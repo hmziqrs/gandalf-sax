@@ -1,0 +1,17 @@
+{
+  "name": "flutter",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "appbundle": "flutter build appbundle",
+    "build-apks": "rm -rf build/release.apks && bundletool build-apks --bundle=build/app/outputs/bundle/release/app-release.aab --output=build/release.apks",
+    "install-apks": "adb uninstall com.onemdev.gandalf && bundletool install-apks --apks=build/release.apks && adb shell am start -n com.onemdev.gandalf/com.onemdev.gandalf.MainActivity",
+    "install-appbundle": "npm run appbundle && npm run build-apks && npm run install-apks",
+    "build-android": "flutter build apk -t lib/main.mobile.dart",
+    "vslaunch": "babel-node scripts/vslaunch.js",
+    "build-web": "flutter build web -t lib/main.mobile.dart --release",
+    "deploy-web": "npm run build-web && firebase deloy",
+    "debug-upload": "nodemon scripts/upload.js --exec  babel-node"
+  },
+  "resolutions": {}
+}

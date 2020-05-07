@@ -1,0 +1,45 @@
+on:
+  push:
+    tags:
+      - '*'
+
+name: Release Builds
+jobs:
+  linux:
+    name: Android & Linux & Web
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          git clone https://github.com/flutter/flutter.git
+          cd flutter
+          git checkout 4df8fdb7df
+      - run: echo ::add-path::`pwd`"/flutter/bin"
+
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '12.x'
+
+      - uses: actions/checkout@v2
+        with:
+          path: 'app'
+
+      - run: |
+          cd app
+          flutter config --enable-web
+          flutter pub get
+          flutter build apk
+
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@v1.3.0
+        with:
+          args: deploy --only hosting
+        env:
+          PROJECT_PATH: 'app'
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+
+      - name: Create Android & linux Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: 'app/build/app/outputs/apk/release/app-release.apk'
+          token: ${{ secrets.TOKEN }}
+          allowUpdates: true

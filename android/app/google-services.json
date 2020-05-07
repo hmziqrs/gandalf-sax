@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "130822511337",
+    "firebase_url": "https://epic-sax-gandalf-infinite.firebaseio.com",
+    "project_id": "epic-sax-gandalf-infinite",
+    "storage_bucket": "epic-sax-gandalf-infinite.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:130822511337:android:92fc13918490c4d56b2e78",
+        "android_client_info": {
+          "package_name": "com.onemdev.gandalf"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "130822511337-e7129d25r43u4vghbo5rpp9la33e17kd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.onemdev.gandalf",
+            "certificate_hash": "520c19e96d238ad5ef078921e40ffd6df8b3f401"
+          }
+        },
+        {
+          "client_id": "130822511337-pak78eoocgk59c7a59ihg8obmu0ontrm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmrHvGkLn5B91Kr2vTBj8VO2uZb4KqzW0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "130822511337-pak78eoocgk59c7a59ihg8obmu0ontrm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

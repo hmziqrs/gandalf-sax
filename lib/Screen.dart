@@ -24,6 +24,12 @@ class _ScreenState extends State<Screen> {
   }
 
   @override
+  void dispose() {
+    this.controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       color: Colors.black,
