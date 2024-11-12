@@ -1,10 +1,9 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:gandalf/configs/app.dart';
+import 'package:video_player/video_player.dart';
 
 import 'package:gandalf/screens/Home/widgets/BottomSheet.dart';
-import 'package:media_kit/media_kit.dart';
-import 'package:media_kit_video/media_kit_video.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -12,32 +11,18 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late final Player player;
-  late final  VideoController controller;
+  late VideoPlayerController controller;
+  // late AdmobInterstitial interstitialAd;
   bool canClose = false;
 
   @override
   void initState() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
-    this.player = Player(configuration: PlayerConfiguration(
-      ready: () {
-        //
-      },
-    ));
-
-    this.controller = VideoController(
-      player: this.player,
-      source: VideoSource(
-        uri: "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample
-        -mp4-file.mp4",
-      ),
-    );
-
-    // this.controller = VideoPlayerController.asset("assets/video.mp4");
-    // this.controller.setLooping(true);
-    // this.controller.initialize().then((value) {
-    //   this.controller.play();
-    // });
+    this.controller = VideoPlayerController.asset("assets/video.mp4");
+    this.controller.setLooping(true);
+    this.controller.initialize().then((value) {
+      this.controller.play();
+    });
     if (App.showAds) {
       // this.interstitialAd = AdmobInterstitial(
       //   adUnitId: Ads.fullScreen(),
@@ -47,14 +32,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
-  void dispose() async {
-    this.player.pause();
-    await player.dispose();
+  void dispose() {
+    this.controller.pause();
+    this.controller.dispose();
     super.dispose();
   }
 
   loadAdd() {
-
     setState(
       () {
         this.canClose = true;

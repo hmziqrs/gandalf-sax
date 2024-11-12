@@ -7,7 +7,7 @@ import 'Navigator.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-VideoPlayerMediaKit.ensureInitialized(
+  VideoPlayerMediaKit.ensureInitialized(
     android: true,
     iOS: true,
     macOS: true,
@@ -15,10 +15,7 @@ VideoPlayerMediaKit.ensureInitialized(
     linux: true,
   );
 
-
   App.showAds = Utils.isMobile();
-
-
 
   runApp(AppNavigator([]));
 }
