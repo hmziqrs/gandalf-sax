@@ -1,4 +1,22 @@
 {
+    "hosting": {
+        "public": "build/web",
+        "ignore": [
+            "firebase.json",
+            "**/.*",
+            "**/node_modules/**"
+        ],
+        "rewrites": [
+            {
+                "source": "/privacy-policy",
+                "destination": "/privacy-policy.html"
+            },
+            {
+                "source": "**",
+                "destination": "/index.html"
+            }
+        ]
+    },
     "flutter": {
         "platforms": {
             "android": {
