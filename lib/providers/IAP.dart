@@ -1,9 +1,8 @@
 import 'package:flutter/cupertino.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
 
 class IAPProvider extends ChangeNotifier {
   bool loading = true;
-  List<ProductDetails> products;
+  // List<ProductDetails> products;
 
   // IAPProvider() {
   //   this.initAsync();
