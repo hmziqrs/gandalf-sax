@@ -14,6 +14,10 @@ jobs:
         with:
           flutter-version: "3.24.4"
           channel: "stable"
+          
+      - name: Required linux build tools
+        run: |
+          sudo apt install libmpv-dev mpv
 
       - uses: actions/checkout@v4
         with:
@@ -60,7 +64,7 @@ jobs:
           cd app
           flutter config --enable-web
           flutter pub get
-          flutter build web -t lib/main.mobile.dart --release --wasm
+          flutter build web -t lib/main.dart --release 
 
       # - name: Copy privacy policy
       #   run: |
@@ -97,7 +101,7 @@ jobs:
       - run: |
           cd app
           flutter pub get
-          flutter build apk -t lib/main.mobile.dart --release
+          flutter build apk -t lib/main.dart --release
 
       - name: Create Android Release
         uses: ncipollo/release-action@v1
@@ -125,7 +129,7 @@ jobs:
           flutter config --enable-macos-desktop
           flutter pub global activate flutterfire_cli
           flutter pub get
-          flutter build macos -t lib/main.mobile.dart --release
+          flutter build macos -t lib/main.dart --release
           cd build/macos/Build/Products/Release
           ditto -c -k --sequesterRsrc --keepParent gandalf.app macos-release.zip
 
