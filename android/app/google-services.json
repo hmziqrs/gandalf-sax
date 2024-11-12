@@ -3,7 +3,7 @@
     "project_number": "130822511337",
     "firebase_url": "https://epic-sax-gandalf-infinite.firebaseio.com",
     "project_id": "epic-sax-gandalf-infinite",
-    "storage_bucket": "epic-sax-gandalf-infinite.appspot.com"
+    "storage_bucket": "epic-sax-gandalf-infinite.firebasestorage.app"
   },
   "client": [
     {
@@ -14,6 +14,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "130822511337-2prj3l1ut9vdtgm7du9lcdn3r14uprel.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.onemdev.gandalf",
+            "certificate_hash": "8952c955aa3c7e88f3802f147a71e54ed051390f"
+          }
+        },
         {
           "client_id": "130822511337-e7129d25r43u4vghbo5rpp9la33e17kd.apps.googleusercontent.com",
           "client_type": 1,

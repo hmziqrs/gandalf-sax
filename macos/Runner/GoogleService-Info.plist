@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>130822511337-2prj3l1ut9vdtgm7du9lcdn3r14uprel.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCDEcFRJLsPHskgAm21PejPyvSW1S4oJJs</string>
+	<key>GCM_SENDER_ID</key>
+	<string>130822511337</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.onemdev.gandalf.gandalf</string>
+	<key>PROJECT_ID</key>
+	<string>epic-sax-gandalf-infinite</string>
+	<key>STORAGE_BUCKET</key>
+	<string>epic-sax-gandalf-infinite.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:130822511337:ios:c3308e1331d9c9e16b2e78</string>
+	<key>DATABASE_URL</key>
+	<string>https://epic-sax-gandalf-infinite.firebaseio.com</string>
+</dict>
+</plist>
