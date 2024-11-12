@@ -2,8 +2,6 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:admob_flutter/admob_flutter.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 
 import 'package:gandalf/providers/IAP.dart';
 
@@ -28,24 +26,24 @@ class HomeBottomSheet extends StatelessWidget {
           content: Text(
               "If you're considering donating Thank you.\nBut be mindful that app won't unlock any additional feature nor the adds will be removed.\nDonation is just a generous way of complementing developer."),
           actions: [
-            FlatButton(
+            TextButton(
               child: Text("Close"),
               onPressed: () => Navigator.pop(context),
             ),
-            FlatButton(
+            TextButton(
               child: Text("Donate"),
               onPressed: () async {
-                final result =
-                    await InAppPurchaseConnection.instance.buyNonConsumable(
-                  purchaseParam: purchaseParam,
-                );
-                if (result) {
-                  Scaffold.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text("Thank You! for donating."),
-                    ),
-                  );
-                }
+                // final result =
+                //     await InAppPurchaseConnection.instance.buyNonConsumable(
+                //   purchaseParam: purchaseParam,
+                // );
+                // if (result) {
+                //   ScaffoldMessenger.of(context).showSnackBar(
+                //     SnackBar(
+                //       content: Text("Thank You! for donating."),
+                //     ),
+                //   );
+                // }
               },
             )
           ],
@@ -85,7 +83,7 @@ class HomeBottomSheet extends StatelessWidget {
                 ),
                 child: NotificationListener<OverscrollIndicatorNotification>(
                   onNotification: (n) {
-                    n.disallowGlow();
+                    n.disallowIndicator();
                     return true;
                   },
                   child: Consumer<IAPProvider>(
@@ -115,25 +113,25 @@ class HomeBottomSheet extends StatelessWidget {
                           SizedBox(height: PADDING * 2),
                           divider,
                           SizedBox(height: PADDING * 2),
-                          Container(
-                            height: 80,
-                            width: double.infinity,
-                            child: AdmobBanner(
-                              // adUnitId: Ads.banner(),
-                              adSize: AdmobBannerSize.FULL_BANNER,
-                              adUnitId: Ads.banner(),
-                            ),
-                          ),
+                          // Container(
+                          //   height: 80,
+                          //   width: double.infinity,
+                          //   child: AdmobBanner(
+                          //     // adUnitId: Ads.banner(),
+                          //     adSize: AdmobBannerSize.FULL_BANNER,
+                          //     adUnitId: Ads.banner(),
+                          //   ),
+                          // ),
                           SizedBox(height: PADDING * 2),
-                          Space(
-                            child: AlphaButton(
-                              onTap: () => Utils.launchUrl(
-                                "https://www.youtube.com/watch?v=BBGEG21CGo0",
-                              ),
-                              label: "Original Video",
-                              icon: MaterialCommunityIcons.youtube,
-                            ),
-                          ),
+                          // Space(
+                          //   child: AlphaButton(
+                          //     onTap: () => Utils.launchUrl(
+                          //       "https://www.youtube.com/watch?v=BBGEG21CGo0",
+                          //     ),
+                          //     label: "Original Video",
+                          //     icon: MaterialCommunityIcons.youtube,
+                          //   ),
+                          // ),
                           SizedBox(height: PADDING * 2),
                           Space(
                             child: Text(
@@ -146,23 +144,23 @@ class HomeBottomSheet extends StatelessWidget {
                             ),
                           ),
                           SizedBox(height: PADDING * 2),
-                          !state.loading
-                              ? Space(
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: state.products
-                                        .map(
-                                          (product) => AlphaButton(
-                                            label: product.price,
-                                            onTap: () =>
-                                                this.doDonate(context, product),
-                                          ),
-                                        )
-                                        .toList(),
-                                  ),
-                                )
-                              : LinearProgressIndicator(),
+                          // !state.loading
+                          //     ? Space(
+                          //         child: Row(
+                          //           mainAxisAlignment:
+                          //               MainAxisAlignment.spaceBetween,
+                          //           children: state.products
+                          //               .map(
+                          //                 (product) => AlphaButton(
+                          //                   label: product.price,
+                          //                   onTap: () =>
+                          //                       this.doDonate(context, product),
+                          //                 ),
+                          //               )
+                          //               .toList(),
+                          //         ),
+                          //       )
+                          //     : LinearProgressIndicator(),
                           SizedBox(height: PADDING * 2),
                         ],
                       );
