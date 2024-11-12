@@ -11,7 +11,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.onemdev.gandalf.gandalf</string>
+	<string>com.example.gandalf</string>
 	<key>PROJECT_ID</key>
 	<string>epic-sax-gandalf-infinite</string>
 	<key>STORAGE_BUCKET</key>
@@ -27,7 +27,7 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:130822511337:ios:c3308e1331d9c9e16b2e78</string>
+	<string>1:130822511337:ios:f1c19bfcc5f0d0776b2e78</string>
 	<key>DATABASE_URL</key>
 	<string>https://epic-sax-gandalf-infinite.firebaseio.com</string>
 </dict>

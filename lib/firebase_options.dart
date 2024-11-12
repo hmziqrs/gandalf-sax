@@ -73,13 +73,14 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyCDEcFRJLsPHskgAm21PejPyvSW1S4oJJs',
-    appId: '1:130822511337:ios:c3308e1331d9c9e16b2e78',
+    appId: '1:130822511337:ios:f1c19bfcc5f0d0776b2e78',
     messagingSenderId: '130822511337',
     projectId: 'epic-sax-gandalf-infinite',
     databaseURL: 'https://epic-sax-gandalf-infinite.firebaseio.com',
     storageBucket: 'epic-sax-gandalf-infinite.firebasestorage.app',
-    androidClientId: '130822511337-2prj3l1ut9vdtgm7du9lcdn3r14uprel.apps.googleusercontent.com',
-    iosBundleId: 'com.onemdev.gandalf.gandalf',
+    androidClientId:
+        '130822511337-2prj3l1ut9vdtgm7du9lcdn3r14uprel.apps.googleusercontent.com',
+    iosBundleId: 'com.example.gandalf',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
