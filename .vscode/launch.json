@@ -7,44 +7,14 @@
       "type": "dart"
     },
     {
-      "name": "Moto Z 2 (mobile)",
-      "deviceId": "ZY224BJD43",
-      "type": "dart",
-      "request": "launch",
-      "args": [
-        "-t",
-        "lib/main.dart"
-      ]
-    },
-    {
-      "name": "Windows (desktop)",
-      "deviceId": "windows",
+      "name": "Linux (desktop)",
+      "deviceId": "linux",
       "type": "dart",
       "request": "launch"
     },
     {
-      "name": "Web Server (web)",
-      "deviceId": "web-server",
-      "type": "dart",
-      "request": "launch",
-      "args": [
-        "-t",
-        "lib/main.web.dart"
-      ]
-    },
-    {
       "name": "Chrome (web)",
       "deviceId": "chrome",
-      "type": "dart",
-      "request": "launch",
-      "args": [
-        "-t",
-        "lib/main.web.dart"
-      ]
-    },
-    {
-      "name": "Edge (web)",
-      "deviceId": "edge",
       "type": "dart",
       "request": "launch",
       "args": [
@@ -57,11 +27,8 @@
     {
       "name": "current",
       "configurations": [
-        "Moto Z 2 (mobile)",
-        "Windows (desktop)",
-        "Web Server (web)",
-        "Chrome (web)",
-        "Edge (web)"
+        "Linux (desktop)",
+        "Chrome (web)"
       ]
     }
   ]
