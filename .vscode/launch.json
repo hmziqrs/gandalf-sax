@@ -7,10 +7,24 @@
       "type": "dart"
     },
     {
-      "name": "Linux (desktop)",
-      "deviceId": "linux",
+      "name": "macOS (desktop)",
+      "deviceId": "macos",
       "type": "dart",
-      "request": "launch"
+      "request": "launch",
+      "args": [
+        "-t",
+        "lib/main.dart"
+      ]
+    },
+    {
+      "name": "Mac Designed for iPad (desktop)",
+      "deviceId": "mac-designed-for-ipad",
+      "type": "dart",
+      "request": "launch",
+      "args": [
+        "-t",
+        "lib/main.dart"
+      ]
     },
     {
       "name": "Chrome (web)",
@@ -19,7 +33,7 @@
       "request": "launch",
       "args": [
         "-t",
-        "lib/main.dart"
+        "lib/main.web.dart"
       ]
     }
   ],
@@ -27,7 +41,8 @@
     {
       "name": "current",
       "configurations": [
-        "Linux (desktop)",
+        "macOS (desktop)",
+        "Mac Designed for iPad (desktop)",
         "Chrome (web)"
       ]
     }

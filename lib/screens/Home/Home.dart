@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
@@ -13,32 +15,50 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late VideoPlayerController controller;
-  // late AdmobInterstitial interstitialAd;
   bool canClose = false;
+
+  // Video duration in microseconds
+  late int videoDurationMicros;
+
+  Future<void> syncVideo() async {
+    // Get current UTC timestamp in microseconds
+    int currentTimeMicros = DateTime.now().toUtc().microsecondsSinceEpoch;
+    print("Suncing video $currentTimeMicros ");
+
+    // Calculate the position where video should be playing
+    int position = currentTimeMicros % videoDurationMicros;
+
+    // Convert to Duration
+    Duration seekPosition = Duration(microseconds: position);
+    print("seek: $seekPosition ${seekPosition.inSeconds}");
+    print("Position: $position current: ${controller.value.position}");
+
+    // Seek to calculated position and play
+    await controller.seekTo(seekPosition);
+    await controller.play();
+  }
 
   @override
   void initState() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
-    this.controller = VideoPlayerController.asset("assets/video.mp4");
-    this.controller.setLooping(true);
 
-    this.controller.initialize().then((value) async {
+    controller = VideoPlayerController.asset("assets/video.mp4");
+    controller.setLooping(true);
+
+    controller.initialize().then((value) async {
+      videoDurationMicros = controller.value.duration.inMicroseconds;
       if (!kIsWeb) {
-        await this.controller.play();
+        syncVideo();
       }
     });
-    if (App.showAds) {
-      // this.interstitialAd = AdmobInterstitial(
-      //   adUnitId: Ads.fullScreen(),
-      // );
-    }
+
     super.initState();
   }
 
   @override
   void dispose() {
-    this.controller.pause();
-    this.controller.dispose();
+    controller.pause();
+    controller.dispose();
     super.dispose();
   }
 
@@ -64,17 +84,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
     await sheet.closed;
 
-    this.controller.play();
+    syncVideo();
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        this.controller.pause();
-        this.loadAdd();
-
-        return this.canClose;
+        controller.pause();
+        loadAdd();
+        return canClose;
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -84,13 +103,13 @@ class _HomeScreenState extends State<HomeScreen> {
             fit: StackFit.expand,
             children: [
               Positioned.fill(
-                child: VideoPlayer(this.controller),
+                child: VideoPlayer(controller),
               ),
               Builder(
                 builder: (context) {
                   return Positioned.fill(
                     child: GestureDetector(
-                      onTap: () => this.onTap(context),
+                      onTap: () => onTap(context),
                       child: Container(
                         color: Colors.transparent,
                       ),
