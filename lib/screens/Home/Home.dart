@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:gandalf/configs/app.dart';
@@ -20,8 +21,11 @@ class _HomeScreenState extends State<HomeScreen> {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
     this.controller = VideoPlayerController.asset("assets/video.mp4");
     this.controller.setLooping(true);
-    this.controller.initialize().then((value) {
-      this.controller.play();
+
+    this.controller.initialize().then((value) async {
+      if (!kIsWeb) {
+        await this.controller.play();
+      }
     });
     if (App.showAds) {
       // this.interstitialAd = AdmobInterstitial(

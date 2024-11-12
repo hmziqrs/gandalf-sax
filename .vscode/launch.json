@@ -19,7 +19,7 @@
       "request": "launch",
       "args": [
         "-t",
-        "lib/main.web.dart"
+        "lib/main.dart"
       ]
     }
   ],
