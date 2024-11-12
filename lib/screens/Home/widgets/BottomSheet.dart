@@ -1,7 +1,6 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
 
 import 'package:gandalf/providers/IAP.dart';
 
@@ -15,8 +14,7 @@ import 'package:provider/provider.dart';
 import 'Space.dart';
 
 class HomeBottomSheet extends StatelessWidget {
-  void doDonate(BuildContext context, ProductDetails productDetails) {
-    final purchaseParam = PurchaseParam(productDetails: productDetails);
+  void doDonate(BuildContext context) {
 
     showDialog(
       context: context,

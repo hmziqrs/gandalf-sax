@@ -139,7 +139,6 @@ PODS:
   - GoogleUtilities/UserDefaults (8.0.2):
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
-  - in_app_purchase_storekit (0.0.1):
     - Flutter
     - FlutterMacOS
   - media_kit_libs_macos_video (1.0.4):
