@@ -39,7 +39,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   loadAdd() {
-
     setState(
       () {
         this.canClose = true;
