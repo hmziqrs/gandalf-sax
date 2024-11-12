@@ -7,8 +7,8 @@ import 'providers/IAP.dart';
 import 'screens/Home/Home.dart';
 
 class AppNavigator extends StatelessWidget {
-  AppNavigator(this.observer);
-  final FirebaseAnalyticsObserver observer;
+  AppNavigator(this.observers);
+  final List<NavigatorObserver> observers;
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,7 @@ class AppNavigator extends StatelessWidget {
       create: (_) => IAPProvider(),
       child: MaterialApp(
         title: 'Epic Sax Gandalf Infinite',
-        navigatorObservers: [this.observer],
+        navigatorObservers: this.observers,
         theme: ThemeData(
           primarySwatch: Colors.blue,
           visualDensity: VisualDensity.adaptivePlatformDensity,
