@@ -2,8 +2,6 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:admob_flutter/admob_flutter.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 
 import 'package:gandalf/providers/IAP.dart';
 
@@ -85,7 +83,7 @@ class HomeBottomSheet extends StatelessWidget {
                 ),
                 child: NotificationListener<OverscrollIndicatorNotification>(
                   onNotification: (n) {
-                    n.disallowGlow();
+                    n.disallowIndicator();
                     return true;
                   },
                   child: Consumer<IAPProvider>(

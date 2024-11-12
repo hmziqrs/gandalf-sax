@@ -3,7 +3,7 @@ import 'package:gandalf/constants.dart';
 
 class Space extends StatelessWidget {
   Space({
-    this.child,
+    required this.child,
   });
 
   final Widget child;

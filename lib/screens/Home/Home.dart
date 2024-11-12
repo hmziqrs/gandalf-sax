@@ -1,9 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
-import 'package:admob_flutter/admob_flutter.dart';
+import 'package:gandalf/configs/app.dart';
 import 'package:video_player/video_player.dart';
-
-import 'package:gandalf/Ads.dart';
 
 import 'package:gandalf/screens/Home/widgets/BottomSheet.dart';
 
@@ -13,21 +11,23 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  VideoPlayerController controller;
-  AdmobInterstitial interstitialAd;
+  late VideoPlayerController controller;
+  // late AdmobInterstitial interstitialAd;
   bool canClose = false;
 
   @override
   void initState() {
-    this.interstitialAd = AdmobInterstitial(
-      adUnitId: Ads.fullScreen(),
-    );
-    SystemChrome.setEnabledSystemUIOverlays([]);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
     this.controller = VideoPlayerController.asset("assets/video.mp4");
     this.controller.setLooping(true);
     this.controller.initialize().then((value) {
       this.controller.play();
     });
+    if (App.showAds) {
+      // this.interstitialAd = AdmobInterstitial(
+      //   adUnitId: Ads.fullScreen(),
+      // );
+    }
     super.initState();
   }
 
@@ -39,12 +39,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   loadAdd() {
-    this.interstitialAd.load();
+
     setState(
       () {
         this.canClose = true;
       },
     );
+    if (!App.showAds) return;
+    // this.interstitialAd.load();
   }
 
   onTap(BuildContext context) async {
