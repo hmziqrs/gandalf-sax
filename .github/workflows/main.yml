@@ -14,7 +14,6 @@ jobs:
         with:
           flutter-version: "3.24.4"
           channel: "stable"
-      - uses: oven-sh/setup-bun@v2
       - name: Required linux build tools
         run: |
           sudo apt install libmpv-dev mpv
@@ -58,6 +57,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: "app"
+      - uses: oven-sh/setup-bun@v2
 
       - name: Build web release
         run: |
@@ -78,7 +78,7 @@ jobs:
           packageManager: "bun"
           command: pages deploy ./dist --project-name=gandalfsax --branch=main
 
-      - name: Deploy to Firebase
+      - name: Deploy to Firebasefweb
         uses: w9jds/firebase-action@master
         with:
           args: deploy --only hosting
