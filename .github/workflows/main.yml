@@ -76,7 +76,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           packageManager: "bun"
-          command: pages deploy ./dist --project-name=gandalfsax --branch=main
+          command: pages deploy ./build/web --project-name=gandalfsax --branch=main
 
       - name: Deploy to Firebasefweb
         uses: w9jds/firebase-action@master
