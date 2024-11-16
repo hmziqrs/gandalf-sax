@@ -23,15 +23,12 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> syncVideo() async {
     // Get current UTC timestamp in microseconds
     int currentTimeMicros = DateTime.now().toUtc().microsecondsSinceEpoch;
-    print("Suncing video $currentTimeMicros ");
 
     // Calculate the position where video should be playing
     int position = currentTimeMicros % videoDurationMicros;
 
     // Convert to Duration
     Duration seekPosition = Duration(microseconds: position);
-    print("seek: $seekPosition ${seekPosition.inSeconds}");
-    print("Position: $position current: ${controller.value.position}");
 
     // Seek to calculated position and play
     await controller.seekTo(seekPosition);
@@ -84,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     await sheet.closed;
 
-    syncVideo();
+    syncVideo;
   }
 
   @override

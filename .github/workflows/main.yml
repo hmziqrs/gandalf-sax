@@ -14,7 +14,6 @@ jobs:
         with:
           flutter-version: "3.24.4"
           channel: "stable"
-          
       - name: Required linux build tools
         run: |
           sudo apt install libmpv-dev mpv
@@ -58,20 +57,28 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: "app"
+      - uses: oven-sh/setup-bun@v2
 
       - name: Build web release
         run: |
           cd app
           flutter config --enable-web
           flutter pub get
-          flutter build web -t lib/main.dart --release 
+          flutter build web -t lib/main.dart --release
 
       # - name: Copy privacy policy
       #   run: |
       #     cd app
       #     cp privacy-policy/index.html build/web/privacy-policy.html
+      - name: Deploy cloudflare pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          packageManager: "bun"
+          command: pages deploy ./dist --project-name=gandalfsax --branch=main
 
-      - name: Deploy to Firebase
+      - name: Deploy to Firebasefweb
         uses: w9jds/firebase-action@master
         with:
           args: deploy --only hosting
