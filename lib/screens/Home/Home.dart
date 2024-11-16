@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:gandalf/providers/video.dart';
 import 'package:video_player/video_player.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -11,58 +12,24 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late VideoPlayerController controller;
-  late int videoDurationMicros;
-
-  Future<void> syncVideo() async {
-    // Get current UTC timestamp in microseconds
-    int currentTimeMicros = DateTime.now().toUtc().microsecondsSinceEpoch;
-
-    // Calculate the position where video should be playing
-    int position = currentTimeMicros % videoDurationMicros;
-
-    // Convert to Duration
-    Duration seekPosition = Duration(microseconds: position);
-
-    // Seek to calculated position and play
-    await controller.seekTo(seekPosition);
-    await controller.play();
-  }
-
   @override
   void initState() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
 
-    controller = VideoPlayerController.asset("assets/video.mp4");
-    controller.setLooping(true);
-
-    controller.initialize().then((value) async {
-      videoDurationMicros = controller.value.duration.inMicroseconds;
-      if (!kIsWeb) {
-        syncVideo();
-      }
+    // Initialize video on widget creation
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      VideoProvider.of(context).initialize();
     });
 
     super.initState();
   }
 
   @override
-  void dispose() {
-    controller.pause();
-    controller.dispose();
-    super.dispose();
-  }
-
-
-
-  onTap(BuildContext context) async {
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final videoState = VideoProvider.of(context, true);
     return PopScope(
       onPopInvokedWithResult: (flag, data) {
-        controller.pause();
+        videoState.pause();
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -71,8 +38,9 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Stack(
             fit: StackFit.expand,
             children: [
+              if (videoState.isInitialized)
               Positioned.fill(
-                child: VideoPlayer(controller),
+                  child: VideoPlayer(videoState.controller),
               ),
               Positioned.fill(
                 child: Container(
