@@ -3,10 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
-import 'package:gandalf/configs/app.dart';
 import 'package:video_player/video_player.dart';
-
-import 'package:gandalf/screens/Home/widgets/BottomSheet.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -15,9 +12,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late VideoPlayerController controller;
-  bool canClose = false;
-
-  // Video duration in microseconds
   late int videoDurationMicros;
 
   Future<void> syncVideo() async {
@@ -59,38 +53,16 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  loadAdd() {
-    setState(
-      () {
-        this.canClose = true;
-      },
-    );
-    if (!App.showAds) return;
-    // this.interstitialAd.load();
-  }
+
 
   onTap(BuildContext context) async {
-    this.controller.pause();
-    final sheet = showBottomSheet(
-      backgroundColor: Colors.black.withOpacity(0.11),
-      context: context,
-      builder: (ctx) {
-        return HomeBottomSheet();
-      },
-    );
-
-    await sheet.closed;
-
-    syncVideo;
   }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      onPopInvokedWithResult: (flag, data) {
         controller.pause();
-        loadAdd();
-        return canClose;
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -102,18 +74,11 @@ class _HomeScreenState extends State<HomeScreen> {
               Positioned.fill(
                 child: VideoPlayer(controller),
               ),
-              Builder(
-                builder: (context) {
-                  return Positioned.fill(
-                    child: GestureDetector(
-                      onTap: () => onTap(context),
-                      child: Container(
-                        color: Colors.transparent,
-                      ),
+              Positioned.fill(
+                child: Container(
+                    // color: Colors.red,
                     ),
-                  );
-                },
-              ),
+              )
             ],
           ),
         ),
