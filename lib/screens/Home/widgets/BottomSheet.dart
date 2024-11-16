@@ -2,7 +2,6 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 
-import 'package:gandalf/providers/IAP.dart';
 
 import 'package:gandalf/constants.dart';
 import 'package:gandalf/Utils.dart';
@@ -20,9 +19,8 @@ class HomeBottomSheet extends StatelessWidget {
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          title: Text("Donation"),
-          content: Text(
-              "If you're considering donating Thank you.\nBut be mindful that app won't unlock any additional feature nor the adds will be removed.\nDonation is just a generous way of complementing developer."),
+          title: Text("Test"),
+          content: Text("Test."),
           actions: [
             TextButton(
               child: Text("Close"),
@@ -84,85 +82,81 @@ class HomeBottomSheet extends StatelessWidget {
                     n.disallowIndicator();
                     return true;
                   },
-                  child: Consumer<IAPProvider>(
-                    builder: (context, state, child) {
-                      return ListView(
-                        children: [
-                          SizedBox(height: PADDING * 2),
-                          Space(
-                            child: Text(
-                              "Epic Sax Gandalf Infinite",
-                              style: TextStyle(
-                                fontSize: 24,
-                              ),
-                            ),
+                  child: ListView(
+                    children: [
+                      SizedBox(height: PADDING * 2),
+                      Space(
+                        child: Text(
+                          "Epic Sax Gandalf Infinite",
+                          style: TextStyle(
+                            fontSize: 24,
                           ),
-                          SizedBox(height: PADDING * 0.5),
-                          Space(
-                            child: Text(
-                              "It's just gandalf an epic one",
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.black.withOpacity(0.4),
-                              ),
-                            ),
+                        ),
+                      ),
+                      SizedBox(height: PADDING * 0.5),
+                      Space(
+                        child: Text(
+                          "It's just gandalf an epic one",
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black.withOpacity(0.4),
                           ),
-                          SizedBox(height: PADDING * 2),
-                          divider,
-                          SizedBox(height: PADDING * 2),
-                          // Container(
-                          //   height: 80,
-                          //   width: double.infinity,
-                          //   child: AdmobBanner(
-                          //     // adUnitId: Ads.banner(),
-                          //     adSize: AdmobBannerSize.FULL_BANNER,
-                          //     adUnitId: Ads.banner(),
-                          //   ),
-                          // ),
-                          SizedBox(height: PADDING * 2),
-                          // Space(
-                          //   child: AlphaButton(
-                          //     onTap: () => Utils.launchUrl(
-                          //       "https://www.youtube.com/watch?v=BBGEG21CGo0",
-                          //     ),
-                          //     label: "Original Video",
-                          //     icon: MaterialCommunityIcons.youtube,
-                          //   ),
-                          // ),
-                          SizedBox(height: PADDING * 2),
-                          Space(
-                            child: Text(
-                              "Donations",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500,
-                                // color: Colors.black.withOpacity(0.4),
-                              ),
-                            ),
+                        ),
+                      ),
+                      SizedBox(height: PADDING * 2),
+                      divider,
+                      SizedBox(height: PADDING * 2),
+                      // Container(
+                      //   height: 80,
+                      //   width: double.infinity,
+                      //   child: AdmobBanner(
+                      //     // adUnitId: Ads.banner(),
+                      //     adSize: AdmobBannerSize.FULL_BANNER,
+                      //     adUnitId: Ads.banner(),
+                      //   ),
+                      // ),
+                      SizedBox(height: PADDING * 2),
+                      // Space(
+                      //   child: AlphaButton(
+                      //     onTap: () => Utils.launchUrl(
+                      //       "https://www.youtube.com/watch?v=BBGEG21CGo0",
+                      //     ),
+                      //     label: "Original Video",
+                      //     icon: MaterialCommunityIcons.youtube,
+                      //   ),
+                      // ),
+                      SizedBox(height: PADDING * 2),
+                      Space(
+                        child: Text(
+                          "Donations",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                            // color: Colors.black.withOpacity(0.4),
                           ),
-                          SizedBox(height: PADDING * 2),
-                          // !state.loading
-                          //     ? Space(
-                          //         child: Row(
-                          //           mainAxisAlignment:
-                          //               MainAxisAlignment.spaceBetween,
-                          //           children: state.products
-                          //               .map(
-                          //                 (product) => AlphaButton(
-                          //                   label: product.price,
-                          //                   onTap: () =>
-                          //                       this.doDonate(context, product),
-                          //                 ),
-                          //               )
-                          //               .toList(),
-                          //         ),
-                          //       )
-                          //     : LinearProgressIndicator(),
-                          SizedBox(height: PADDING * 2),
-                        ],
-                      );
-                    },
+                        ),
+                      ),
+                      SizedBox(height: PADDING * 2),
+                      // !state.loading
+                      //     ? Space(
+                      //         child: Row(
+                      //           mainAxisAlignment:
+                      //               MainAxisAlignment.spaceBetween,
+                      //           children: state.products
+                      //               .map(
+                      //                 (product) => AlphaButton(
+                      //                   label: product.price,
+                      //                   onTap: () =>
+                      //                       this.doDonate(context, product),
+                      //                 ),
+                      //               )
+                      //               .toList(),
+                      //         ),
+                      //       )
+                      //     : LinearProgressIndicator(),
+                      SizedBox(height: PADDING * 2),
+                    ],
                   ),
                 ),
               ),
