@@ -1,4 +1,4 @@
-package com.onemdev.gandlaf
+package com.onemdev.gandalf
 
 import io.flutter.embedding.android.FlutterActivity
 
