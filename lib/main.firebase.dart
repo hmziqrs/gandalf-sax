@@ -2,6 +2,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gandalf/Utils.dart';
 import 'package:gandalf/configs/app.dart';
@@ -26,6 +27,13 @@ void main() async {
   App.showAds = Utils.isMobile();
   if (App.showAds) {
     await MobileAds.instance.initialize();
+  }
+
+  if (Utils.isMobile()) {
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
   }
 
   FlutterError.onError = (FlutterErrorDetails err) {

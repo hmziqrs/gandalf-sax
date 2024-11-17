@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gandalf/Ads.dart';
 import 'package:gandalf/configs/app.dart';
+import 'package:gandalf/constants.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class AppBannerAd extends StatefulWidget {
@@ -46,10 +47,13 @@ class _AppBannerAdState extends State<AppBannerAd> {
       return SizedBox();
     }
 
-    return SizedBox(
-      height: this.ad?.size.height.toDouble(),
-      width: this.ad?.size.width.toDouble(),
-      child: this.isAdLoaded ? AdWidget(ad: this.ad!) : SizedBox(),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: PADDING * 2),
+      child: SizedBox(
+        height: this.ad?.size.height.toDouble(),
+        width: this.ad?.size.width.toDouble(),
+        child: this.isAdLoaded ? AdWidget(ad: this.ad!) : SizedBox(),
+      ),
     );
   }
 }
