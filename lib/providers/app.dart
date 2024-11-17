@@ -1,70 +1,72 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class AppProvider extends ChangeNotifier {
-  static AppProvider of(BuildContext context, [bool listen = false]) {
-    return Provider.of<AppProvider>(context, listen: listen);
-  }
+final appSettingsProvider = StateNotifierProvider<AppSettingsNotifier, AppSettings>((ref) {
+  return AppSettingsNotifier();
+});
 
-  // Cache keys
-  static const String _themeKey = 'app_theme';
-  static const String _backgroundPlaybackKey = 'background_playback';
+class AppSettings {
+  final ThemeMode themeMode;
+  final bool backgroundPlayback;
 
-  // Default values
-  ThemeMode _themeMode = ThemeMode.system;
-  bool _backgroundPlayback = false;
+  AppSettings({
+    this.themeMode = ThemeMode.system,
+    this.backgroundPlayback = false,
+  });
 
-  // Getters
-  ThemeMode get themeMode => _themeMode;
-  bool get backgroundPlayback => _backgroundPlayback;
-
-  // Initialize from cache
-  Future<void> initFromCache() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    // Load theme
-    final themeModeString = prefs.getString(_themeKey) ?? 'system';
-    _themeMode = ThemeMode.values.firstWhere(
-      (e) => e.toString() == 'ThemeMode.$themeModeString',
-      orElse: () => ThemeMode.system,
+  AppSettings copyWith({
+    ThemeMode? themeMode,
+    bool? backgroundPlayback,
+  }) {
+    return AppSettings(
+      themeMode: themeMode ?? this.themeMode,
+      backgroundPlayback: backgroundPlayback ?? this.backgroundPlayback,
     );
+  }
+}
 
-    // Load background playback
-    _backgroundPlayback = prefs.getBool(_backgroundPlaybackKey) ?? false;
-
-    notifyListeners();
+class AppSettingsNotifier extends StateNotifier<AppSettings> {
+  AppSettingsNotifier() : super(AppSettings()) {
+    _initFromCache();
   }
 
-  // Theme methods
+  Future<void> _initFromCache() async {
+    final prefs = await SharedPreferences.getInstance();
+    final themeModeString = prefs.getString('app_theme') ?? 'system';
+    final backgroundPlayback = prefs.getBool('background_playback') ?? false;
+
+    state = state.copyWith(
+      themeMode: ThemeMode.values.firstWhere(
+        (e) => e.toString() == 'ThemeMode.$themeModeString',
+        orElse: () => ThemeMode.system,
+      ),
+      backgroundPlayback: backgroundPlayback,
+    );
+  }
+
   Future<void> setThemeMode(ThemeMode mode) async {
-    if (_themeMode == mode) return;
+    if (state.themeMode == mode) return;
 
-    _themeMode = mode;
-    notifyListeners();
-
-    // Cache the value
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_themeKey, mode.toString().split('.').last);
+    await prefs.setString('app_theme', mode.toString().split('.').last);
+
+    state = state.copyWith(themeMode: mode);
   }
 
-  // Background playback methods
   Future<void> setBackgroundPlayback(bool enabled) async {
-    if (_backgroundPlayback == enabled) return;
+    if (state.backgroundPlayback == enabled) return;
 
-    _backgroundPlayback = enabled;
-    notifyListeners();
-
-    // Cache the value
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_backgroundPlaybackKey, enabled);
+    await prefs.setBool('background_playback', enabled);
+
+    state = state.copyWith(backgroundPlayback: enabled);
   }
 
-  // Helper method to determine if we should use dark theme
   bool isDarkMode(BuildContext context) {
-    if (_themeMode == ThemeMode.system) {
+    if (state.themeMode == ThemeMode.system) {
       return MediaQuery.platformBrightnessOf(context) == Brightness.dark;
     }
-    return _themeMode == ThemeMode.dark;
+    return state.themeMode == ThemeMode.dark;
   }
 }

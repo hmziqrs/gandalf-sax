@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gandalf/constants.dart';
 import 'package:gandalf/providers/app.dart';
 import 'package:gandalf/widgets/Buttons/Alpha.dart';
 
-class SheetControls extends StatelessWidget {
+class SheetControls extends ConsumerWidget {
   const SheetControls({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final appProvider = AppProvider.of(context, true);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final appState = ref.watch(appSettingsProvider);
+    final appController = ref.read(appSettingsProvider.notifier);
 
     return Padding(
       padding: const EdgeInsets.all(PADDING * 2),
@@ -33,7 +35,7 @@ class SheetControls extends StatelessWidget {
               Expanded(
                 child: AlphaButton(
                   label: 'Light',
-                  onTap: () => appProvider.setThemeMode(ThemeMode.light),
+                  onTap: () => appController.setThemeMode(ThemeMode.light),
                   margin: EdgeInsets.only(right: PADDING),
                   icon: Icons.light_mode,
                 ),
@@ -41,7 +43,7 @@ class SheetControls extends StatelessWidget {
               Expanded(
                 child: AlphaButton(
                   label: 'Dark',
-                  onTap: () => appProvider.setThemeMode(ThemeMode.dark),
+                  onTap: () => appController.setThemeMode(ThemeMode.dark),
                   margin: EdgeInsets.symmetric(horizontal: PADDING),
                   icon: Icons.dark_mode,
                 ),
@@ -49,7 +51,7 @@ class SheetControls extends StatelessWidget {
               Expanded(
                 child: AlphaButton(
                   label: 'System',
-                  onTap: () => appProvider.setThemeMode(ThemeMode.system),
+                  onTap: () => appController.setThemeMode(ThemeMode.system),
                   margin: EdgeInsets.only(left: PADDING),
                   icon: Icons.settings_brightness,
                 ),
@@ -68,8 +70,9 @@ class SheetControls extends StatelessWidget {
                 ),
               ),
               Switch(
-                value: appProvider.backgroundPlayback,
-                onChanged: (value) => appProvider.setBackgroundPlayback(value),
+                value: appState.backgroundPlayback,
+                onChanged: (value) =>
+                    appController.setBackgroundPlayback(value),
               ),
             ],
           ),
@@ -82,11 +85,11 @@ class SheetControls extends StatelessWidget {
           ),
           SizedBox(height: PADDING),
           Text(
-            'Theme: ${appProvider.themeMode.toString().split('.').last}',
+            'Theme: ${appState.themeMode.toString().split('.').last}',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           Text(
-            'Background Playback: ${appProvider.backgroundPlayback ? 'Enabled' : 'Disabled'}',
+            'Background Playback: ${appState.backgroundPlayback ? 'Enabled' : 'Disabled'}',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
         ],

@@ -1,31 +1,32 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gandalf/providers/video.dart';
 import 'package:gandalf/screens/Home/widgets/sheet.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:video_player/video_player.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
 
     // Initialize video on widget creation
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      VideoProvider.of(context).initialize();
+      ref.read(videoControllerProvider.notifier).initialize();
     });
 
     super.initState();
   }
 
   void onTap() async {
-    final video = VideoProvider.of(context);
-    await video.pause();
+    final videoController = ref.read(videoControllerProvider.notifier);
+    await videoController.pause();
     await showMaterialModalBottomSheet(
       backgroundColor: Colors.transparent,
       context: context,
@@ -34,15 +35,16 @@ class _HomeScreenState extends State<HomeScreen> {
         return Sheet();
       },
     );
-    await video.syncVideo();
+    await videoController.syncVideo();
   }
 
   @override
   Widget build(BuildContext context) {
-    final videoState = VideoProvider.of(context, true);
+    final videoState = ref.watch(videoControllerProvider);
+
     return PopScope(
       onPopInvokedWithResult: (flag, data) {
-        videoState.pause();
+        ref.read(videoControllerProvider.notifier).pause();
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -52,11 +54,11 @@ class _HomeScreenState extends State<HomeScreen> {
             fit: StackFit.expand,
             children: [
               if (videoState.isInitialized)
-              Positioned.fill(
+                Positioned.fill(
                   child: VideoPlayer(
-                    videoState.controller,
+                    videoState.controller!,
                   ),
-              ),
+                ),
               Positioned.fill(
                 child: GestureDetector(
                   onTap: onTap,

@@ -1,43 +1,68 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
-class VideoProvider extends ChangeNotifier {
-  static VideoProvider of(BuildContext context, [bool listen = false]) {
-    return Provider.of<VideoProvider>(context, listen: listen);
+final videoControllerProvider = StateNotifierProvider<VideoControllerNotifier, VideoState>((ref) {
+  return VideoControllerNotifier();
+});
+
+class VideoState {
+  final VideoPlayerController? controller;
+  final bool isPlaying;
+  final bool isInitialized;
+  final Duration currentPosition;
+  final Duration totalDuration;
+  final double volume;
+
+  VideoState({
+    this.controller,
+    this.isPlaying = false,
+    this.isInitialized = false,
+    this.currentPosition = Duration.zero,
+    this.totalDuration = Duration.zero,
+    this.volume = 1.0,
+  });
+
+  VideoState copyWith({
+    VideoPlayerController? controller,
+    bool? isPlaying,
+    bool? isInitialized,
+    Duration? currentPosition,
+    Duration? totalDuration,
+    double? volume,
+  }) {
+    return VideoState(
+      controller: controller ?? this.controller,
+      isPlaying: isPlaying ?? this.isPlaying,
+      isInitialized: isInitialized ?? this.isInitialized,
+      currentPosition: currentPosition ?? this.currentPosition,
+      totalDuration: totalDuration ?? this.totalDuration,
+      volume: volume ?? this.volume,
+    );
   }
+}
 
-  late VideoPlayerController _controller;
-  late int _videoDurationMicros;
-  bool _isPlaying = false;
-  bool _isInitialized = false;
-
-  VideoPlayerController get controller => _controller;
-  bool get isPlaying => _isPlaying;
-  bool get isInitialized => _isInitialized;
-  Duration get currentPosition => _controller.value.position;
-  Duration get totalDuration => _controller.value.duration;
-  double get volume => _controller.value.volume;
+class VideoControllerNotifier extends StateNotifier<VideoState> {
+  VideoControllerNotifier() : super(VideoState());
 
   Future<void> initialize() async {
-    _controller = VideoPlayerController.asset("assets/video.mp4");
-    _controller.setLooping(true);
+    final controller = VideoPlayerController.asset("assets/video.mp4");
+    await controller.initialize();
+    controller.setLooping(true);
 
-    await _controller.initialize();
-    _videoDurationMicros = _controller.value.duration.inMicroseconds;
+    state = state.copyWith(
+      controller: controller,
+      isInitialized: true,
+      totalDuration: controller.value.duration,
+    );
 
-    _isInitialized = true;
-    notifyListeners();
-
-    if (!kIsWeb) {
-      await syncVideo();
-    }
+    await syncVideo();
   }
 
   Future<void> syncVideo() async {
+    if (!state.isInitialized) return;
+
     int currentTimeMicros = DateTime.now().toUtc().microsecondsSinceEpoch;
-    int position = currentTimeMicros % _videoDurationMicros;
+    int position = currentTimeMicros % state.totalDuration.inMicroseconds;
     Duration seekPosition = Duration(microseconds: position);
 
     await seekTo(seekPosition);
@@ -45,30 +70,32 @@ class VideoProvider extends ChangeNotifier {
   }
 
   Future<void> play() async {
-    await _controller.play();
-    _isPlaying = true;
-    notifyListeners();
+    if (!state.isInitialized) return;
+    await state.controller!.play();
+    state = state.copyWith(isPlaying: true);
   }
 
   Future<void> pause() async {
-    await _controller.pause();
-    _isPlaying = false;
-    notifyListeners();
+    if (!state.isInitialized) return;
+    await state.controller!.pause();
+    state = state.copyWith(isPlaying: false);
   }
 
   Future<void> seekTo(Duration position) async {
-    await _controller.seekTo(position);
-    notifyListeners();
+    if (!state.isInitialized) return;
+    await state.controller!.seekTo(position);
+    state = state.copyWith(currentPosition: position);
   }
 
   Future<void> setVolume(double volume) async {
-    await _controller.setVolume(volume.clamp(0.0, 1.0));
-    notifyListeners();
+    if (!state.isInitialized) return;
+    await state.controller!.setVolume(volume.clamp(0.0, 1.0));
+    state = state.copyWith(volume: volume);
   }
 
+  @override
   void dispose() {
-    _controller.pause();
-    _controller.dispose();
+    state.controller?.dispose();
     super.dispose();
   }
 }

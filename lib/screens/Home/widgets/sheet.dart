@@ -1,13 +1,13 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gandalf/screens/Home/widgets/sheet_controls.dart';
 
-class Sheet extends StatelessWidget {
+class Sheet extends ConsumerWidget {
   const Sheet({Key? key}) : super(key: key);
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final screenWidth = MediaQuery.of(context).size.width;
     final maxWidth = 800.0; // Maximum width for the sheet
     final sheetWidth = min(screenWidth, maxWidth); // Take the smaller value

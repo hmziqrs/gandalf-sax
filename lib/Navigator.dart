@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gandalf/providers/app.dart';
-import 'package:gandalf/providers/video.dart';
-import 'package:provider/provider.dart';
-
+import 'screens/Home/Home.dart';
 
 import 'screens/Home/Home.dart';
 
-class AppNavigator extends StatelessWidget {
+class AppNavigator extends ConsumerWidget {
   AppNavigator(this.observers);
   final List<NavigatorObserver> observers;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final appSettings = ref.watch(appSettingsProvider);
+
     return MaterialApp(
       title: 'Epic Sax Gandalf Infinite',
       navigatorObservers: this.observers,
@@ -19,17 +20,8 @@ class AppNavigator extends StatelessWidget {
         primarySwatch: Colors.red,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MultiProvider(
-        providers: [
-          ChangeNotifierProvider<VideoProvider>(
-            create: (_) => VideoProvider(),
-          ),
-          ChangeNotifierProvider<AppProvider>(
-            create: (_) => AppProvider(),
-          ),
-        ],
-        child: HomeScreen(),
-      ),
+      themeMode: appSettings.themeMode,
+      home: HomeScreen(),
     );
   }
 }
