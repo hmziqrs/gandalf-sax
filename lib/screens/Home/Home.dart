@@ -1,6 +1,3 @@
-import 'dart:async';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:gandalf/providers/video.dart';
@@ -26,15 +23,17 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
   }
 
-  void onTap() {
-    print("Tapped");
-    showMaterialModalBottomSheet(
+  void onTap() async {
+    final video = VideoProvider.of(context);
+    await video.pause();
+    await showMaterialModalBottomSheet(
       backgroundColor: Colors.transparent,
       context: context,
       builder: (context) {
         return Sheet();
       },
     );
+    await video.syncVideo();
   }
 
   @override
@@ -53,7 +52,9 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               if (videoState.isInitialized)
               Positioned.fill(
-                  child: VideoPlayer(videoState.controller),
+                  child: VideoPlayer(
+                    videoState.controller,
+                  ),
               ),
               Positioned.fill(
                 child: GestureDetector(

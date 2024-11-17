@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gandalf/providers/app.dart';
 import 'package:gandalf/providers/video.dart';
 import 'package:provider/provider.dart';
 
@@ -21,6 +22,7 @@ class AppNavigator extends StatelessWidget {
       home: MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) => VideoProvider()),
+          ChangeNotifierProvider(create: (_) => AppProvider()),
         ],
         child: HomeScreen(),
       ),

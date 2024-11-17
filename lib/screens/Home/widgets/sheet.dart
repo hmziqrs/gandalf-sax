@@ -59,7 +59,9 @@ class Sheet extends StatelessWidget {
               top: 10,
               right: 10,
               child: IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
                 tooltip: "close",
                 icon: Icon(Icons.close),
               ),
