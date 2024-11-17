@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gandalf/screens/Home/widgets/sheet_content.dart';
 import 'package:gandalf/screens/Home/widgets/sheet_controls.dart';
 
 class Sheet extends ConsumerWidget {
@@ -47,6 +48,7 @@ class Sheet extends ConsumerWidget {
                   ),
                 ),
                 // Add your sheet content here
+                SheetContent(),
                 SheetControls(),
               ],
             ),
