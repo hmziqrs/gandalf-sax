@@ -9,10 +9,29 @@ class SheetControls extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final List<Map<String, dynamic>> themeButtons = const [
+      {
+        'label': 'Light',
+        'mode': ThemeMode.light,
+        'icon': Icons.light_mode,
+      },
+      {
+        'label': 'Dark',
+        'mode': ThemeMode.dark,
+        'icon': Icons.dark_mode,
+      },
+      {
+        'label': 'System',
+        'mode': ThemeMode.system,
+        'icon': Icons.settings_brightness,
+      },
+    ];
+
     final appState = ref.watch(appSettingsProvider);
     final appController = ref.read(appSettingsProvider.notifier);
+    final isNarrow = MediaQuery.of(context).size.width < 480;
     print("${appState.themeMode}");
-    
+
     return Padding(
       padding: const EdgeInsets.all(PADDING * 2),
       child: Column(
@@ -26,34 +45,49 @@ class SheetControls extends ConsumerWidget {
             style: Theme.of(context).textTheme.titleMedium,
           ),
           SizedBox(height: PADDING),
-          Row(
-            children: [
-              Expanded(
-                child: AlphaButton(
-                  label: 'Light',
-                  onTap: () => appController.setThemeMode(ThemeMode.light),
-                  margin: EdgeInsets.only(right: PADDING),
-                  icon: Icons.light_mode,
+          // Theme Buttons
+          isNarrow
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: themeButtons
+                      .map((button) => Padding(
+                            padding: EdgeInsets.only(bottom: PADDING),
+                            child: AlphaButton(
+                              label: button['label'],
+                              onTap: () =>
+                                  appController.setThemeMode(button['mode']),
+                              icon: button['icon'],
+                              color: appState.themeMode == button['mode']
+                                  ? Theme.of(context)
+                                      .primaryColor
+                                      .withOpacity(0.2)
+                                  : null,
+                            ),
+                          ))
+                      .toList(),
+                )
+              : Row(
+                  children: themeButtons.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final button = entry.value;
+
+                    return Expanded(
+                      child: AlphaButton(
+                        label: button['label'],
+                        onTap: () => appController.setThemeMode(button['mode']),
+                        margin: EdgeInsets.only(
+                          left: index == 0 ? 0 : PADDING,
+                          right: index == themeButtons.length - 1 ? 0 : PADDING,
+                        ),
+                        icon: button['icon'],
+                        color: appState.themeMode == button['mode']
+                            ? Theme.of(context).primaryColor.withOpacity(0.2)
+                            : null,
+                      ),
+                    );
+                  }).toList(),
                 ),
-              ),
-              Expanded(
-                child: AlphaButton(
-                  label: 'Dark',
-                  onTap: () => appController.setThemeMode(ThemeMode.dark),
-                  margin: EdgeInsets.symmetric(horizontal: PADDING),
-                  icon: Icons.dark_mode,
-                ),
-              ),
-              Expanded(
-                child: AlphaButton(
-                  label: 'System',
-                  onTap: () => appController.setThemeMode(ThemeMode.system),
-                  margin: EdgeInsets.only(left: PADDING),
-                  icon: Icons.settings_brightness,
-                ),
-              ),
-            ],
-          ),
+
           SizedBox(height: PADDING * 3),
 
           // Background Playback Toggle
@@ -68,7 +102,9 @@ class SheetControls extends ConsumerWidget {
               Switch(
                 value: appState.backgroundPlayback,
                 onChanged: (value) =>
-                    appController.setBackgroundPlayback(value),
+                    appController.setBackgroundPlayback(
+                  value,
+                ),
               ),
             ],
           ),
