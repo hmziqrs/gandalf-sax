@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gandalf/Utils.dart';
 import 'package:gandalf/constants.dart';
 import 'package:gandalf/widgets/Buttons/Alpha.dart';
+import 'package:gandalf/widgets/banner_ad.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -56,6 +57,7 @@ class SheetContent extends StatelessWidget {
                 ),
           ),
           SizedBox(height: PADDING * 2),
+          AppBannerAd(),
           Text(
             "Developer: $USER",
             style: Theme.of(context).textTheme.titleMedium,
