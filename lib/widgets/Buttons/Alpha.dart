@@ -5,28 +5,29 @@ class AlphaButton extends StatelessWidget {
   AlphaButton({
     // Required
     required this.onTap,
-    required this.label,
+    this.label,
 
     // Not required
     this.icon,
     this.margin = EdgeInsets.zero,
-    this.color,  // Add new optional color parameter
+    this.color, // Add new optional color parameter
 
     // Assignable
     borderRadius,
   }) : this.borderRadius = borderRadius ?? BorderRadius.circular(8.0);
 
-  final String label;
+  final String? label;
   final IconData? icon;
   final EdgeInsets margin;
   final VoidCallback onTap;
   final BorderRadius borderRadius;
-  final Color? color;  // Add color property
+  final Color? color; // Add color property
 
   @override
   Widget build(BuildContext context) {
     final hasIcon = this.icon != null;
-    final backgroundColor = this.color ?? Colors.black.withOpacity(0.1);  // Use provided color or default
+    final backgroundColor = this.color ??
+        Colors.black.withOpacity(0.1); // Use provided color or default
 
     return Padding(
       padding: this.margin,
@@ -37,7 +38,7 @@ class AlphaButton extends StatelessWidget {
           borderRadius: this.borderRadius,
           child: Container(
             decoration: BoxDecoration(
-              color: backgroundColor,  // Use the backgroundColor variable
+              color: backgroundColor, // Use the backgroundColor variable
               borderRadius: this.borderRadius,
             ),
             padding: EdgeInsets.symmetric(
@@ -52,14 +53,16 @@ class AlphaButton extends StatelessWidget {
                         size: 18,
                       )
                     : SizedBox(),
-                SizedBox(width: hasIcon ? PADDING * 2 : 0.0),
-                Text(
-                  this.label,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
+                if (this.label != null && hasIcon)
+                  SizedBox(width: hasIcon ? PADDING * 2 : 0.0),
+                if (this.label != null)
+                  Text(
+                    this.label!,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                ),
               ],
             ),
           ),

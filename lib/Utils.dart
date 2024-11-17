@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:universal_io/io.dart';
 
-import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class Utils {
@@ -68,7 +67,7 @@ class Utils {
       } else {
         final bool safeCheck = await canLaunchUrlString(link);
         if (safeCheck) {
-          await launchUrl(link);
+          await launchUrlString(link);
         }
         return safeCheck;
       }

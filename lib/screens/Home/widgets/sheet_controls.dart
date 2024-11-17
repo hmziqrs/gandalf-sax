@@ -31,7 +31,6 @@ class SheetControls extends ConsumerWidget {
     final appController = ref.read(appSettingsProvider.notifier);
     final isNarrow = MediaQuery.of(context).size.width < 480;
     final primaryColor = Theme.of(context).colorScheme.primary;
-    print("${appState.themeMode}");
 
     return Padding(
       padding: const EdgeInsets.all(PADDING * 2),

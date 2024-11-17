@@ -25,23 +25,19 @@ class SheetContent extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // YouTube Button
               AlphaButton(
                 onTap: () => Utils.launchUrl(YOUTUBE_LINK),
                 label: 'Original video',
                 icon: Icons.play_circle_filled,
-                color: Colors.red.withOpacity(0.1),
               ),
 
-              SizedBox(height: PADDING),
+              SizedBox(width: PADDING * 2),
 
               // Share Button
               AlphaButton(
                 onTap: _shareContent,
-                label: 'Share',
                 icon: Icons.share,
               ),
             ],
