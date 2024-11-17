@@ -30,6 +30,7 @@ class SheetControls extends ConsumerWidget {
     final appState = ref.watch(appSettingsProvider);
     final appController = ref.read(appSettingsProvider.notifier);
     final isNarrow = MediaQuery.of(context).size.width < 480;
+    final primaryColor = Theme.of(context).colorScheme.primary;
     print("${appState.themeMode}");
 
     return Padding(
@@ -58,9 +59,7 @@ class SheetControls extends ConsumerWidget {
                                   appController.setThemeMode(button['mode']),
                               icon: button['icon'],
                               color: appState.themeMode == button['mode']
-                                  ? Theme.of(context)
-                                      .primaryColor
-                                      .withOpacity(0.2)
+                                  ? primaryColor
                                   : null,
                             ),
                           ))
@@ -81,7 +80,7 @@ class SheetControls extends ConsumerWidget {
                         ),
                         icon: button['icon'],
                         color: appState.themeMode == button['mode']
-                            ? Theme.of(context).primaryColor.withOpacity(0.2)
+                            ? primaryColor
                             : null,
                       ),
                     );

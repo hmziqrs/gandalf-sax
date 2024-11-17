@@ -1,19 +1,31 @@
 import 'package:flutter/material.dart';
 
 class AppThemes {
+  // Custom red colors for light and dark themes
+  static const _lightRed = Color(0xFFE53935);  // A bright, vibrant red for light theme
+  static const _darkRed = Color(0xFFFF5252);   // A lighter, more visible red for dark theme
+
   static ThemeData light = ThemeData(
+    useMaterial3: true,
     brightness: Brightness.light,
-    primarySwatch: Colors.red,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: _lightRed,
+      brightness: Brightness.light,
+    ).copyWith(
+      // Optional: directly override specific colors if needed
+      primary: _lightRed,
+      primaryContainer: _lightRed.withOpacity(0.2),
+    ),
     scaffoldBackgroundColor: Colors.white,
-    appBarTheme: AppBarTheme(
+    appBarTheme: const AppBarTheme(
       backgroundColor: Colors.white,
       foregroundColor: Colors.black,
       elevation: 0,
     ),
-    bottomSheetTheme: BottomSheetThemeData(
+    bottomSheetTheme: const BottomSheetThemeData(
       backgroundColor: Colors.white,
     ),
-    textTheme: TextTheme(
+    textTheme: const TextTheme(
       titleLarge: TextStyle(
         color: Colors.black,
         fontSize: 24,
@@ -33,38 +45,32 @@ class AppThemes {
         fontSize: 14,
       ),
     ),
-    iconTheme: IconThemeData(
+    iconTheme: const IconThemeData(
       color: Colors.black87,
-    ),
-    switchTheme: SwitchThemeData(
-      thumbColor: MaterialStateProperty.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) {
-          return Colors.red;
-        }
-        return Colors.grey;
-      }),
-      trackColor: MaterialStateProperty.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) {
-          return Colors.red.withOpacity(0.5);
-        }
-        return Colors.grey.withOpacity(0.5);
-      }),
     ),
   );
 
   static ThemeData dark = ThemeData(
+    useMaterial3: true,
     brightness: Brightness.dark,
-    primarySwatch: Colors.red,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: _darkRed,
+      brightness: Brightness.dark,
+    ).copyWith(
+      // Optional: directly override specific colors if needed
+      primary: _darkRed,
+      primaryContainer: _darkRed.withOpacity(0.2),
+    ),
     scaffoldBackgroundColor: Colors.black,
-    appBarTheme: AppBarTheme(
+    appBarTheme: const AppBarTheme(
       backgroundColor: Colors.black,
       foregroundColor: Colors.white,
       elevation: 0,
     ),
-    bottomSheetTheme: BottomSheetThemeData(
+    bottomSheetTheme: const BottomSheetThemeData(
       backgroundColor: Color(0xFF1E1E1E),
     ),
-    textTheme: TextTheme(
+    textTheme: const TextTheme(
       titleLarge: TextStyle(
         color: Colors.white,
         fontSize: 24,
@@ -84,22 +90,8 @@ class AppThemes {
         fontSize: 14,
       ),
     ),
-    iconTheme: IconThemeData(
+    iconTheme: const IconThemeData(
       color: Colors.white70,
-    ),
-    switchTheme: SwitchThemeData(
-      thumbColor: MaterialStateProperty.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) {
-          return Colors.red;
-        }
-        return Colors.grey;
-      }),
-      trackColor: MaterialStateProperty.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) {
-          return Colors.red.withOpacity(0.5);
-        }
-        return Colors.grey.withOpacity(0.5);
-      }),
     ),
   );
 }
