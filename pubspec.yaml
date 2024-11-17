@@ -40,6 +40,8 @@ dependencies:
   media_kit_libs_windows_video: any
   media_kit_libs_linux: any
 
+  icons_launcher: 3.0.0 
+
 dev_dependencies:
   path: 1.9.0
   yaml: 3.1.2
