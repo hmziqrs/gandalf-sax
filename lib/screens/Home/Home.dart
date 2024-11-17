@@ -29,6 +29,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     await videoController.pause();
     await showMaterialModalBottomSheet(
       backgroundColor: Colors.transparent,
+      
       context: context,
       useRootNavigator: true,
       builder: (context) {

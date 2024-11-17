@@ -10,6 +10,7 @@ class AlphaButton extends StatelessWidget {
     // Not required
     this.icon,
     this.margin = EdgeInsets.zero,
+    this.color,  // Add new optional color parameter
 
     // Assignable
     borderRadius,
@@ -20,11 +21,12 @@ class AlphaButton extends StatelessWidget {
   final EdgeInsets margin;
   final VoidCallback onTap;
   final BorderRadius borderRadius;
+  final Color? color;  // Add color property
 
   @override
   Widget build(BuildContext context) {
     final hasIcon = this.icon != null;
-    final textColor = Colors.black.withOpacity(0.1);
+    final backgroundColor = this.color ?? Colors.black.withOpacity(0.1);  // Use provided color or default
 
     return Padding(
       padding: this.margin,
@@ -35,7 +37,7 @@ class AlphaButton extends StatelessWidget {
           borderRadius: this.borderRadius,
           child: Container(
             decoration: BoxDecoration(
-              color: textColor,
+              color: backgroundColor,  // Use the backgroundColor variable
               borderRadius: this.borderRadius,
             ),
             padding: EdgeInsets.symmetric(

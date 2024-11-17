@@ -4,6 +4,7 @@ import 'package:gandalf/providers/app.dart';
 import 'screens/Home/Home.dart';
 
 import 'screens/Home/Home.dart';
+import 'themes.dart';
 
 class AppNavigator extends ConsumerWidget {
   AppNavigator(this.observers);
@@ -16,10 +17,8 @@ class AppNavigator extends ConsumerWidget {
     return MaterialApp(
       title: 'Epic Sax Gandalf Infinite',
       navigatorObservers: this.observers,
-      theme: ThemeData(
-        primarySwatch: Colors.red,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
+      theme: AppThemes.light,
+      darkTheme: AppThemes.dark,
       themeMode: appSettings.themeMode,
       home: HomeScreen(),
     );

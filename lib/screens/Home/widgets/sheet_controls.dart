@@ -11,18 +11,14 @@ class SheetControls extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final appState = ref.watch(appSettingsProvider);
     final appController = ref.read(appSettingsProvider.notifier);
-
+    print("${appState.themeMode}");
+    
     return Padding(
       padding: const EdgeInsets.all(PADDING * 2),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            'Settings',
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-          SizedBox(height: PADDING * 3),
 
           // Theme Selection
           Text(
@@ -76,22 +72,7 @@ class SheetControls extends ConsumerWidget {
               ),
             ],
           ),
-
-          // Current Settings Status
-          SizedBox(height: PADDING * 3),
-          Text(
-            'Current Settings',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          SizedBox(height: PADDING),
-          Text(
-            'Theme: ${appState.themeMode.toString().split('.').last}',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          Text(
-            'Background Playback: ${appState.backgroundPlayback ? 'Enabled' : 'Disabled'}',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
+          SizedBox(height: PADDING * 1),
         ],
       ),
     );

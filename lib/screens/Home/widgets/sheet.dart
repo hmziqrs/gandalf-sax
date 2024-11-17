@@ -22,7 +22,7 @@ class Sheet extends ConsumerWidget {
           maxHeight: maxHeight, // 90% of screen height
         ),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).bottomSheetTheme.backgroundColor,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(16),
             topRight: Radius.circular(16),
@@ -37,7 +37,7 @@ class Sheet extends ConsumerWidget {
                 // Add a drag handle
                 Center(
                   child: Container(
-                    margin: EdgeInsets.only(top: 8),
+                    margin: EdgeInsets.only(top: 20),
                     width: 40,
                     height: 4,
                     decoration: BoxDecoration(
@@ -47,13 +47,6 @@ class Sheet extends ConsumerWidget {
                   ),
                 ),
                 // Add your sheet content here
-                Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Text(
-                    'Bottom Sheet Content',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                ),
                 SheetControls(),
               ],
             ),
