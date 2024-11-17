@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:gandalf/providers/video.dart';
+import 'package:gandalf/screens/Home/widgets/sheet.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:video_player/video_player.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -22,6 +24,17 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     super.initState();
+  }
+
+  void onTap() {
+    print("Tapped");
+    showMaterialModalBottomSheet(
+      backgroundColor: Colors.transparent,
+      context: context,
+      builder: (context) {
+        return Sheet();
+      },
+    );
   }
 
   @override
@@ -43,9 +56,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: VideoPlayer(videoState.controller),
               ),
               Positioned.fill(
-                child: Container(
-                    // color: Colors.red,
-                    ),
+                child: GestureDetector(
+                  onTap: onTap,
+                  child: Container(
+                    color: Colors.transparent,
+                  ),
+                ),
               )
             ],
           ),
