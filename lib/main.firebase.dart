@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gandalf/Utils.dart';
 import 'package:gandalf/configs/app.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:video_player_media_kit/video_player_media_kit.dart';
 
 import 'Navigator.dart';
@@ -22,6 +23,9 @@ void main() async {
   await Firebase.initializeApp();
 
   App.showAds = Utils.isMobile();
+  if (App.showAds) {
+    await MobileAds.instance.initialize();
+  }
 
   FlutterError.onError = (FlutterErrorDetails err) {
     FirebaseCrashlytics.instance.recordFlutterError(err);
