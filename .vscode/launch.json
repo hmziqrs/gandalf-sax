@@ -13,7 +13,7 @@
       "request": "launch",
       "args": [
         "-t",
-        "lib/main.dart"
+        "lib/main.firebase.dart"
       ]
     },
     {
@@ -23,7 +23,7 @@
       "request": "launch",
       "args": [
         "-t",
-        "lib/main.dart"
+        "lib/main.firebase.dart"
       ]
     },
     {
@@ -33,7 +33,7 @@
       "request": "launch",
       "args": [
         "-t",
-        "lib/main.web.dart"
+        "lib/main.firebase.dart"
       ]
     }
   ],

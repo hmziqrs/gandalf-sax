@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'utils.dart' as utils;
 
-const List<String> desktopFilters = ['mac', 'linux', 'windows'];
+const List<String> desktopFilters = ['linux', 'windows'];
 final webtype = 'web-javascript';
 
 void main(List<String> args) async {
@@ -40,9 +40,9 @@ void main(List<String> args) async {
     );
 
     if (desktopCheck == -1) {
-      obj["args"] = ['-t', 'lib/main.mobile.dart'];
+      obj["args"] = ['-t', 'lib/main.firebase.dart'];
       if (deviceType == webtype) {
-        obj["args"] = ['-t', 'lib/main.web.dart'];
+        obj["args"] = ['-t', 'lib/main.firebase.dart'];
       }
     }
     return obj;
