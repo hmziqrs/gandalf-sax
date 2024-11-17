@@ -9,6 +9,7 @@ import 'Navigator.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   VideoPlayerMediaKit.ensureInitialized(
     web: true,
     linux: false,

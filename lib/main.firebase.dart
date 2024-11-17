@@ -12,6 +12,8 @@ import 'Navigator.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
   VideoPlayerMediaKit.ensureInitialized(
     web: false,
     linux: false,
@@ -20,7 +22,6 @@ void main() async {
     iOS: true,
     macOS: true,
   );
-  await Firebase.initializeApp();
 
   App.showAds = Utils.isMobile();
   if (App.showAds) {

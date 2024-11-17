@@ -93,4 +93,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'epic-sax-gandalf-infinite.firebasestorage.app',
     measurementId: 'G-FNTB6W4T3X',
   );
+
 }
