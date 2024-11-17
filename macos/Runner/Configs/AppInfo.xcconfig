@@ -11,4 +11,4 @@ PRODUCT_NAME = gandalf
 PRODUCT_BUNDLE_IDENTIFIER = com.onemdev.gandalf
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2024 com.onemdev.gandalf. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2024 com.onemdev. All rights reserved.

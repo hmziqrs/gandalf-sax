@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart'
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
-/// Example:
+/// onemdev:
 /// ```dart
 /// import 'firebase_options.dart';
 /// // ...
@@ -68,7 +68,7 @@ class DefaultFirebaseOptions {
     databaseURL: 'https://epic-sax-gandalf-infinite.firebaseio.com',
     storageBucket: 'epic-sax-gandalf-infinite.firebasestorage.app',
     androidClientId: '130822511337-2prj3l1ut9vdtgm7du9lcdn3r14uprel.apps.googleusercontent.com',
-    iosBundleId: 'com.example.gandalf',
+    iosBundleId: 'com.onemdev.gandalf',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -80,7 +80,7 @@ class DefaultFirebaseOptions {
     storageBucket: 'epic-sax-gandalf-infinite.firebasestorage.app',
     androidClientId:
         '130822511337-2prj3l1ut9vdtgm7du9lcdn3r14uprel.apps.googleusercontent.com',
-    iosBundleId: 'com.example.gandalf',
+    iosBundleId: 'com.onemdev.gandalf',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(

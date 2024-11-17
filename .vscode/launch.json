@@ -7,8 +7,8 @@
       "type": "dart"
     },
     {
-      "name": "sdk gphone64 x86 64 (mobile)",
-      "deviceId": "emulator-5554",
+      "name": "macOS (desktop)",
+      "deviceId": "macos",
       "type": "dart",
       "request": "launch",
       "args": [
@@ -17,24 +17,18 @@
       ]
     },
     {
-      "name": "Windows (desktop)",
-      "deviceId": "windows",
-      "type": "dart",
-      "request": "launch"
-    },
-    {
-      "name": "Chrome (web)",
-      "deviceId": "chrome",
+      "name": "Mac Designed for iPad (desktop)",
+      "deviceId": "mac-designed-for-ipad",
       "type": "dart",
       "request": "launch",
       "args": [
         "-t",
-        "lib/main.web.dart"
+        "lib/main.dart"
       ]
     },
     {
-      "name": "Edge (web)",
-      "deviceId": "edge",
+      "name": "Chrome (web)",
+      "deviceId": "chrome",
       "type": "dart",
       "request": "launch",
       "args": [
@@ -47,10 +41,9 @@
     {
       "name": "current",
       "configurations": [
-        "sdk gphone64 x86 64 (mobile)",
-        "Windows (desktop)",
-        "Chrome (web)",
-        "Edge (web)"
+        "macOS (desktop)",
+        "Mac Designed for iPad (desktop)",
+        "Chrome (web)"
       ]
     }
   ]
