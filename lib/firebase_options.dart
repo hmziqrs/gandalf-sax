@@ -62,7 +62,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyCDEcFRJLsPHskgAm21PejPyvSW1S4oJJs',
-    appId: '1:130822511337:ios:f1c19bfcc5f0d0776b2e78',
+    appId: '1:130822511337:ios:41a9b18241ef65946b2e78',
     messagingSenderId: '130822511337',
     projectId: 'epic-sax-gandalf-infinite',
     databaseURL: 'https://epic-sax-gandalf-infinite.firebaseio.com',
@@ -73,7 +73,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyCDEcFRJLsPHskgAm21PejPyvSW1S4oJJs',
-    appId: '1:130822511337:ios:f1c19bfcc5f0d0776b2e78',
+    appId: '1:130822511337:ios:41a9b18241ef65946b2e78',
     messagingSenderId: '130822511337',
     projectId: 'epic-sax-gandalf-infinite',
     databaseURL: 'https://epic-sax-gandalf-infinite.firebaseio.com',

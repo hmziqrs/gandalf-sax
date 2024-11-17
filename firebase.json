@@ -29,7 +29,7 @@
             "ios": {
                 "default": {
                     "projectId": "epic-sax-gandalf-infinite",
-                    "appId": "1:130822511337:ios:f1c19bfcc5f0d0776b2e78",
+                    "appId": "1:130822511337:ios:41a9b18241ef65946b2e78",
                     "uploadDebugSymbols": true,
                     "fileOutput": "ios/Runner/GoogleService-Info.plist"
                 }
@@ -37,7 +37,7 @@
             "macos": {
                 "default": {
                     "projectId": "epic-sax-gandalf-infinite",
-                    "appId": "1:130822511337:ios:c3308e1331d9c9e16b2e78",
+                    "appId": "1:130822511337:ios:41a9b18241ef65946b2e78",
                     "uploadDebugSymbols": true,
                     "fileOutput": "macos/Runner/GoogleService-Info.plist"
                 }
@@ -47,8 +47,8 @@
                     "projectId": "epic-sax-gandalf-infinite",
                     "configurations": {
                         "android": "1:130822511337:android:92fc13918490c4d56b2e78",
-                        "ios": "1:130822511337:ios:f1c19bfcc5f0d0776b2e78",
-                        "macos": "1:130822511337:ios:c3308e1331d9c9e16b2e78",
+                        "ios": "1:130822511337:ios:41a9b18241ef65946b2e78",
+                        "macos": "1:130822511337:ios:41a9b18241ef65946b2e78",
                         "web": "1:130822511337:web:2d437ca1530cb0ba6b2e78",
                         "windows": "1:130822511337:web:2ffab151968b9eb36b2e78"
                     }
