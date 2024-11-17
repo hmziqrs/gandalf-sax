@@ -33,7 +33,7 @@ class SheetControls extends ConsumerWidget {
     final primaryColor = Theme.of(context).colorScheme.primary;
 
     return Padding(
-      padding: const EdgeInsets.all(PADDING * 2),
+      padding: const EdgeInsets.symmetric(horizontal: PADDING * 2),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,

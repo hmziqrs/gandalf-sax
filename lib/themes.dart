@@ -37,12 +37,16 @@ class AppThemes {
         fontWeight: FontWeight.w600,
       ),
       bodyLarge: TextStyle(
-        color: Colors.black87,
+        color: Colors.black,
         fontSize: 16,
       ),
       bodyMedium: TextStyle(
-        color: Colors.black54,
+        color: Colors.black,
         fontSize: 14,
+      ),
+      bodySmall: TextStyle(
+        color: Colors.black,
+        fontSize: 12,
       ),
     ),
     iconTheme: const IconThemeData(
@@ -82,12 +86,16 @@ class AppThemes {
         fontWeight: FontWeight.w600,
       ),
       bodyLarge: TextStyle(
-        color: Colors.white70,
+        color: Colors.white,
         fontSize: 16,
       ),
       bodyMedium: TextStyle(
-        color: Colors.white54,
+        color: Colors.white,
         fontSize: 14,
+      ),
+      bodySmall: TextStyle(
+        color: Colors.white,
+        fontSize: 12,
       ),
     ),
     iconTheme: const IconThemeData(

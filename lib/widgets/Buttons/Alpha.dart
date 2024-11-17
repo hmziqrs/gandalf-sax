@@ -11,6 +11,7 @@ class AlphaButton extends StatelessWidget {
     this.icon,
     this.margin = EdgeInsets.zero,
     this.color, // Add new optional color parameter
+    this.mainAxisSize = MainAxisSize.min,
 
     // Assignable
     borderRadius,
@@ -22,12 +23,13 @@ class AlphaButton extends StatelessWidget {
   final VoidCallback onTap;
   final BorderRadius borderRadius;
   final Color? color; // Add color property
+  final MainAxisSize mainAxisSize;
 
   @override
   Widget build(BuildContext context) {
     final hasIcon = this.icon != null;
     final backgroundColor = this.color ??
-        Colors.black.withOpacity(0.1); // Use provided color or default
+        Colors.black.withOpacity(0.24); // Use provided color or default
 
     return Padding(
       padding: this.margin,
@@ -37,31 +39,31 @@ class AlphaButton extends StatelessWidget {
           onTap: this.onTap,
           borderRadius: this.borderRadius,
           child: Container(
+            width: null,
             decoration: BoxDecoration(
               color: backgroundColor, // Use the backgroundColor variable
               borderRadius: this.borderRadius,
             ),
             padding: EdgeInsets.symmetric(
-              vertical: PADDING * 2,
-              horizontal: PADDING * 3,
+              vertical: PADDING * 1.3,
+              horizontal: PADDING * 2,
             ),
             child: Row(
+              mainAxisSize: this.mainAxisSize,
               children: [
                 hasIcon
                     ? Icon(
                         this.icon,
-                        size: 18,
+                        size: 16,
+                        color: Theme.of(context).textTheme.bodyMedium!.color,
                       )
                     : SizedBox(),
                 if (this.label != null && hasIcon)
-                  SizedBox(width: hasIcon ? PADDING * 2 : 0.0),
+                  SizedBox(width: hasIcon ? PADDING * 1.5 : 0.0),
                 if (this.label != null)
                   Text(
                     this.label!,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
               ],
             ),
