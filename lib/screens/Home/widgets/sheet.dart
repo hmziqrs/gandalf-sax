@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:gandalf/screens/Home/widgets/sheet_controls.dart';
 
 class Sheet extends StatelessWidget {
   const Sheet({Key? key}) : super(key: key);
@@ -53,6 +54,7 @@ class Sheet extends StatelessWidget {
                     style: TextStyle(fontSize: 18),
                   ),
                 ),
+                SheetControls(),
               ],
             ),
             Positioned(

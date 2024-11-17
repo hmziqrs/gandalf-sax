@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-enum ThemeMode { light, dark, system }
-
 class AppProvider extends ChangeNotifier {
   static AppProvider of(BuildContext context, [bool listen = false]) {
     return Provider.of<AppProvider>(context, listen: listen);

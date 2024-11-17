@@ -21,8 +21,12 @@ class AppNavigator extends StatelessWidget {
       ),
       home: MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => VideoProvider()),
-          ChangeNotifierProvider(create: (_) => AppProvider()),
+          ChangeNotifierProvider<VideoProvider>(
+            create: (_) => VideoProvider(),
+          ),
+          ChangeNotifierProvider<AppProvider>(
+            create: (_) => AppProvider(),
+          ),
         ],
         child: HomeScreen(),
       ),
