@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
-final videoControllerProvider = StateNotifierProvider<VideoControllerNotifier, VideoState>((ref) {
+final videoControllerProvider =
+    StateNotifierProvider<VideoControllerNotifier, VideoState>((ref) {
   return VideoControllerNotifier();
 });
 
@@ -54,8 +56,9 @@ class VideoControllerNotifier extends StateNotifier<VideoState> {
       isInitialized: true,
       totalDuration: controller.value.duration,
     );
-
-    await syncVideo();
+    if (!kIsWeb) {
+      await syncVideo();
+    }
   }
 
   Future<void> syncVideo() async {

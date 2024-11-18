@@ -33,7 +33,7 @@
       "request": "launch",
       "args": [
         "-t",
-        "lib/main.firebase.dart"
+        "lib/main.web.dart"
       ]
     }
   ],

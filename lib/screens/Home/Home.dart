@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,8 +18,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
 
     // Initialize video on widget creation
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(videoControllerProvider.notifier).initialize();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await ref.read(videoControllerProvider.notifier).initialize();
+      if (kIsWeb) {
+        onTap();
+      }
     });
 
     super.initState();
@@ -26,7 +30,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   void onTap() async {
     final videoController = ref.read(videoControllerProvider.notifier);
-    await videoController.pause();
+    final videoState = ref.read(videoControllerProvider);
+    if (videoState.isPlaying) {
+      await videoController.pause();
+    }
     await showMaterialModalBottomSheet(
       backgroundColor: Colors.transparent,
       

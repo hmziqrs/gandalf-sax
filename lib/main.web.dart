@@ -11,15 +11,10 @@ import 'Navigator.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
+    options: DefaultFirebaseOptions.web,
   );
   VideoPlayerMediaKit.ensureInitialized(
-    web: true,
-    linux: false,
-    windows: false,
-    android: false,
-    iOS: false,
-    macOS: false,
+    web: false,
   );
 
   App.showAds = false;
