@@ -7,8 +7,8 @@
       "type": "dart"
     },
     {
-      "name": "iPhone 16 Plus (mobile)",
-      "deviceId": "909F141D-CCCA-4A91-BB7F-DD4850915D17",
+      "name": "sdk gphone64 x86 64 (mobile)",
+      "deviceId": "emulator-5554",
       "type": "dart",
       "request": "launch",
       "args": [
@@ -17,28 +17,24 @@
       ]
     },
     {
-      "name": "macOS (desktop)",
-      "deviceId": "macos",
+      "name": "Windows (desktop)",
+      "deviceId": "windows",
       "type": "dart",
-      "request": "launch",
-      "args": [
-        "-t",
-        "lib/main.firebase.dart"
-      ]
-    },
-    {
-      "name": "Mac Designed for iPad (desktop)",
-      "deviceId": "mac-designed-for-ipad",
-      "type": "dart",
-      "request": "launch",
-      "args": [
-        "-t",
-        "lib/main.firebase.dart"
-      ]
+      "request": "launch"
     },
     {
       "name": "Chrome (web)",
       "deviceId": "chrome",
+      "type": "dart",
+      "request": "launch",
+      "args": [
+        "-t",
+        "lib/main.firebase.dart"
+      ]
+    },
+    {
+      "name": "Edge (web)",
+      "deviceId": "edge",
       "type": "dart",
       "request": "launch",
       "args": [
@@ -51,10 +47,10 @@
     {
       "name": "current",
       "configurations": [
-        "iPhone 16 Plus (mobile)",
-        "macOS (desktop)",
-        "Mac Designed for iPad (desktop)",
-        "Chrome (web)"
+        "sdk gphone64 x86 64 (mobile)",
+        "Windows (desktop)",
+        "Chrome (web)",
+        "Edge (web)"
       ]
     }
   ]
