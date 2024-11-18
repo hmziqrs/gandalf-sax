@@ -44,6 +44,9 @@ jobs:
       - name: Enable MacOS desktop support
         run: flutter config --enable-macos-desktop
 
+      - name: Activate flutter fire
+        run: flutter pub global activate flutterfire_cli
+
       - name: Install pub dependencies
         run: cd app && flutter pub get
 
