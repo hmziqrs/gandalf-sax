@@ -53,7 +53,7 @@ jobs:
       - name: Build web release
         run: |
           cd app
-          flutter build web -t lib/main.web.dart --release --no-tree-shake-icons --wasm
+          flutter build web -t lib/main.web.dart --release --no-tree-shake-icons
 
       - name: Deploy cloudflare pages
         uses: cloudflare/wrangler-action@v3
