@@ -21,7 +21,6 @@ void main() async {
     iOS: false,
     macOS: false,
   );
-  await Firebase.initializeApp();
 
   App.showAds = false;
 
