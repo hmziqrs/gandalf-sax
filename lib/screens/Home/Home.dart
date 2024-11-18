@@ -36,7 +36,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
     await showMaterialModalBottomSheet(
       backgroundColor: Colors.transparent,
-      
       context: context,
       useRootNavigator: true,
       builder: (context) {

@@ -49,7 +49,8 @@ class VideoControllerNotifier extends StateNotifier<VideoState> {
   Future<void> initialize() async {
     final controller = VideoPlayerController.asset("assets/video.mp4");
     await controller.initialize();
-    controller.setLooping(true);
+    await controller.setLooping(true);
+    await controller.seekTo(Duration(seconds: 0));
 
     state = state.copyWith(
       controller: controller,
@@ -68,8 +69,18 @@ class VideoControllerNotifier extends StateNotifier<VideoState> {
     int position = currentTimeMicros % state.totalDuration.inMicroseconds;
     Duration seekPosition = Duration(microseconds: position);
 
+    final beforeSeek = DateTime.now();
     await seekTo(seekPosition);
+    final afterSeek = DateTime.now();
+    debugPrint(
+      'Seek took: ${afterSeek.difference(beforeSeek).inMilliseconds}ms',
+    );
+    final beforePlay = DateTime.now();
     await play();
+    final afterPlay = DateTime.now();
+    debugPrint(
+      'Seek took: ${afterPlay.difference(beforePlay).inMilliseconds}ms',
+    );
   }
 
   Future<void> play() async {
