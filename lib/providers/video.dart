@@ -14,6 +14,7 @@ class VideoState {
   final Duration currentPosition;
   final Duration totalDuration;
   final double volume;
+  final bool isFirstSync;
 
   VideoState({
     this.controller,
@@ -22,6 +23,7 @@ class VideoState {
     this.currentPosition = Duration.zero,
     this.totalDuration = Duration.zero,
     this.volume = 1.0,
+    this.isFirstSync = true,
   });
 
   VideoState copyWith({
@@ -31,6 +33,7 @@ class VideoState {
     Duration? currentPosition,
     Duration? totalDuration,
     double? volume,
+    bool? isFirstSync,
   }) {
     return VideoState(
       controller: controller ?? this.controller,
@@ -39,6 +42,7 @@ class VideoState {
       currentPosition: currentPosition ?? this.currentPosition,
       totalDuration: totalDuration ?? this.totalDuration,
       volume: volume ?? this.volume,
+      isFirstSync: isFirstSync ?? this.isFirstSync,
     );
   }
 }
@@ -59,6 +63,8 @@ class VideoControllerNotifier extends StateNotifier<VideoState> {
     );
     if (!kIsWeb) {
       await syncVideo();
+    } else {
+
     }
   }
 
@@ -67,7 +73,8 @@ class VideoControllerNotifier extends StateNotifier<VideoState> {
 
     int currentTimeMicros = DateTime.now().toUtc().microsecondsSinceEpoch;
     int position = currentTimeMicros % state.totalDuration.inMicroseconds;
-    Duration seekPosition = Duration(microseconds: position);
+    int buffer = 55 + (state.isFirstSync ? 140 : 0);
+    Duration seekPosition = Duration(microseconds: position + buffer);
 
     final beforeSeek = DateTime.now();
     await seekTo(seekPosition);
@@ -81,6 +88,10 @@ class VideoControllerNotifier extends StateNotifier<VideoState> {
     debugPrint(
       'Seek took: ${afterPlay.difference(beforePlay).inMilliseconds}ms',
     );
+  }
+
+  triggerFirstSync() {
+    state = state.copyWith(isFirstSync: false);
   }
 
   Future<void> play() async {

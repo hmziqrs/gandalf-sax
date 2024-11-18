@@ -29,10 +29,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void onTap() async {
-    final videoController = ref.read(videoControllerProvider.notifier);
+    final videoProvider = ref.read(videoControllerProvider.notifier);
     final videoState = ref.read(videoControllerProvider);
     if (videoState.isPlaying) {
-      await videoController.pause();
+      await videoProvider.pause();
     }
     await showMaterialModalBottomSheet(
       backgroundColor: Colors.transparent,
@@ -42,7 +42,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         return Sheet();
       },
     );
-    await videoController.syncVideo();
+    await videoProvider.syncVideo();
+    if (kIsWeb && videoState.isFirstSync) {
+      videoProvider.triggerFirstSync();
+    }
   }
 
   @override
