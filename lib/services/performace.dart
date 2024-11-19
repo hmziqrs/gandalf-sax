@@ -1,4 +1,11 @@
+import 'dart:io';
+
 import 'package:firebase_performance/firebase_performance.dart';
+import 'package:flutter/foundation.dart';
+
+bool _isPerfAllowed() {
+  return kIsWeb || Platform.isAndroid || Platform.isIOS;
+}
 
 abstract class PerformanceTrace {
   void start();
@@ -46,6 +53,9 @@ class FirebasePerformanceTrace implements PerformanceTrace {
     required String name,
     required Future<T> Function() operation,
   }) async {
+    if (!_isPerfAllowed()) {
+      return operation();
+    }
     final startTime = DateTime.now().millisecondsSinceEpoch;
 
     try {
@@ -83,6 +93,9 @@ class FirebasePerformanceMonitoring implements PerformanceMonitoring {
   }) async {
     final trace = FirebasePerformanceTrace(await _performance.newTrace(name));
 
+    if (!_isPerfAllowed()) {
+      return operation(trace);
+    }
     try {
       trace.start();
 
