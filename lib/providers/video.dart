@@ -64,7 +64,7 @@ class VideoControllerNotifier extends StateNotifier<VideoState> {
     if (!kIsWeb) {
       await syncVideo();
     } else {
-
+      //
     }
   }
 
@@ -73,7 +73,7 @@ class VideoControllerNotifier extends StateNotifier<VideoState> {
 
     int currentTimeMicros = DateTime.now().toUtc().microsecondsSinceEpoch;
     int position = currentTimeMicros % state.totalDuration.inMicroseconds;
-    int buffer = 55 + (state.isFirstSync ? 140 : 0);
+    int buffer = 25 + (state.isFirstSync ? 140 : 0);
     Duration seekPosition = Duration(microseconds: position + buffer);
 
     final beforeSeek = DateTime.now();

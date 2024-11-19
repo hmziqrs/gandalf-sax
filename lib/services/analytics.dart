@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:flutter/foundation.dart';
 
 abstract class AnalyticsEvent {
   String get eventName;
@@ -46,11 +49,19 @@ class Analytics {
 
   static bool _isInitialized = false;
 
+  static bool _isAllowed() {
+    return Platform.isAndroid || Platform.isIOS || Platform.isMacOS || kIsWeb;
+  }
+
   /// Initialize analytics services
   static void initialize({
     FirebaseAnalytics? firebaseAnalytics,
     // Add other analytics services as needed
   }) {
+    if (!_isAllowed()) {
+      print('Analytics not allowed on this platform');
+      return;
+    }
     if (_isInitialized) {
       print('Analytics already initialized');
       return;
@@ -66,6 +77,10 @@ class Analytics {
 
   /// Log an analytics event
   static Future<void> logEvent(AnalyticsEvent event) async {
+    if (!_isAllowed()) {
+      print('Analytics not allowed on this platform');
+      return;
+    }
     _checkInitialization();
 
     for (final service in _services) {
@@ -79,6 +94,10 @@ class Analytics {
 
   /// Set user properties
   static Future<void> setUserProperties(Map<String, dynamic> properties) async {
+    if (!_isAllowed()) {
+      print('Analytics not allowed on this platform');
+      return;
+    }
     _checkInitialization();
 
     for (final service in _services) {
@@ -92,6 +111,10 @@ class Analytics {
 
   /// Set user ID
   static Future<void> setUserId(String? userId) async {
+    if (!_isAllowed()) {
+      print('Analytics not allowed on this platform');
+      return;
+    }
     _checkInitialization();
 
     for (final service in _services) {

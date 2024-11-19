@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gandalf/Utils.dart';
 import 'package:gandalf/constants.dart';
+import 'package:gandalf/screens/Home/events.dart';
+import 'package:gandalf/services/analytics.dart';
 import 'package:gandalf/widgets/Buttons/Alpha.dart';
 import 'package:gandalf/widgets/banner_ad.dart';
 import 'package:share_plus/share_plus.dart';
@@ -32,6 +34,7 @@ class SheetContent extends StatelessWidget {
   const SheetContent({Key? key}) : super(key: key);
 
   void _shareContent() {
+    Analytics.logEvent(ShareContentEvent());
     Share.share(
       'Check out Epic Sax Gandalf: $YOUTUBE_LINK',
       subject: 'Epic Sax Gandalf',
@@ -69,7 +72,16 @@ class SheetContent extends StatelessWidget {
             children: links
                 .map(
                   (link) => AlphaButton(
-                    onTap: () => Utils.launchUrl(link['url']! as String),
+                    onTap: () {
+                      Analytics.logEvent(
+                        ClickSocialLinkEvent(
+                          platform: link['label']! as String,
+                          url: link['url']! as String,
+                        ),
+                      );
+
+                      Utils.launchUrl(link['url']! as String);
+                    },
                     icon: link['icon']! as IconData,
                     label: link['label']! as String,
                   ),
