@@ -41,12 +41,30 @@ class FirebasePerformanceTrace implements PerformanceTrace {
 
   @override
   void removeAttribute(String name) => _trace.removeAttribute(name);
+
+  Future<T> timeOperation<T>({
+    required String name,
+    required Future<T> Function() operation,
+  }) async {
+    final startTime = DateTime.now().millisecondsSinceEpoch;
+
+    try {
+      final result = await operation();
+      final duration = DateTime.now().millisecondsSinceEpoch - startTime;
+      setMetric('${name}_duration', duration);
+      return result;
+    } catch (e) {
+      final duration = DateTime.now().millisecondsSinceEpoch - startTime;
+      setMetric('${name}_error_duration', duration);
+      rethrow;
+    }
+  }
 }
 
 abstract class PerformanceMonitoring {
   Future<T> trace<T>({
     required String name,
-    required Future<T> Function(PerformanceTrace trace) operation,
+    required Future<T> Function(FirebasePerformanceTrace trace) operation,
     Map<String, String>? attributes,
   });
 }
@@ -60,7 +78,7 @@ class FirebasePerformanceMonitoring implements PerformanceMonitoring {
   @override
   Future<T> trace<T>({
     required String name,
-    required Future<T> Function(PerformanceTrace trace) operation,
+    required Future<T> Function(FirebasePerformanceTrace trace) operation,
     Map<String, String>? attributes,
   }) async {
     final trace = FirebasePerformanceTrace(await _performance.newTrace(name));

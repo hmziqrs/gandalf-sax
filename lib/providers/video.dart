@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gandalf/services/performace.dart';
 import 'package:video_player/video_player.dart';
 
 final videoControllerProvider =
@@ -50,43 +51,71 @@ class VideoState {
 class VideoControllerNotifier extends StateNotifier<VideoState> {
   VideoControllerNotifier() : super(VideoState());
 
-  Future<void> initialize() async {
-    final controller = VideoPlayerController.asset("assets/video.mp4");
-    await controller.initialize();
-    await controller.setLooping(true);
-    await controller.seekTo(Duration(seconds: 0));
+  final _perf = FirebasePerformanceMonitoring();
 
-    state = state.copyWith(
-      controller: controller,
-      isInitialized: true,
-      totalDuration: controller.value.duration,
+  Future<void> initialize() async {
+    await _perf.trace(
+      name: 'video_initialization',
+      operation: (trace) async {
+        final controller = VideoPlayerController.asset("assets/video.mp4");
+
+        await trace.timeOperation(
+          name: 'init',
+          operation: () => controller.initialize(),
+        );
+
+        await trace.timeOperation(
+          name: 'loop_setup',
+          operation: () => controller.setLooping(true),
+        );
+
+        await trace.timeOperation(
+          name: 'initial_seek',
+          operation: () => controller.seekTo(Duration.zero),
+        );
+
+        state = state.copyWith(
+          controller: controller,
+          isInitialized: true,
+          totalDuration: controller.value.duration,
+        );
+
+        if (!kIsWeb) {
+          await trace.timeOperation(
+            name: 'initial_sync_video',
+            operation: () => syncVideo(),
+          );
+        }
+      },
     );
-    if (!kIsWeb) {
-      await syncVideo();
-    } else {
-      //
-    }
   }
 
   Future<void> syncVideo() async {
     if (!state.isInitialized) return;
 
-    int currentTimeMicros = DateTime.now().toUtc().microsecondsSinceEpoch;
-    int position = currentTimeMicros % state.totalDuration.inMicroseconds;
-    int buffer = 25 + (state.isFirstSync ? 140 : 0);
-    Duration seekPosition = Duration(microseconds: position + buffer);
+    await _perf.trace(
+      name: 'video_sync',
+      attributes: {'is_first_sync': state.isFirstSync.toString()},
+      operation: (trace) async {
+        int currentTimeMicros = DateTime.now().toUtc().microsecondsSinceEpoch;
+        int position = currentTimeMicros % state.totalDuration.inMicroseconds;
+        int buffer = 25 + (state.isFirstSync ? 140 : 0);
+        Duration seekPosition = Duration(microseconds: position + buffer);
 
-    final beforeSeek = DateTime.now();
-    await seekTo(seekPosition);
-    final afterSeek = DateTime.now();
-    debugPrint(
-      'Seek took: ${afterSeek.difference(beforeSeek).inMilliseconds}ms',
-    );
-    final beforePlay = DateTime.now();
-    await play();
-    final afterPlay = DateTime.now();
-    debugPrint(
-      'Seek took: ${afterPlay.difference(beforePlay).inMilliseconds}ms',
+        // Track seek operation
+        trace.timeOperation(
+          name: 'sync_seek_time',
+          operation: () => seekTo(seekPosition),
+        );
+
+        // Track play operation
+        trace.timeOperation(
+          name: 'sync_play_time',
+          operation: () => play(),
+        );
+
+        return;
+      },
     );
   }
 
