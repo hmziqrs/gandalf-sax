@@ -7,24 +7,10 @@
       "type": "dart"
     },
     {
-      "name": "macOS (desktop)",
-      "deviceId": "macos",
+      "name": "Windows (desktop)",
+      "deviceId": "windows",
       "type": "dart",
-      "request": "launch",
-      "args": [
-        "-t",
-        "lib/main.firebase.dart"
-      ]
-    },
-    {
-      "name": "Mac Designed for iPad (desktop)",
-      "deviceId": "mac-designed-for-ipad",
-      "type": "dart",
-      "request": "launch",
-      "args": [
-        "-t",
-        "lib/main.firebase.dart"
-      ]
+      "request": "launch"
     },
     {
       "name": "Chrome (web)",
@@ -33,7 +19,17 @@
       "request": "launch",
       "args": [
         "-t",
-        "lib/main.web.dart"
+        "lib/main.firebase.dart"
+      ]
+    },
+    {
+      "name": "Edge (web)",
+      "deviceId": "edge",
+      "type": "dart",
+      "request": "launch",
+      "args": [
+        "-t",
+        "lib/main.firebase.dart"
       ]
     }
   ],
@@ -41,9 +37,9 @@
     {
       "name": "current",
       "configurations": [
-        "macOS (desktop)",
-        "Mac Designed for iPad (desktop)",
-        "Chrome (web)"
+        "Windows (desktop)",
+        "Chrome (web)",
+        "Edge (web)"
       ]
     }
   ]
