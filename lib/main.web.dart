@@ -7,12 +7,17 @@ import 'package:gandalf/firebase_options.dart';
 import 'package:video_player_media_kit/video_player_media_kit.dart';
 
 import 'Navigator.dart';
+import 'services/analytics.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.web,
   );
+  Analytics.initialize(
+    firebaseAnalytics: FirebaseAnalytics.instance,
+  );
+
   VideoPlayerMediaKit.ensureInitialized(
     web: false,
   );

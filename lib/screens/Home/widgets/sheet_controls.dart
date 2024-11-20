@@ -2,10 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gandalf/constants.dart';
 import 'package:gandalf/providers/app.dart';
+import 'package:gandalf/screens/Home/events.dart';
+import 'package:gandalf/services/analytics.dart';
 import 'package:gandalf/widgets/Buttons/Alpha.dart';
 
 class SheetControls extends ConsumerWidget {
   const SheetControls({Key? key}) : super(key: key);
+
+  void _changeTheme(WidgetRef ref, dynamic mode) {
+    final _mode = mode as ThemeMode;
+    ref.read(appSettingsProvider.notifier).setThemeMode(_mode);
+
+    Analytics.logEvent(
+      ChangeThemeEvent(mode.toString().split('.').last),
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -38,7 +49,6 @@ class SheetControls extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-
           // Theme Selection
           Text(
             'Theme',
@@ -54,8 +64,7 @@ class SheetControls extends ConsumerWidget {
                             padding: EdgeInsets.only(bottom: PADDING),
                             child: AlphaButton(
                               label: button['label'],
-                              onTap: () =>
-                                  appController.setThemeMode(button['mode']),
+                              onTap: () => _changeTheme(ref, button['mode']),
                               icon: button['icon'],
                               color: appState.themeMode == button['mode']
                                   ? primaryColor
@@ -72,7 +81,7 @@ class SheetControls extends ConsumerWidget {
                     return Expanded(
                       child: AlphaButton(
                         label: button['label'],
-                        onTap: () => appController.setThemeMode(button['mode']),
+                        onTap: () => _changeTheme(ref, button['mode']),
                         margin: EdgeInsets.only(
                           left: index == 0 ? 0 : PADDING,
                           right: index == themeButtons.length - 1 ? 0 : PADDING,
@@ -99,10 +108,11 @@ class SheetControls extends ConsumerWidget {
               ),
               Switch(
                 value: appState.backgroundPlayback,
-                onChanged: (value) =>
-                    appController.setBackgroundPlayback(
-                  value,
-                ),
+                onChanged: (value) {
+                  appController.setBackgroundPlayback(
+                    value,
+                  );
+                },
               ),
             ],
           ),
