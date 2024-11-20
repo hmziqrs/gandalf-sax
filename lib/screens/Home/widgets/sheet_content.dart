@@ -25,7 +25,12 @@ final links = [
   },
   {
     "icon": FontAwesomeIcons.xTwitter,
-    "url": "https://x.hmziq.rs",
+    "url": "https://x.com/$USER",
+    "label": "$USER",
+  },
+  {
+    "icon": FontAwesomeIcons.telegram,
+    "url": "https://t.me/$USER",
     "label": "$USER",
   }
 ];

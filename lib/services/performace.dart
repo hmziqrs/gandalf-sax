@@ -1,7 +1,7 @@
-import 'dart:io';
 
 import 'package:firebase_performance/firebase_performance.dart';
 import 'package:flutter/foundation.dart';
+import 'package:universal_io/io.dart';
 
 bool _isPerfAllowed() {
   return kIsWeb || Platform.isAndroid || Platform.isIOS;
