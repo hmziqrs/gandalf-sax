@@ -76,20 +76,11 @@
 								{ntpClient.isSynced ? "NTP synced" : "Device time"}
 							</Badge>
 						</div>
-						<TooltipRoot>
-							<TooltipTrigger>
-								{#snippet child({ props })}
-									<SheetClose>
-										{#snippet child({ props: closeProps })}
-											<Button {...props} {...closeProps} variant="ghost" size="icon" class="h-8 w-8">
-												<X size={16} />
-											</Button>
-										{/snippet}
-									</SheetClose>
-								{/snippet}
-							</TooltipTrigger>
-							<TooltipContent>Close</TooltipContent>
-						</TooltipRoot>
+						<SheetClose>
+							<Button variant="ghost" size="icon" class="h-8 w-8">
+								<X size={16} />
+							</Button>
+						</SheetClose>
 					</div>
 					<SheetTitle class="text-lg font-bold">
 						Behold the glory of infinite Gandalf!
@@ -100,6 +91,34 @@
 				</SheetHeader>
 
 				<div class="mt-6 space-y-6 pb-6">
+					<!-- Playback Settings -->
+					<div>
+						<h3 class="text-sm font-medium mb-3">Playback</h3>
+						<div class="flex gap-2">
+							<Button
+								variant={videoState.pauseOnSheetOpen ? "default" : "outline"}
+								size="sm"
+								onclick={() => { videoState.pauseOnSheetOpen = true; }}
+								class="flex-1"
+							>
+								Pause on Open
+							</Button>
+							<Button
+								variant={!videoState.pauseOnSheetOpen ? "default" : "outline"}
+								size="sm"
+								onclick={() => { videoState.pauseOnSheetOpen = false; }}
+								class="flex-1"
+							>
+								Keep Playing
+							</Button>
+						</div>
+						<p class="text-muted-foreground text-xs mt-2">
+							Whether the video pauses when you tap to open this settings panel
+						</p>
+					</div>
+
+					<Separator />
+
 					<!-- Theme Selection -->
 					<div>
 						<h3 class="text-sm font-medium mb-3">Theme</h3>

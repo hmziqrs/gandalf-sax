@@ -11,12 +11,9 @@ export interface VideoState {
 	duration: number;
 	isSettingsOpen: boolean;
 	isFullscreen: boolean;
-}
-
-// Stored sync references — mirrors Swift VideoViewModel state
-export interface SyncRefs {
-	syncedTimeMs: number;
-	localReferenceTimeMs: number;
+	isMuted: boolean;
+	/** Whether clicking the video pauses it before opening settings */
+	pauseOnSheetOpen: boolean;
 }
 
 // Singleton NTP client (class instance, not reactive)
@@ -62,10 +59,20 @@ export const videoState = $state<VideoState>({
 	duration: 117540, // 117.54 seconds in ms, matching native
 	isSettingsOpen: true,
 	isFullscreen: false,
+	isMuted: true,
+	pauseOnSheetOpen: true,
 });
 
-// Sync references — updated on each NTP sync, used by syncVideo()
-export const syncRefs = $state<SyncRefs>({
-	syncedTimeMs: 0,
-	localReferenceTimeMs: 0,
-});
+// --- Action functions ---
+
+export function toggleFullscreen() {
+	if (!document.fullscreenElement) {
+		document.documentElement.requestFullscreen();
+	} else {
+		document.exitFullscreen();
+	}
+}
+
+export function toggleMute() {
+	videoState.isMuted = !videoState.isMuted;
+}

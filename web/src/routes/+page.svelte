@@ -1,7 +1,7 @@
 <script lang="ts">
 	import VideoPlayer from "$lib/components/VideoPlayer.svelte";
 	import SettingsSheet from "$lib/components/SettingsSheet.svelte";
-	import { videoState } from "$lib/stores.svelte";
+	import { videoState, toggleFullscreen } from "$lib/stores.svelte";
 	import { onMount } from "svelte";
 
 	let videoPlayer: VideoPlayer;
@@ -30,16 +30,6 @@
 			document.removeEventListener("fullscreenchange", handleFullscreenChange);
 		};
 	});
-
-	function toggleFullscreen() {
-		if (!document.fullscreenElement) {
-			document.documentElement.requestFullscreen();
-			videoState.isFullscreen = true;
-		} else {
-			document.exitFullscreen();
-			videoState.isFullscreen = false;
-		}
-	}
 
 	/** Called when settings sheet closes — matching Swift sheet(onDismiss: syncVideo) */
 	function handleSettingsClose() {

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from "svelte";
-	import { videoState, ntpClient, syncRefs } from "$lib/stores.svelte";
-	import type { SyncResult } from "$lib/ntp";
+	import { videoState, ntpClient } from "$lib/stores.svelte";
+	import ControlsOverlay from "./ControlsOverlay.svelte";
 
 	let videoElement: HTMLVideoElement;
 	let animationFrame: number;
@@ -10,19 +10,12 @@
 	onMount(() => {
 		if (!videoElement) return;
 
-		// Start NTP sync (matching Swift: initialize → performSync → play → startResyncTimer)
-		ntpClient.startAutoSync((result: SyncResult) => {
+		// Sync NTP once on boot to measure offset, then reuse it forever
+		ntpClient.sync().then(() => {
 			videoState.isSynced = ntpClient.isSynced;
 			videoState.syncSource = ntpClient.syncSource;
-			// Store sync references (matching Swift: syncedTimeMicros / localReferenceMicros)
-			syncRefs.syncedTimeMs = result.syncedTimeMs;
-			syncRefs.localReferenceTimeMs = result.localReferenceTimeMs;
 			seekToSyncedPosition();
 		});
-
-		// Don't autoplay — browser autoplay policy blocks audio without user gesture.
-		// The settings sheet opens on boot; when the user closes it, onResumeFromSettings()
-		// triggers playback with sound (the close click counts as the required user gesture).
 
 		// Track position
 		const trackPosition = () => {
@@ -34,55 +27,36 @@
 		animationFrame = requestAnimationFrame(trackPosition);
 
 		return () => {
-			ntpClient.stopAutoSync();
 			if (animationFrame) cancelAnimationFrame(animationFrame);
 		};
 	});
 
-	/** Full NTP seek — used after sync (matching Swift performSync) */
+	// Sync muted state to the video element reactively
+	$effect(() => {
+		if (videoElement) {
+			videoElement.muted = videoState.isMuted;
+		}
+	});
+
+	/** Seek using the stored NTP offset: (Date.now() + offset) % duration + buffer */
 	function seekToSyncedPosition() {
 		if (!videoElement) return;
-		const durationMs = videoElement.duration * 1000;
-		if (durationMs <= 0) return;
-		const seekSec = ntpClient.seekPositionSec(durationMs / 1000);
-		videoElement.currentTime = seekSec;
-	}
-
-	/**
-	 * Seek using stored references — matching Swift VideoViewModel.syncVideo()
-	 * which uses stored syncedTimeMicros + localReferenceMicros without re-syncing.
-	 */
-	function syncVideo() {
-		if (!videoElement) return;
-		const durationMs = videoElement.duration * 1000;
-		if (durationMs <= 0) return;
-
-		if (syncRefs.syncedTimeMs === 0) {
-			// No stored reference yet — fall back to full sync
-			seekToSyncedPosition();
-		} else {
-			const seekMs = ntpClient.seekPositionFromRefs(
-				syncRefs.syncedTimeMs,
-				syncRefs.localReferenceTimeMs,
-				durationMs
-			);
-			videoElement.currentTime = seekMs / 1000;
-		}
-		videoElement.play();
-		videoState.isPlaying = true;
+		const durationSec = videoElement.duration;
+		if (durationSec <= 0) return;
+		videoElement.currentTime = ntpClient.seekPositionSec(durationSec);
 	}
 
 	/**
 	 * Tap handler — matching Swift ContentView:
 	 *   .onTapGesture { viewModel.pause(); showSettings = true }
+	 * Respects the pauseOnSheetOpen setting.
 	 */
 	function handleVideoClick(e: MouseEvent) {
 		e.stopPropagation();
-		// Pause + open settings
-		if (videoElement) {
+		if (videoState.pauseOnSheetOpen && videoElement) {
 			videoElement.pause();
+			videoState.isPlaying = false;
 		}
-		videoState.isPlaying = false;
 		videoState.isSettingsOpen = true;
 	}
 
@@ -94,9 +68,13 @@
 	 * the user's close click satisfies the browser autoplay policy.
 	 */
 	export function onResumeFromSettings() {
-		syncVideo();
-		if (!hasPlayedOnce && videoElement) {
-			videoElement.muted = false;
+		seekToSyncedPosition();
+		if (videoElement) {
+			videoElement.play();
+			videoState.isPlaying = true;
+		}
+		if (!hasPlayedOnce) {
+			videoState.isMuted = false;
 			hasPlayedOnce = true;
 		}
 	}
@@ -126,7 +104,7 @@
 		class="w-full h-full object-contain bg-black"
 	></video>
 
-	<div class="hint-text">Press F for fullscreen · Click for settings</div>
+	<ControlsOverlay />
 </div>
 
 <style>
@@ -139,23 +117,5 @@
 		background: black;
 		cursor: pointer;
 		z-index: 0;
-	}
-
-	.hint-text {
-		position: absolute;
-		bottom: 1.5rem;
-		left: 50%;
-		transform: translateX(-50%);
-		color: rgba(255, 255, 255, 0.3);
-		font-size: 0.75rem;
-		pointer-events: none;
-		animation: fadeInOut 4s ease-in-out forwards;
-	}
-
-	@keyframes fadeInOut {
-		0% { opacity: 0; }
-		20% { opacity: 1; }
-		80% { opacity: 1; }
-		100% { opacity: 0; }
 	}
 </style>
