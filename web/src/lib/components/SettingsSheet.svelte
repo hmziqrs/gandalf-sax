@@ -19,33 +19,24 @@
 	} from "@lucide/svelte";
 	import GitHubIcon from "$lib/components/icons/GitHub.svelte";
 	import XBrandIcon from "$lib/components/icons/XBrand.svelte";
-	import { videoState, themeMode, ntpClient } from "$lib/stores";
-	import type { ThemeMode } from "$lib/stores";
+	import { videoState, ntpClient, getThemeMode, setThemeMode } from "$lib/stores.svelte";
+	import type { ThemeMode } from "$lib/stores.svelte";
 
-	let open = $derived($videoState.isSettingsOpen);
+	let { onClose }: { onClose: () => void } = $props();
 
+	let open = $derived(videoState.isSettingsOpen);
+	let currentTheme = $derived(getThemeMode());
+
+	/** Matching Swift: .sheet(onDismiss: { viewModel.syncVideo() }) */
 	function setOpen(val: boolean) {
-		videoState.update((s) => ({ ...s, isSettingsOpen: val }));
+		videoState.isSettingsOpen = val;
 		if (!val) {
-			videoState.update((s) => ({ ...s, isPlaying: true }));
+			onClose();
 		}
 	}
 
-	function setTheme(mode: ThemeMode) {
-		themeMode.set(mode);
-		applyTheme(mode);
-	}
-
-	function applyTheme(mode: ThemeMode) {
-		if (typeof document === "undefined") return;
-		const root = document.documentElement;
-		let resolved = mode;
-		if (mode === "system") {
-			resolved = window.matchMedia("(prefers-color-scheme: dark)").matches
-				? "dark"
-				: "light";
-		}
-		root.classList.toggle("dark", resolved === "dark");
+	function changeTheme(mode: ThemeMode) {
+		setThemeMode(mode);
 	}
 
 	function share() {
@@ -59,11 +50,6 @@
 			navigator.clipboard.writeText("https://youtu.be/BBGEG21CGo0");
 		}
 	}
-
-	// Apply theme on mount
-	$effect(() => {
-		applyTheme($themeMode);
-	});
 </script>
 
 <SheetRoot bind:open onOpenChange={setOpen}>
@@ -103,27 +89,27 @@
 					<h3 class="text-sm font-medium mb-3">Theme</h3>
 					<div class="flex gap-2">
 						<Button
-							variant={$themeMode === "light" ? "default" : "outline"}
+							variant={currentTheme === "light" ? "default" : "outline"}
 							size="sm"
-							onclick={() => setTheme("light")}
+							onclick={() => changeTheme("light")}
 							class="flex-1 gap-2"
 						>
 							<Sun size={16} />
 							Light
 						</Button>
 						<Button
-							variant={$themeMode === "dark" ? "default" : "outline"}
+							variant={currentTheme === "dark" ? "default" : "outline"}
 							size="sm"
-							onclick={() => setTheme("dark")}
+							onclick={() => changeTheme("dark")}
 							class="flex-1 gap-2"
 						>
 							<Moon size={16} />
 							Dark
 						</Button>
 						<Button
-							variant={$themeMode === "system" ? "default" : "outline"}
+							variant={currentTheme === "system" ? "default" : "outline"}
 							size="sm"
-							onclick={() => setTheme("system")}
+							onclick={() => changeTheme("system")}
 							class="flex-1 gap-2"
 						>
 							<Monitor size={16} />

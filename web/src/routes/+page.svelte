@@ -1,26 +1,25 @@
 <script lang="ts">
 	import VideoPlayer from "$lib/components/VideoPlayer.svelte";
 	import SettingsSheet from "$lib/components/SettingsSheet.svelte";
-	import { videoState } from "$lib/stores";
+	import { videoState } from "$lib/stores.svelte";
 	import { onMount } from "svelte";
+
+	let videoPlayer: VideoPlayer;
 
 	onMount(() => {
 		function handleKeydown(e: KeyboardEvent) {
 			if (e.key === "f" || e.key === "F") {
 				toggleFullscreen();
 			} else if (e.key === "Escape") {
-				if ($videoState.isFullscreen) {
+				if (videoState.isFullscreen) {
 					document.exitFullscreen();
-					videoState.update((s) => ({ ...s, isFullscreen: false }));
+					videoState.isFullscreen = false;
 				}
 			}
 		}
 
 		function handleFullscreenChange() {
-			videoState.update((s) => ({
-				...s,
-				isFullscreen: !!document.fullscreenElement,
-			}));
+			videoState.isFullscreen = !!document.fullscreenElement;
 		}
 
 		document.addEventListener("keydown", handleKeydown);
@@ -35,11 +34,16 @@
 	function toggleFullscreen() {
 		if (!document.fullscreenElement) {
 			document.documentElement.requestFullscreen();
-			videoState.update((s) => ({ ...s, isFullscreen: true }));
+			videoState.isFullscreen = true;
 		} else {
 			document.exitFullscreen();
-			videoState.update((s) => ({ ...s, isFullscreen: false }));
+			videoState.isFullscreen = false;
 		}
+	}
+
+	/** Called when settings sheet closes — matching Swift sheet(onDismiss: syncVideo) */
+	function handleSettingsClose() {
+		videoPlayer?.onResumeFromSettings();
 	}
 </script>
 
@@ -50,5 +54,5 @@
 	<link rel="icon" href="/favicon.png" />
 </svelte:head>
 
-<VideoPlayer />
-<SettingsSheet />
+<VideoPlayer bind:this={videoPlayer} />
+<SettingsSheet onClose={handleSettingsClose} />

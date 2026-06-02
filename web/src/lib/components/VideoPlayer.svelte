@@ -1,35 +1,22 @@
 <script lang="ts">
-	import { onMount, onDestroy } from "svelte";
-	import { videoState, ntpClient, syncRefs } from "$lib/stores";
+	import { onMount } from "svelte";
+	import { videoState, ntpClient, syncRefs } from "$lib/stores.svelte";
 	import type { SyncResult } from "$lib/ntp";
 
 	let videoElement: HTMLVideoElement;
 	let animationFrame: number;
 	let hasUnmuted = false;
 
-	/** Stored sync references — mirrors Swift VideoViewModel's syncedTimeMicros/localReferenceMicros */
-	let currentSyncRefs = { syncedTimeMs: 0, localReferenceTimeMs: 0 };
-
-	// Subscribe to sync refs store
-	const unsubRefs = syncRefs.subscribe((refs) => {
-		currentSyncRefs = refs;
-	});
-
 	onMount(() => {
 		if (!videoElement) return;
 
 		// Start NTP sync (matching Swift: initialize → performSync → play → startResyncTimer)
 		ntpClient.startAutoSync((result: SyncResult) => {
-			videoState.update((s) => ({
-				...s,
-				isSynced: ntpClient.isSynced,
-				syncSource: ntpClient.syncSource,
-			}));
+			videoState.isSynced = ntpClient.isSynced;
+			videoState.syncSource = ntpClient.syncSource;
 			// Store sync references (matching Swift: syncedTimeMicros / localReferenceMicros)
-			syncRefs.set({
-				syncedTimeMs: result.syncedTimeMs,
-				localReferenceTimeMs: result.localReferenceTimeMs,
-			});
+			syncRefs.syncedTimeMs = result.syncedTimeMs;
+			syncRefs.localReferenceTimeMs = result.localReferenceTimeMs;
 			seekToSyncedPosition();
 		});
 
@@ -37,10 +24,10 @@
 		videoElement
 			.play()
 			.then(() => {
-				videoState.update((s) => ({ ...s, isPlaying: true }));
+				videoState.isPlaying = true;
 			})
 			.catch(() => {
-				videoState.update((s) => ({ ...s, isPlaying: false }));
+				videoState.isPlaying = false;
 			});
 
 		// Unmute on first user interaction
@@ -61,20 +48,16 @@
 		// Track position
 		const trackPosition = () => {
 			if (videoElement) {
-				videoState.update((s) => ({
-					...s,
-					currentPosition: videoElement.currentTime * 1000,
-				}));
+				videoState.currentPosition = videoElement.currentTime * 1000;
 			}
 			animationFrame = requestAnimationFrame(trackPosition);
 		};
 		animationFrame = requestAnimationFrame(trackPosition);
-	});
 
-	onDestroy(() => {
-		unsubRefs();
-		ntpClient.stopAutoSync();
-		if (animationFrame) cancelAnimationFrame(animationFrame);
+		return () => {
+			ntpClient.stopAutoSync();
+			if (animationFrame) cancelAnimationFrame(animationFrame);
+		};
 	});
 
 	/** Full NTP seek — used after sync (matching Swift performSync) */
@@ -95,19 +78,19 @@
 		const durationMs = videoElement.duration * 1000;
 		if (durationMs <= 0) return;
 
-		if (currentSyncRefs.syncedTimeMs === 0) {
+		if (syncRefs.syncedTimeMs === 0) {
 			// No stored reference yet — fall back to full sync
 			seekToSyncedPosition();
 		} else {
 			const seekMs = ntpClient.seekPositionFromRefs(
-				currentSyncRefs.syncedTimeMs,
-				currentSyncRefs.localReferenceTimeMs,
+				syncRefs.syncedTimeMs,
+				syncRefs.localReferenceTimeMs,
 				durationMs
 			);
 			videoElement.currentTime = seekMs / 1000;
 		}
 		videoElement.play();
-		videoState.update((s) => ({ ...s, isPlaying: true }));
+		videoState.isPlaying = true;
 	}
 
 	/**
@@ -120,11 +103,12 @@
 		if (videoElement) {
 			videoElement.pause();
 		}
-		videoState.update((s) => ({ ...s, isPlaying: false, isSettingsOpen: true }));
+		videoState.isPlaying = false;
+		videoState.isSettingsOpen = true;
 	}
 
 	/**
-	 * Called by SettingsSheet when it closes — matching Swift:
+	 * Called when settings sheet closes — matching Swift:
 	 *   .sheet(onDismiss: { viewModel.syncVideo() })
 	 */
 	export function onResumeFromSettings() {
@@ -138,8 +122,7 @@
 	}
 </script>
 
-<!-- svelte-ignore a11y_no_static_element_interactions -->
-<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
 <div
 	class="video-container"
 	onclick={handleVideoClick}

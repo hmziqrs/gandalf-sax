@@ -1,7 +1,7 @@
 <script lang="ts">
 	import "../app.css";
-	import { themeMode } from "$lib/stores";
-	import type { ThemeMode } from "$lib/stores";
+	import { getThemeMode } from "$lib/stores.svelte";
+	import type { ThemeMode } from "$lib/stores.svelte";
 
 	let { children } = $props();
 
@@ -17,13 +17,15 @@
 		root.classList.toggle("dark", resolved === "dark");
 	}
 
+	// Single source of truth for theme application — uses $effect with proper teardown
 	$effect(() => {
-		applyTheme($themeMode);
+		const mode = getThemeMode();
+		applyTheme(mode);
 
 		if (typeof window !== "undefined") {
 			const mq = window.matchMedia("(prefers-color-scheme: dark)");
 			const handler = () => {
-				if ($themeMode === "system") applyTheme("system");
+				if (getThemeMode() === "system") applyTheme("system");
 			};
 			mq.addEventListener("change", handler);
 			return () => mq.removeEventListener("change", handler);
