@@ -1,6 +1,6 @@
 # 🎷 Epic Sax Gandalf Infinite
 
-Glorious Gandalf sax
+Glorious Gandalf sax — now **NTP-synced to millisecond precision**. Every device on every platform plays the exact same frame at the same time.
 
 ## 📲 Download
 
@@ -25,34 +25,64 @@ Glorious Gandalf sax
 
 ## ✨ Features
 
+- ⏱️ **NTP time sync** — all devices play the same frame at the same time (millisecond precision)
 - 🔄 Perfect seamless loop
-- 📱 Multiple platform support
-- 🎵 Video & audio synchronization
-- 🌐 Web version available
-- 📺 Native video playback
+- 📱 **Native first-party** implementations per platform
+- 🌐 Firebase Analytics + Crashlytics (mobile)
+- 📺 Hardware-accelerated video playback
 
 ## 🖥️ Supported Platforms
 
-- 🤖 Android
-- 🍎 iOS
-- 🪟 Windows
-- 🐧 Linux
-- 🍏 macOS
-- 🌐 Web
+| Platform | Stack | Video Engine |
+|----------|-------|-------------|
+| 🤖 Android | Kotlin + Jetpack Compose | Media3 / ExoPlayer |
+| 🍎 iOS | Swift + SwiftUI | AVPlayer |
+| 🍏 macOS | Swift + SwiftUI | AVPlayer |
+| 🪟 Windows | Rust + egui | libmpv |
+| 🐧 Linux | Rust + egui | libmpv |
 
 ## 🛠️ Building
 
-### Prerequisites
+### Android
+```bash
+cd android
+./gradlew assembleDebug
+```
 
-- Flutter SDK (3.24.5 or higher)
-- For iOS/macOS: Xcode
-- For Android: Android Studio
-- For Windows: Visual Studio
-- For Linux: Required system dependencies:
-  ```bash
-  sudo apt install libmpv-dev mpv
-  ```
+### iOS / macOS
+Open `apple/Projects/iOS/` or `apple/Projects/macOS/` in Xcode. Build & run.
 
+### Windows / Linux (Rust)
+```bash
+cd rust
+
+# Linux: install system dependency
+sudo apt install libmpv-dev mpv libgl-dev libx11-dev
+
+# Build
+cargo build --release
+```
+
+## 📁 Project Structure
+
+```
+gandalf-sax/
+  assets/video.mp4          # Single source of truth (~11MB)
+  assets/icons/             # Source icons (1024x1024)
+  android/                  # Kotlin / Gradle project
+  apple/
+    Sources/GandalfSync/    # Shared Swift Package (NTP client)
+    Projects/iOS/           # iOS Xcode project
+    Projects/macOS/         # macOS Xcode project
+  rust/                     # Cargo project (Windows + Linux)
+  legacy/                   # Previous Flutter implementation
+```
+
+## ⏱️ How Time Sync Works
+
+Every device computes: `seekPosition = (correctedTime % videoDuration) + buffer`
+
+Where `correctedTime = deviceTime + ntpOffset`. NTP offset is computed by querying 4 time servers and taking the median. Re-syncs every 60 seconds.
 
 ## 📄 License
 

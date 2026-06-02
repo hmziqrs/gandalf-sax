@@ -1,0 +1,36 @@
+name: GandalfMac
+options:
+  bundleIdPrefix: com.onemdev
+  deploymentTarget:
+    macOS: "14.0"
+  xcodeVersion: "15.0"
+  generateEmptyDirectories: true
+
+packages:
+  GandalfSync:
+    path: ../../
+
+targets:
+  GandalfMac:
+    type: application
+    platform: macOS
+    sources:
+      - path: GandalfMac
+        excludes:
+          - "**/.DS_Store"
+    dependencies:
+      - package: GandalfSync
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.onemdev.gandalf
+        MARKETING_VERSION: "4.0.0"
+        CURRENT_PROJECT_VERSION: 1
+        MACOSX_DEPLOYMENT_TARGET: "14.0"
+        SWIFT_VERSION: "5.9"
+        INFOPLIST_FILE: Info.plist
+        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGN_STYLE: Automatic
+        ENABLE_PREVIEWS: YES
+        GENERATE_INFOPLIST_FILE: NO
+    info:
+      path: Info.plist

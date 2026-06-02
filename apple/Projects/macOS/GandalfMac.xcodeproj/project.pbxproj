@@ -1,0 +1,401 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		13CC116111576C03E9318D02 /* GandalfMacApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1620F944E5E96C039CD7C05B /* GandalfMacApp.swift */; };
+		27A17A69FCB40836479EE22B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F5CE4AD79F528107A6DC27D4 /* Assets.xcassets */; };
+		3E4E23C35AC3A7275A99ABCB /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B81F1D9331A9F913E5DD43C8 /* ContentView.swift */; };
+		6E06B484898994BCDC15D4BA /* VideoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5350FDB45F4B88FA76AF194A /* VideoViewModel.swift */; };
+		A793D61CEF6B2EE2E3378194 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03509AFF282A1DA115278B12 /* SettingsView.swift */; };
+		BCD1A8951D4E3B1188C51B72 /* GandalfSync in Frameworks */ = {isa = PBXBuildFile; productRef = D9FE6042CD8AB35C20396507 /* GandalfSync */; };
+		C02556A9022F1C499C57F166 /* VideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C133F4F6268990209ED0ACF5 /* VideoPlayerView.swift */; };
+		DBEF6EDA24200D41C9F296CE /* video.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 87E1DD2870310A892F189A01 /* video.mp4 */; };
+		FC0C1CFFE7AD8856B977AA61 /* Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = A42E081BA303D2F2D6A95A01 /* Analytics.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		03509AFF282A1DA115278B12 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		1620F944E5E96C039CD7C05B /* GandalfMacApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GandalfMacApp.swift; sourceTree = "<group>"; };
+		1CB2C7B32034F611A0754872 /* GandalfMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GandalfMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5350FDB45F4B88FA76AF194A /* VideoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoViewModel.swift; sourceTree = "<group>"; };
+		8432A622FA316ACE620750FC /* apple */ = {isa = PBXFileReference; lastKnownFileType = folder; name = apple; path = ../..; sourceTree = SOURCE_ROOT; };
+		87E1DD2870310A892F189A01 /* video.mp4 */ = {isa = PBXFileReference; path = video.mp4; sourceTree = "<group>"; };
+		A42E081BA303D2F2D6A95A01 /* Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Analytics.swift; sourceTree = "<group>"; };
+		B81F1D9331A9F913E5DD43C8 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		C133F4F6268990209ED0ACF5 /* VideoPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayerView.swift; sourceTree = "<group>"; };
+		F5CE4AD79F528107A6DC27D4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F7A3612FCAFEA977820FFBCB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BCD1A8951D4E3B1188C51B72 /* GandalfSync in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0D503FB201CD551152519001 /* Analytics */ = {
+			isa = PBXGroup;
+			children = (
+				A42E081BA303D2F2D6A95A01 /* Analytics.swift */,
+			);
+			path = Analytics;
+			sourceTree = "<group>";
+		};
+		144B3EFEE0E481F47E288F3B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1CB2C7B32034F611A0754872 /* GandalfMac.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		4B85EE6F74B9989E103DD547 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				B81F1D9331A9F913E5DD43C8 /* ContentView.swift */,
+				03509AFF282A1DA115278B12 /* SettingsView.swift */,
+				C133F4F6268990209ED0ACF5 /* VideoPlayerView.swift */,
+				5350FDB45F4B88FA76AF194A /* VideoViewModel.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		59601AFD82901F446D981DF4 = {
+			isa = PBXGroup;
+			children = (
+				BDED18BA938EEFC0A3609047 /* GandalfMac */,
+				C362704B4334CA777EDA4DC3 /* Packages */,
+				144B3EFEE0E481F47E288F3B /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		BDED18BA938EEFC0A3609047 /* GandalfMac */ = {
+			isa = PBXGroup;
+			children = (
+				F5CE4AD79F528107A6DC27D4 /* Assets.xcassets */,
+				1620F944E5E96C039CD7C05B /* GandalfMacApp.swift */,
+				87E1DD2870310A892F189A01 /* video.mp4 */,
+				0D503FB201CD551152519001 /* Analytics */,
+				D375EE580F98920C7EC151A5 /* Theme */,
+				4B85EE6F74B9989E103DD547 /* Views */,
+			);
+			path = GandalfMac;
+			sourceTree = "<group>";
+		};
+		C362704B4334CA777EDA4DC3 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				8432A622FA316ACE620750FC /* apple */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		D375EE580F98920C7EC151A5 /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Theme;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		37DCEE4AE760B1C81ABC715E /* GandalfMac */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3DBC59908055C6BB1C0C5451 /* Build configuration list for PBXNativeTarget "GandalfMac" */;
+			buildPhases = (
+				60A60172A10559F49870D38E /* Sources */,
+				32866DDE6BFE706ABBFFACF9 /* Resources */,
+				F7A3612FCAFEA977820FFBCB /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = GandalfMac;
+			packageProductDependencies = (
+				D9FE6042CD8AB35C20396507 /* GandalfSync */,
+			);
+			productName = GandalfMac;
+			productReference = 1CB2C7B32034F611A0754872 /* GandalfMac.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D2E302C4CFE3D949266F90BB /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					37DCEE4AE760B1C81ABC715E = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = B34931F7C2E932961A24D88B /* Build configuration list for PBXProject "GandalfMac" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 59601AFD82901F446D981DF4;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				1824DF3CB0C1DCF2BB83BF2E /* XCLocalSwiftPackageReference "../..//" */,
+			);
+			preferredProjectObjectVersion = 77;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				37DCEE4AE760B1C81ABC715E /* GandalfMac */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		32866DDE6BFE706ABBFFACF9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				27A17A69FCB40836479EE22B /* Assets.xcassets in Resources */,
+				DBEF6EDA24200D41C9F296CE /* video.mp4 in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		60A60172A10559F49870D38E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FC0C1CFFE7AD8856B977AA61 /* Analytics.swift in Sources */,
+				3E4E23C35AC3A7275A99ABCB /* ContentView.swift in Sources */,
+				13CC116111576C03E9318D02 /* GandalfMacApp.swift in Sources */,
+				A793D61CEF6B2EE2E3378194 /* SettingsView.swift in Sources */,
+				C02556A9022F1C499C57F166 /* VideoPlayerView.swift in Sources */,
+				6E06B484898994BCDC15D4BA /* VideoViewModel.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		3BD4BC1A313B1B60DFEF5E8B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		408EE82B2FA318ED05BA3360 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		703F2BB0C01C9B7FF290F30C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 4.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.onemdev.gandalf;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		A94CAF8D3E5EB3667CF50C69 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 4.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.onemdev.gandalf;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3DBC59908055C6BB1C0C5451 /* Build configuration list for PBXNativeTarget "GandalfMac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A94CAF8D3E5EB3667CF50C69 /* Debug */,
+				703F2BB0C01C9B7FF290F30C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		B34931F7C2E932961A24D88B /* Build configuration list for PBXProject "GandalfMac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3BD4BC1A313B1B60DFEF5E8B /* Debug */,
+				408EE82B2FA318ED05BA3360 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		1824DF3CB0C1DCF2BB83BF2E /* XCLocalSwiftPackageReference "../..//" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../..//";
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		D9FE6042CD8AB35C20396507 /* GandalfSync */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = GandalfSync;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = D2E302C4CFE3D949266F90BB /* Project object */;
+}

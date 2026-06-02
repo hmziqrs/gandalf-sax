@@ -1,0 +1,50 @@
+# === Android ===
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/*.iml
+android/app/*.iml
+android/.idea/
+android/gradle.properties
+*.keystore
+*.jks
+dev.properties
+prod.properties
+
+# === Apple (iOS/macOS) ===
+apple/**/*.xcodeproj/xcuserdata/
+apple/**/*.xcworkspace/xcuserdata/
+apple/**/DerivedData/
+apple/**/build/
+apple/**/*.moved-aside
+apple/**/*.pbxuser
+apple/**/*.perspectivev3
+apple/**/*sync/
+apple/**/.swiftpm/
+apple/**/Pods/
+apple/**/.build/
+
+# === Rust ===
+rust/target/
+rust/Cargo.lock
+**/*.pdb
+
+# === OS ===
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# === IDE ===
+.idea/
+.vscode/
+*.iml
+
+# === Secrets ===
+.keys-n-stuff.json
+google-services.json
+GoogleService-Info.plist
+*.keystore
+*.jks
