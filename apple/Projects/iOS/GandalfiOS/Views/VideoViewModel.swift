@@ -1,6 +1,6 @@
 import SwiftUI
 import AVFoundation
-import GandalfSync
+import GandalfShared
 
 @MainActor
 class VideoViewModel: ObservableObject {

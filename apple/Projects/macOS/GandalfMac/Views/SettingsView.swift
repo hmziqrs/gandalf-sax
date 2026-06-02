@@ -1,5 +1,5 @@
 import SwiftUI
-import GandalfSync
+import GandalfShared
 
 struct SettingsView: View {
     let syncSource: NtpClient.SyncSource

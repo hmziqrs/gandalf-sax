@@ -20,7 +20,8 @@ apple/**/build/
 apple/**/*.moved-aside
 apple/**/*.pbxuser
 apple/**/*.perspectivev3
-apple/**/*sync/
+apple/**/*sync*.db
+apple/**/*sync*.plist
 apple/**/.swiftpm/
 apple/**/Pods/
 apple/**/.build/
@@ -29,6 +30,11 @@ apple/**/.build/
 rust/target/
 rust/Cargo.lock
 **/*.pdb
+
+# === Web ===
+web/node_modules/
+web/.svelte-kit/
+web/build/
 
 # === OS ===
 .DS_Store

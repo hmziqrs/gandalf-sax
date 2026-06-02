@@ -12,7 +12,7 @@
 		3E4E23C35AC3A7275A99ABCB /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B81F1D9331A9F913E5DD43C8 /* ContentView.swift */; };
 		6E06B484898994BCDC15D4BA /* VideoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5350FDB45F4B88FA76AF194A /* VideoViewModel.swift */; };
 		A793D61CEF6B2EE2E3378194 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03509AFF282A1DA115278B12 /* SettingsView.swift */; };
-		BCD1A8951D4E3B1188C51B72 /* GandalfSync in Frameworks */ = {isa = PBXBuildFile; productRef = D9FE6042CD8AB35C20396507 /* GandalfSync */; };
+		BCD1A8951D4E3B1188C51B72 /* GandalfShared in Frameworks */ = {isa = PBXBuildFile; productRef = 135080D7AF2FA86D4BE1EB41 /* GandalfShared */; };
 		C02556A9022F1C499C57F166 /* VideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C133F4F6268990209ED0ACF5 /* VideoPlayerView.swift */; };
 		DBEF6EDA24200D41C9F296CE /* video.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 87E1DD2870310A892F189A01 /* video.mp4 */; };
 		FC0C1CFFE7AD8856B977AA61 /* Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = A42E081BA303D2F2D6A95A01 /* Analytics.swift */; };
@@ -37,7 +37,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BCD1A8951D4E3B1188C51B72 /* GandalfSync in Frameworks */,
+				BCD1A8951D4E3B1188C51B72 /* GandalfShared in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -126,7 +126,7 @@
 			);
 			name = GandalfMac;
 			packageProductDependencies = (
-				D9FE6042CD8AB35C20396507 /* GandalfSync */,
+				135080D7AF2FA86D4BE1EB41 /* GandalfShared */,
 			);
 			productName = GandalfMac;
 			productReference = 1CB2C7B32034F611A0754872 /* GandalfMac.app */;
@@ -397,9 +397,9 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		D9FE6042CD8AB35C20396507 /* GandalfSync */ = {
+		135080D7AF2FA86D4BE1EB41 /* GandalfShared */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = GandalfSync;
+			productName = GandalfShared;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

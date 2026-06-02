@@ -7,7 +7,7 @@ options:
   generateEmptyDirectories: true
 
 packages:
-  GandalfSync:
+  GandalfShared:
     path: ../../
 
 targets:
@@ -19,7 +19,7 @@ targets:
         excludes:
           - "**/.DS_Store"
     dependencies:
-      - package: GandalfSync
+      - package: GandalfShared
     entitlements:
       path: GandalfMac/GandalfMac.entitlements
     settings:

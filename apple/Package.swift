@@ -2,23 +2,22 @@
 import PackageDescription
 
 let package = Package(
-    name: "GandalfSync",
+    name: "GandalfShared",
     platforms: [
         .iOS(.v15),
         .macOS(.v12),
     ],
     products: [
-        .library(name: "GandalfSync", targets: ["GandalfSync"]),
+        .library(name: "GandalfShared", targets: ["GandalfShared"]),
     ],
     targets: [
         .target(
-            name: "GandalfSync",
-            path: "Sources/GandalfSync"
+            name: "GandalfShared",
+            path: "Sources/GandalfShared"
         ),
         .testTarget(
-            name: "GandalfSyncTests",
-            dependencies: ["GandalfSync"],
-            path: "Tests/GandalfSyncTests"
+            name: "GandalfSharedTests",
+            dependencies: ["GandalfShared"]
         ),
     ]
 )

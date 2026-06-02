@@ -1,5 +1,5 @@
 import SwiftUI
-import GandalfSync
+import GandalfShared
 
 struct ContentView: View {
     @StateObject private var viewModel = VideoViewModel()
