@@ -20,6 +20,8 @@ targets:
           - "**/.DS_Store"
     dependencies:
       - package: GandalfSync
+    entitlements:
+      path: GandalfMac/GandalfMac.entitlements
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.onemdev.gandalf
@@ -28,9 +30,11 @@ targets:
         MACOSX_DEPLOYMENT_TARGET: "14.0"
         SWIFT_VERSION: "5.9"
         INFOPLIST_FILE: Info.plist
+        CODE_SIGN_ENTITLEMENTS: GandalfMac/GandalfMac.entitlements
         CODE_SIGN_IDENTITY: "-"
         CODE_SIGN_STYLE: Automatic
         ENABLE_PREVIEWS: YES
         GENERATE_INFOPLIST_FILE: NO
+        ENABLE_APP_SANDBOX: NO
     info:
       path: Info.plist

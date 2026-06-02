@@ -22,6 +22,7 @@
 		03509AFF282A1DA115278B12 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		1620F944E5E96C039CD7C05B /* GandalfMacApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GandalfMacApp.swift; sourceTree = "<group>"; };
 		1CB2C7B32034F611A0754872 /* GandalfMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GandalfMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		21A43BF23907E220B2FE195D /* GandalfMac.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GandalfMac.entitlements; sourceTree = "<group>"; };
 		5350FDB45F4B88FA76AF194A /* VideoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoViewModel.swift; sourceTree = "<group>"; };
 		8432A622FA316ACE620750FC /* apple */ = {isa = PBXFileReference; lastKnownFileType = folder; name = apple; path = ../..; sourceTree = SOURCE_ROOT; };
 		87E1DD2870310A892F189A01 /* video.mp4 */ = {isa = PBXFileReference; path = video.mp4; sourceTree = "<group>"; };
@@ -83,6 +84,7 @@
 			isa = PBXGroup;
 			children = (
 				F5CE4AD79F528107A6DC27D4 /* Assets.xcassets */,
+				21A43BF23907E220B2FE195D /* GandalfMac.entitlements */,
 				1620F944E5E96C039CD7C05B /* GandalfMacApp.swift */,
 				87E1DD2870310A892F189A01 /* video.mp4 */,
 				0D503FB201CD551152519001 /* Analytics */,
@@ -318,10 +320,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = GandalfMac/GandalfMac.entitlements;
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = NO;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Info.plist;
@@ -341,10 +345,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = GandalfMac/GandalfMac.entitlements;
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = NO;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Info.plist;
