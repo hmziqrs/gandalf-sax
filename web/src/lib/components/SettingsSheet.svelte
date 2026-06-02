@@ -19,7 +19,7 @@
 	} from "@lucide/svelte";
 	import GitHubIcon from "$lib/components/icons/GitHub.svelte";
 	import XBrandIcon from "$lib/components/icons/XBrand.svelte";
-	import { videoState, ntpClient, getThemeMode, setThemeMode } from "$lib/stores.svelte";
+	import { videoState, ntpClient, getThemeMode, setThemeMode, pause, play } from "$lib/stores.svelte";
 	import type { ThemeMode } from "$lib/stores.svelte";
 	import {
 		Root as TooltipRoot,
@@ -91,14 +91,17 @@
 				</SheetHeader>
 
 				<div class="mt-3 space-y-3 pb-3">
-					<!-- Playback Settings -->
+					<!-- Playback -->
 					<div>
 						<h3 class="text-sm font-medium mb-2">Playback</h3>
 						<div class="flex gap-2">
 							<Button
 								variant={videoState.pauseOnSheetOpen ? "default" : "outline"}
 								size="sm"
-								onclick={() => { videoState.pauseOnSheetOpen = true; }}
+								onclick={() => {
+									videoState.pauseOnSheetOpen = true;
+									pause();
+								}}
 								class="flex-1"
 							>
 								Pause on Open
@@ -106,14 +109,17 @@
 							<Button
 								variant={!videoState.pauseOnSheetOpen ? "default" : "outline"}
 								size="sm"
-								onclick={() => { videoState.pauseOnSheetOpen = false; }}
+								onclick={() => {
+									videoState.pauseOnSheetOpen = false;
+									play();
+								}}
 								class="flex-1"
 							>
 								Keep Playing
 							</Button>
 						</div>
 						<p class="text-muted-foreground text-xs mt-1.5">
-							Whether the video pauses when you tap to open this settings panel
+							Sets default behavior when opening this panel
 						</p>
 					</div>
 

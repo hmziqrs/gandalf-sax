@@ -63,6 +63,37 @@ export const videoState = $state<VideoState>({
 	pauseOnSheetOpen: true,
 });
 
+// --- Video element reference ---
+// Registered by VideoPlayer on mount so store actions can control playback.
+let _videoElement: HTMLVideoElement | null = null;
+
+export function registerVideoElement(el: HTMLVideoElement) {
+	_videoElement = el;
+}
+
+/** Seek to NTP-synced position: (Date.now() + offset) % duration + buffer */
+export function seekToSyncedPosition() {
+	if (!_videoElement) return;
+	const durationSec = _videoElement.duration;
+	if (durationSec <= 0) return;
+	_videoElement.currentTime = ntpClient.seekPositionSec(durationSec);
+}
+
+/** Pause the video */
+export function pause() {
+	if (!_videoElement) return;
+	_videoElement.pause();
+	videoState.isPlaying = false;
+}
+
+/** Seek to synced position and play */
+export function play() {
+	if (!_videoElement) return;
+	seekToSyncedPosition();
+	_videoElement.play();
+	videoState.isPlaying = true;
+}
+
 // --- Action functions ---
 
 export function toggleFullscreen() {

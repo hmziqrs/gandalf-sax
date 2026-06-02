@@ -1,6 +1,13 @@
 <script lang="ts">
 	import { onMount } from "svelte";
-	import { videoState, ntpClient } from "$lib/stores.svelte";
+	import {
+		videoState,
+		ntpClient,
+		registerVideoElement,
+		seekToSyncedPosition,
+		play,
+		pause,
+	} from "$lib/stores.svelte";
 	import ControlsOverlay from "./ControlsOverlay.svelte";
 
 	let videoElement: HTMLVideoElement;
@@ -9,6 +16,9 @@
 
 	onMount(() => {
 		if (!videoElement) return;
+
+		// Register the video element so store actions can control it
+		registerVideoElement(videoElement);
 
 		// Sync NTP once on boot to measure offset, then reuse it forever
 		ntpClient.sync().then(() => {
@@ -38,24 +48,14 @@
 		}
 	});
 
-	/** Seek using the stored NTP offset: (Date.now() + offset) % duration + buffer */
-	function seekToSyncedPosition() {
-		if (!videoElement) return;
-		const durationSec = videoElement.duration;
-		if (durationSec <= 0) return;
-		videoElement.currentTime = ntpClient.seekPositionSec(durationSec);
-	}
-
 	/**
-	 * Tap handler — matching Swift ContentView:
-	 *   .onTapGesture { viewModel.pause(); showSettings = true }
+	 * Tap handler — opens settings sheet.
 	 * Respects the pauseOnSheetOpen setting.
 	 */
 	function handleVideoClick(e: MouseEvent) {
 		e.stopPropagation();
-		if (videoState.pauseOnSheetOpen && videoElement) {
-			videoElement.pause();
-			videoState.isPlaying = false;
+		if (videoState.pauseOnSheetOpen) {
+			pause();
 		}
 		videoState.isSettingsOpen = true;
 	}
@@ -68,11 +68,7 @@
 	 * the user's close click satisfies the browser autoplay policy.
 	 */
 	export function onResumeFromSettings() {
-		seekToSyncedPosition();
-		if (videoElement) {
-			videoElement.play();
-			videoState.isPlaying = true;
-		}
+		play();
 		if (!hasPlayedOnce) {
 			videoState.isMuted = false;
 			hasPlayedOnce = true;
@@ -80,9 +76,7 @@
 	}
 
 	function handleLoadedMetadata() {
-		if (videoElement) {
-			seekToSyncedPosition();
-		}
+		seekToSyncedPosition();
 	}
 </script>
 
