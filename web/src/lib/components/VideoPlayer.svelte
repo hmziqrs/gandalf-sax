@@ -5,7 +5,7 @@
 
 	let videoElement: HTMLVideoElement;
 	let animationFrame: number;
-	let hasUnmuted = false;
+	let hasPlayedOnce = false;
 
 	onMount(() => {
 		if (!videoElement) return;
@@ -20,30 +20,9 @@
 			seekToSyncedPosition();
 		});
 
-		// Start playback muted (required for autoplay)
-		videoElement
-			.play()
-			.then(() => {
-				videoState.isPlaying = true;
-			})
-			.catch(() => {
-				videoState.isPlaying = false;
-			});
-
-		// Unmute on first user interaction
-		const interactionEvents = ["click", "keydown", "touchstart"] as const;
-		function handleFirstInteraction() {
-			if (!hasUnmuted && videoElement) {
-				videoElement.muted = false;
-				hasUnmuted = true;
-			}
-			interactionEvents.forEach((evt) =>
-				document.removeEventListener(evt, handleFirstInteraction)
-			);
-		}
-		interactionEvents.forEach((evt) =>
-			document.addEventListener(evt, handleFirstInteraction, { once: true })
-		);
+		// Don't autoplay — browser autoplay policy blocks audio without user gesture.
+		// The settings sheet opens on boot; when the user closes it, onResumeFromSettings()
+		// triggers playback with sound (the close click counts as the required user gesture).
 
 		// Track position
 		const trackPosition = () => {
@@ -110,9 +89,16 @@
 	/**
 	 * Called when settings sheet closes — matching Swift:
 	 *   .sheet(onDismiss: { viewModel.syncVideo() })
+	 *
+	 * On first call (boot sheet closing), unmutes and starts playback —
+	 * the user's close click satisfies the browser autoplay policy.
 	 */
 	export function onResumeFromSettings() {
 		syncVideo();
+		if (!hasPlayedOnce && videoElement) {
+			videoElement.muted = false;
+			hasPlayedOnce = true;
+		}
 	}
 
 	function handleLoadedMetadata() {
@@ -136,7 +122,6 @@
 		loop
 		muted
 		playsinline
-		autoplay
 		onloadedmetadata={handleLoadedMetadata}
 		class="w-full h-full object-contain bg-black"
 	></video>

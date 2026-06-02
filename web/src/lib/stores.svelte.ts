@@ -60,7 +60,7 @@ export const videoState = $state<VideoState>({
 	syncSource: SyncSource.DEVICE_CLOCK,
 	currentPosition: 0,
 	duration: 117540, // 117.54 seconds in ms, matching native
-	isSettingsOpen: false,
+	isSettingsOpen: true,
 	isFullscreen: false,
 });
 
