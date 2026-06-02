@@ -5,6 +5,16 @@ class PlayerView: NSView {
     private var _playerLayer: AVPlayerLayer?
     var onTap: (() -> Void)?
 
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        wantsLayer = true
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        wantsLayer = true
+    }
+
     override func makeBackingLayer() -> CALayer {
         let layer = AVPlayerLayer()
         _playerLayer = layer

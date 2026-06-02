@@ -1,6 +1,15 @@
 import AppKit
 
 @main
+struct GandalfMacApp {
+    static func main() {
+        let app = NSApplication.shared
+        let delegate = AppDelegate()
+        app.delegate = delegate
+        app.run()
+    }
+}
+
 class AppDelegate: NSObject, NSApplicationDelegate {
     var mainWindowController: MainWindowController?
 
