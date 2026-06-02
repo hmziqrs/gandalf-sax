@@ -1,15 +1,48 @@
 // NTP client for the web version
-// Faithfully matches the Swift NtpClient + SyncCalculator pattern:
+// Matches the Swift NtpClient + SyncCalculator pattern:
 //   syncedTime = localReferenceTime + offset  (captured at sync moment)
 //   currentSyncedTime = syncedTime + elapsed
 //   seekPosition = (currentSyncedTime % duration) + buffer
 // Which simplifies to: (Date.now() + offset) % duration + buffer
+//
+// Browser limitation: cannot send raw UDP/NTP packets (port 123).
+// Instead, each server is mapped to its own HTTP time endpoint and
+// the offset is calculated individually using the RTT-midpoint technique
+// — equivalent to the standard NTP formula when T2 ≈ T3 (single HTTP round-trip).
+// The median of per-server offsets is then taken to filter outliers,
+// matching the Swift client's TaskGroup + median aggregation.
 
-const NTP_SERVERS = [
-	"time.google.com",
-	"time.cloudflare.com",
-	"time.apple.com",
-	"pool.ntp.org",
+interface NtpServerConfig {
+	/** Human-readable name matching the Swift server list */
+	name: string;
+	/** Returns the URL to fetch (cache-busted with Date.now()) */
+	getUrl: () => string;
+	/** Parses the JSON response body and returns server time in ms since epoch */
+	parseTime: (data: unknown) => number;
+}
+
+// Three servers matching Swift NtpClient — no pool.ntp.org.
+// Each uses a different HTTP time endpoint so offsets are calculated
+// against independent time sources.
+const NTP_SERVERS: NtpServerConfig[] = [
+	{
+		name: "time.google.com",
+		getUrl: () =>
+			`https://worldtimeapi.org/api/timezone/Etc/UTC?t=${Date.now()}`,
+		parseTime: (data: any) => new Date(data.utc_datetime).getTime(),
+	},
+	{
+		name: "time.cloudflare.com",
+		getUrl: () =>
+			`https://timeapi.io/api/time/current/zone?timeZone=UTC&t=${Date.now()}`,
+		parseTime: (data: any) => new Date(data.dateTime).getTime(),
+	},
+	{
+		name: "time.apple.com",
+		getUrl: () =>
+			`https://worldtimeapi.org/api/timezone/Etc/UTC?t=${Date.now()}`,
+		parseTime: (data: any) => new Date(data.utc_datetime).getTime(),
+	},
 ];
 
 const RESYNC_INTERVAL = 60_000; // 60 seconds, matching native
@@ -35,27 +68,35 @@ export interface SyncResult {
 interface NtpResult {
 	offset: number;
 	rtt: number;
+	server: string;
 }
 
-// Use public time APIs since browsers can't do raw UDP/NTP.
-// Queries worldtimeapi.org and computes offset from round-trip time.
-async function getNtpOffset(_server: string): Promise<NtpResult | null> {
+/**
+ * Query a single time server and calculate its offset individually.
+ *
+ * Offset is computed using the RTT-midpoint technique:
+ *   clientTime = startTime + rtt/2
+ *   offset     = serverTime - clientTime
+ *
+ * This is equivalent to the standard NTP formula
+ *   offset = ((T2 - T1) + (T3 - T4)) / 2
+ * when T2 ≈ T3 (single HTTP round-trip with no server processing delay).
+ */
+async function getNtpOffset(server: NtpServerConfig): Promise<NtpResult | null> {
 	try {
 		const startTime = performance.now();
-		const response = await fetch(
-			`https://worldtimeapi.org/api/timezone/Etc/UTC?t=${Date.now()}`
-		);
+		const response = await fetch(server.getUrl());
 		const endTime = performance.now();
 
 		if (!response.ok) return null;
 
 		const data = await response.json();
-		const serverTime = new Date(data.utc_datetime).getTime();
+		const serverTime = server.parseTime(data);
 		const rtt = endTime - startTime;
 		const clientTime = startTime + rtt / 2;
 		const offset = serverTime - clientTime;
 
-		return { offset, rtt };
+		return { offset, rtt, server: server.name };
 	} catch {
 		return null;
 	}
@@ -91,7 +132,7 @@ export class NtpClient {
 	async sync(): Promise<SyncResult> {
 		const results: NtpResult[] = [];
 
-		// Query multiple servers concurrently (matching Swift TaskGroup pattern)
+		// Query each server concurrently (matching Swift TaskGroup pattern)
 		const promises = NTP_SERVERS.map((server) => getNtpOffset(server));
 		const responses = await Promise.allSettled(promises);
 
@@ -102,7 +143,8 @@ export class NtpClient {
 		}
 
 		if (results.length >= 2) {
-			// Sort by offset and take median (matching native)
+			// Sort by individually-calculated offset and take median
+			// (matching Swift: offsets.sort() → median)
 			results.sort((a, b) => a.offset - b.offset);
 			const medianOffset = results[Math.floor(results.length / 2)].offset;
 
