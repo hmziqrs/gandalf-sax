@@ -17,4 +17,8 @@ enum MacAnalytics {
     static func logClickSocialLink(platform: String, url: String) {
         print("[Analytics] click_social_link: \(platform) \(url)")
     }
+
+    static func logToggleBackgroundPlayback(enabled: Bool) {
+        print("[Analytics] toggle_background_playback: \(enabled)")
+    }
 }

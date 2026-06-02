@@ -1,16 +1,29 @@
-import SwiftUI
+import AppKit
 
 @main
-struct GandalfMacApp: App {
-    var body: some Scene {
-        WindowGroup {
-            ContentView()
-                .frame(minWidth: 800, minHeight: 450)
-        }
-        .defaultSize(width: 1280, height: 720)
-        .windowStyle(.hiddenTitleBar)
-        .commands {
-            CommandGroup(replacing: .newItem) {}
+class AppDelegate: NSObject, NSApplicationDelegate {
+    var mainWindowController: MainWindowController?
+
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        applyTheme()
+
+        let windowController = MainWindowController()
+        windowController.showWindow(nil)
+        mainWindowController = windowController
+
+        NSApp.activate(ignoringOtherApps: true)
+    }
+
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        true
+    }
+
+    private func applyTheme() {
+        let mode = UserDefaults.standard.string(forKey: "theme_mode") ?? "system"
+        switch mode {
+        case "light": NSApp.appearance = NSAppearance(named: .aqua)
+        case "dark":  NSApp.appearance = NSAppearance(named: .darkAqua)
+        default:      NSApp.appearance = nil
         }
     }
 }

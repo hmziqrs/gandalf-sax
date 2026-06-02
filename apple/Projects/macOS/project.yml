@@ -33,7 +33,6 @@ targets:
         CODE_SIGN_ENTITLEMENTS: GandalfMac/GandalfMac.entitlements
         CODE_SIGN_IDENTITY: "-"
         CODE_SIGN_STYLE: Automatic
-        ENABLE_PREVIEWS: YES
         GENERATE_INFOPLIST_FILE: NO
         ENABLE_APP_SANDBOX: NO
     info:
