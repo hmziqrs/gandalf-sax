@@ -60,8 +60,8 @@
 
 <TooltipProvider delayDuration={300}>
 	<SheetRoot bind:open onOpenChange={setOpen}>
-		<SheetContent side="bottom" class="max-h-[70vh] overflow-y-auto rounded-t-2xl">
-			<div class="mx-auto max-w-md">
+		<SheetContent side="bottom" class="max-h-[70vh] overflow-y-auto">
+			<div class="mx-auto max-w-sm">
 				<SheetHeader>
 					<div class="flex items-center justify-between">
 						<div class="flex items-center gap-2">
@@ -90,10 +90,10 @@
 					</SheetDescription>
 				</SheetHeader>
 
-				<div class="mt-6 space-y-6 pb-6">
+				<div class="mt-3 space-y-3 pb-3">
 					<!-- Playback Settings -->
 					<div>
-						<h3 class="text-sm font-medium mb-3">Playback</h3>
+						<h3 class="text-sm font-medium mb-2">Playback</h3>
 						<div class="flex gap-2">
 							<Button
 								variant={videoState.pauseOnSheetOpen ? "default" : "outline"}
@@ -112,7 +112,7 @@
 								Keep Playing
 							</Button>
 						</div>
-						<p class="text-muted-foreground text-xs mt-2">
+						<p class="text-muted-foreground text-xs mt-1.5">
 							Whether the video pauses when you tap to open this settings panel
 						</p>
 					</div>
@@ -121,7 +121,7 @@
 
 					<!-- Theme Selection -->
 					<div>
-						<h3 class="text-sm font-medium mb-3">Theme</h3>
+						<h3 class="text-sm font-medium mb-2">Theme</h3>
 						<div class="flex gap-2">
 							<Button
 								variant={currentTheme === "light" ? "default" : "outline"}
@@ -157,8 +157,8 @@
 
 					<!-- Developer Info -->
 					<div>
-						<h3 class="text-sm font-medium mb-3">Developer</h3>
-						<p class="text-muted-foreground text-sm mb-3">hmziqrs</p>
+						<h3 class="text-sm font-medium mb-2">Developer</h3>
+						<p class="text-muted-foreground text-sm mb-2">hmziqrs</p>
 						<div class="flex gap-2">
 							<TooltipRoot>
 								<TooltipTrigger>
@@ -231,7 +231,7 @@
 
 					<!-- Video Source -->
 					<div>
-						<h3 class="text-sm font-medium mb-3">Video Source</h3>
+						<h3 class="text-sm font-medium mb-2">Video Source</h3>
 						<div class="flex gap-2">
 							<Button
 								variant="outline"
