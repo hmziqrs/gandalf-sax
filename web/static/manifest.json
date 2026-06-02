@@ -1,0 +1,17 @@
+{
+	"name": "Epic Sax Gandalf",
+	"short_name": "Gandalf Sax",
+	"description": "Behold the glory of infinite Gandalf! Billions must be entertained!",
+	"start_url": "/",
+	"display": "fullscreen",
+	"orientation": "landscape",
+	"background_color": "#000000",
+	"theme_color": "#E53935",
+	"icons": [
+		{
+			"src": "/logo.png",
+			"sizes": "1024x1024",
+			"type": "image/png"
+		}
+	]
+}

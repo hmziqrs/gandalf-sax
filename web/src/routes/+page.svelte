@@ -1,0 +1,54 @@
+<script lang="ts">
+	import VideoPlayer from "$lib/components/VideoPlayer.svelte";
+	import SettingsSheet from "$lib/components/SettingsSheet.svelte";
+	import { videoState } from "$lib/stores";
+	import { onMount } from "svelte";
+
+	onMount(() => {
+		function handleKeydown(e: KeyboardEvent) {
+			if (e.key === "f" || e.key === "F") {
+				toggleFullscreen();
+			} else if (e.key === "Escape") {
+				if ($videoState.isFullscreen) {
+					document.exitFullscreen();
+					videoState.update((s) => ({ ...s, isFullscreen: false }));
+				}
+			}
+		}
+
+		function handleFullscreenChange() {
+			videoState.update((s) => ({
+				...s,
+				isFullscreen: !!document.fullscreenElement,
+			}));
+		}
+
+		document.addEventListener("keydown", handleKeydown);
+		document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+		return () => {
+			document.removeEventListener("keydown", handleKeydown);
+			document.removeEventListener("fullscreenchange", handleFullscreenChange);
+		};
+	});
+
+	function toggleFullscreen() {
+		if (!document.fullscreenElement) {
+			document.documentElement.requestFullscreen();
+			videoState.update((s) => ({ ...s, isFullscreen: true }));
+		} else {
+			document.exitFullscreen();
+			videoState.update((s) => ({ ...s, isFullscreen: false }));
+		}
+	}
+</script>
+
+<svelte:head>
+	<title>Epic Sax Gandalf</title>
+	<meta name="description" content="Behold the glory of infinite Gandalf! Billions must be entertained!" />
+	<meta name="theme-color" content="#1E1E1E" />
+	<link rel="icon" href="/favicon.png" />
+</svelte:head>
+
+<VideoPlayer />
+<SettingsSheet />
