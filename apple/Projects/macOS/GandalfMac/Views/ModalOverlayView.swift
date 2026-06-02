@@ -1,16 +1,14 @@
 import AppKit
 
-/// A blurred overlay that dims the content behind it.
+/// A dimmed overlay that darkens the content behind it.
 /// Clicking on the overlay background (not on any child view) triggers `onBackgroundClick`.
-class ModalOverlayView: NSVisualEffectView {
+class ModalOverlayView: NSView {
     var onBackgroundClick: (() -> Void)?
 
     init() {
         super.init(frame: .zero)
         wantsLayer = true
-        material = .underWindowBackground
-        blendingMode = .behindWindow
-        state = .active
+        layer?.backgroundColor = NSColor.black.withAlphaComponent(0.45).cgColor
         alphaValue = 0
     }
 

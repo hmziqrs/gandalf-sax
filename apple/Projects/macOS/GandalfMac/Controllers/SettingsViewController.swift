@@ -28,82 +28,132 @@ class SettingsViewController: NSViewController {
     // MARK: - Lifecycle
 
     override func loadView() {
-        view = NSView(frame: NSRect(x: 0, y: 0, width: 420, height: 440))
-        view.wantsLayer = true
+        // Shadow container — must have masksToBounds = false so shadow is visible
+        let container = NSView(frame: NSRect(x: 0, y: 0, width: 400, height: 480))
+        container.wantsLayer = true
+        container.layer?.shadowColor = NSColor.black.withAlphaComponent(0.35).cgColor
+        container.layer?.shadowOpacity = 1
+        container.layer?.shadowOffset = NSSize(width: 0, height: -4)
+        container.layer?.shadowRadius = 20
+
+        // Card — clips its own content to rounded corners
+        let card = NSView()
+        card.wantsLayer = true
+        card.layer?.backgroundColor = NSColor.windowBackgroundColor.cgColor
+        card.layer?.cornerRadius = 14
+        card.layer?.cornerCurve = .continuous
+        card.layer?.masksToBounds = true
+        // Subtle top border highlight
+        card.layer?.borderColor = NSColor.white.withAlphaComponent(0.08).cgColor
+        card.layer?.borderWidth = 1
+        card.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(card)
+
+        NSLayoutConstraint.activate([
+            card.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            card.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            card.topAnchor.constraint(equalTo: container.topAnchor),
+            card.bottomAnchor.constraint(equalTo: container.bottomAnchor),
+        ])
+
+        view = container
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         buildLayout()
+        fitToContent()
     }
 
     // MARK: - Layout
 
+    private func fitToContent() {
+        guard let card = view.subviews.first,
+              let stack = card.subviews.first(where: { $0 is NSStackView }) as? NSStackView
+        else { return }
+        let h = stack.intrinsicContentSize.height
+        guard h > 0 else { return }
+        view.frame.size.height = h
+    }
+
     private func buildLayout() {
+        // Find the card (first subview of the container)
+        guard let card = view.subviews.first else { return }
+
         let stack = NSStackView()
         stack.orientation = .vertical
-        stack.spacing = 10
-        stack.edgeInsets = NSEdgeInsets(top: 16, left: 20, bottom: 16, right: 20)
+        stack.spacing = 12
+        stack.edgeInsets = NSEdgeInsets(top: 20, left: 24, bottom: 24, right: 24)
         stack.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(stack)
+        card.addSubview(stack)
 
         NSLayoutConstraint.activate([
-            stack.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            stack.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            stack.topAnchor.constraint(equalTo: view.topAnchor),
-            stack.bottomAnchor.constraint(lessThanOrEqualTo: view.bottomAnchor),
+            stack.leadingAnchor.constraint(equalTo: card.leadingAnchor),
+            stack.trailingAnchor.constraint(equalTo: card.trailingAnchor),
+            stack.topAnchor.constraint(equalTo: card.topAnchor),
+            stack.bottomAnchor.constraint(lessThanOrEqualTo: card.bottomAnchor),
         ])
 
-        stack.addArrangedSubview(makeSyncStatusRow())
+        // Close button (top-right, on the card)
+        let closeBtn = makeCloseButton()
+        card.addSubview(closeBtn)
+        NSLayoutConstraint.activate([
+            closeBtn.topAnchor.constraint(equalTo: card.topAnchor, constant: 14),
+            closeBtn.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -14),
+            closeBtn.widthAnchor.constraint(equalToConstant: 22),
+            closeBtn.heightAnchor.constraint(equalToConstant: 22),
+        ])
+
+        // Header
         stack.addArrangedSubview(makeHeader())
+        stack.addArrangedSubview(makeSyncStatusRow())
         stack.addArrangedSubview(makeSeparator())
 
-        stack.addArrangedSubview(makeLabel("Theme", bold: true))
+        // Appearance section
+        stack.addArrangedSubview(makeSectionHeader("Appearance", icon: "paintbrush.fill"))
         stack.addArrangedSubview(makeThemeRow())
-
         stack.addArrangedSubview(makeBackgroundPlaybackRow())
         stack.addArrangedSubview(makeSeparator())
 
-        stack.addArrangedSubview(makeLabel("Developer: \(user)", bold: true))
+        // Developer section
+        stack.addArrangedSubview(makeSectionHeader("Developer", icon: "curlybraces"))
         stack.addArrangedSubview(makeDevLinksRow())
         stack.addArrangedSubview(makeSeparator())
 
-        stack.addArrangedSubview(makeLabel("Video source:", bold: true))
+        // Video section
+        stack.addArrangedSubview(makeSectionHeader("Video", icon: "play.rectangle.fill"))
         stack.addArrangedSubview(makeVideoSourceRow())
     }
 
     // MARK: - Components
 
-    private func makeSyncStatusRow() -> NSView {
-        let container = NSStackView()
-        container.orientation = .horizontal
-        container.spacing = 6
-        container.alignment = .centerY
+    private func makeCloseButton() -> NSButton {
+        let button = NSButton()
+        button.image = NSImage(systemSymbolName: "xmark.circle.fill",
+                               accessibilityDescription: "Close")
+        button.imagePosition = .imageOnly
+        button.isBordered = false
+        button.contentTintColor = .tertiaryLabelColor
+        button.target = self
+        button.action = #selector(dismissSettings)
+        button.toolTip = "Close settings"
 
-        let icon = NSImageView(frame: NSRect(x: 0, y: 0, width: 14, height: 14))
-        icon.image = NSImage(systemSymbolName: "sync", accessibilityDescription: "Sync")
-        icon.contentTintColor = syncSource == .ntp ? .systemGreen : .systemGray
-        icon.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        let config = NSImage.SymbolConfiguration(pointSize: 16, weight: .regular)
+        button.symbolConfiguration = config
 
-        let text = NSTextField(labelWithString: syncSource == .ntp ? "NTP synced" : "Device time")
-        text.font = NSFont.systemFont(ofSize: 11)
-        text.textColor = .secondaryLabelColor
-
-        container.addArrangedSubview(icon)
-        container.addArrangedSubview(text)
-        return container
+        return button
     }
 
     private func makeHeader() -> NSView {
         let container = NSStackView()
         container.orientation = .vertical
-        container.spacing = 2
+        container.spacing = 3
 
-        let title = NSTextField(labelWithString: "Behold the glory of infinite Gandalf!")
-        title.font = NSFont.systemFont(ofSize: 13, weight: .semibold)
+        let title = NSTextField(labelWithString: "Epic Sax Gandalf")
+        title.font = NSFont.systemFont(ofSize: 17, weight: .bold)
 
         let subtitle = NSTextField(labelWithString: "Billions must be entertained!")
-        subtitle.font = NSFont.systemFont(ofSize: 11)
+        subtitle.font = NSFont.systemFont(ofSize: 11, weight: .medium)
         subtitle.textColor = .systemRed
 
         container.addArrangedSubview(title)
@@ -111,7 +161,68 @@ class SettingsViewController: NSViewController {
         return container
     }
 
+    private func makeSyncStatusRow() -> NSView {
+        let container = NSStackView()
+        container.orientation = .horizontal
+        container.spacing = 6
+        container.alignment = .centerY
+
+        let indicator = NSView()
+        indicator.wantsLayer = true
+        indicator.layer?.cornerRadius = 4
+        indicator.layer?.backgroundColor = (syncSource == .ntp
+            ? NSColor.systemGreen
+            : NSColor.systemGray).cgColor
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            indicator.widthAnchor.constraint(equalToConstant: 8),
+            indicator.heightAnchor.constraint(equalToConstant: 8),
+        ])
+        indicator.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+
+        let text = NSTextField(labelWithString: syncSource == .ntp ? "NTP Synced" : "Device Time")
+        text.font = NSFont.systemFont(ofSize: 11, weight: .medium)
+        text.textColor = syncSource == .ntp ? .systemGreen : .secondaryLabelColor
+
+        container.addArrangedSubview(indicator)
+        container.addArrangedSubview(text)
+
+        let spacer = NSView()
+        container.addArrangedSubview(spacer)
+
+        return container
+    }
+
+    private func makeSectionHeader(_ text: String, icon: String) -> NSView {
+        let container = NSStackView()
+        container.orientation = .horizontal
+        container.spacing = 6
+        container.alignment = .centerY
+
+        let iconView = NSImageView()
+        let config = NSImage.SymbolConfiguration(pointSize: 11, weight: .semibold)
+        iconView.image = NSImage(systemSymbolName: icon,
+                                 accessibilityDescription: nil)?.withSymbolConfiguration(config)
+        iconView.contentTintColor = .secondaryLabelColor
+        iconView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+
+        let label = NSTextField(labelWithString: text)
+        label.font = NSFont.systemFont(ofSize: 12, weight: .semibold)
+        label.textColor = .secondaryLabelColor
+
+        container.addArrangedSubview(iconView)
+        container.addArrangedSubview(label)
+
+        let spacer = NSView()
+        container.addArrangedSubview(spacer)
+
+        return container
+    }
+
     private func makeThemeRow() -> NSView {
+        let container = NSStackView()
+        container.orientation = .horizontal
+
         let segmented = NSSegmentedControl(
             labels: ["Light", "Dark", "System"],
             trackingMode: .selectOne,
@@ -120,7 +231,12 @@ class SettingsViewController: NSViewController {
         )
         segmented.selectedSegment = currentThemeSegmentIndex()
         segmented.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        return segmented
+        container.addArrangedSubview(segmented)
+
+        let spacer = NSView()
+        container.addArrangedSubview(spacer)
+
+        return container
     }
 
     private func makeBackgroundPlaybackRow() -> NSView {
@@ -140,15 +256,20 @@ class SettingsViewController: NSViewController {
         container.spacing = 8
 
         let icons = ["globe", "chevron.left.forwardslash.chevron.right", "xmark", "paperplane"]
+        let tooltips = ["Website", "GitHub", "X (Twitter)", "Telegram"]
 
         for (index, icon) in icons.enumerated() {
-            let button = NSButton(frame: NSRect(x: 0, y: 0, width: 36, height: 36))
-            button.image = NSImage(systemSymbolName: icon, accessibilityDescription: nil)
-            button.bezelStyle = .rounded
+            let button = NSButton()
+            let config = NSImage.SymbolConfiguration(pointSize: 14, weight: .regular)
+            button.image = NSImage(systemSymbolName: icon,
+                                   accessibilityDescription: nil)?.withSymbolConfiguration(config)
+            button.imagePosition = .imageOnly
+            button.bezelStyle = .accessoryBarAction
             button.isBordered = true
             button.tag = index
             button.target = self
             button.action = #selector(openDevLink(_:))
+            button.toolTip = tooltips[index]
             container.addArrangedSubview(button)
         }
 
@@ -160,28 +281,34 @@ class SettingsViewController: NSViewController {
         container.orientation = .horizontal
         container.spacing = 8
 
-        let linkButton = NSButton(title: "Original video", target: self, action: #selector(openVideoLink(_:)))
-        linkButton.bezelStyle = .rounded
+        let linkButton = NSButton(title: "Original Video",
+                                  target: self,
+                                  action: #selector(openVideoLink(_:)))
+        linkButton.bezelStyle = .accessoryBarAction
+        let playConfig = NSImage.SymbolConfiguration(pointSize: 12, weight: .regular)
+        linkButton.image = NSImage(systemSymbolName: "play.rectangle",
+                                   accessibilityDescription: nil)?.withSymbolConfiguration(playConfig)
+        linkButton.imagePosition = .imageLeft
         container.addArrangedSubview(linkButton)
 
-        let shareButton = NSButton(
-            image: NSImage(systemSymbolName: "square.and.arrow.up", accessibilityDescription: "Share")!,
-            target: self,
-            action: #selector(shareLink(_:))
-        )
-        shareButton.bezelStyle = .rounded
+        let shareButton = NSButton()
+        let shareConfig = NSImage.SymbolConfiguration(pointSize: 14, weight: .regular)
+        shareButton.image = NSImage(systemSymbolName: "square.and.arrow.up",
+                                    accessibilityDescription: "Share")?.withSymbolConfiguration(shareConfig)
+        shareButton.imagePosition = .imageOnly
+        shareButton.bezelStyle = .accessoryBarAction
+        shareButton.target = self
+        shareButton.action = #selector(shareLink(_:))
+        shareButton.toolTip = "Share"
         container.addArrangedSubview(shareButton)
+
+        let spacer = NSView()
+        container.addArrangedSubview(spacer)
 
         return container
     }
 
     // MARK: - Helpers
-
-    private func makeLabel(_ text: String, bold: Bool = false) -> NSTextField {
-        let label = NSTextField(labelWithString: text)
-        label.font = bold ? NSFont.systemFont(ofSize: 12, weight: .semibold) : NSFont.systemFont(ofSize: 12)
-        return label
-    }
 
     private func makeSeparator() -> NSBox {
         let sep = NSBox()
@@ -240,10 +367,9 @@ class SettingsViewController: NSViewController {
         }
     }
 
-    // MARK: - Sheet dismiss
+    // MARK: - Dismiss
 
     @objc func dismissSettings() {
-        dismiss(self)
         onDismiss()
     }
 }
