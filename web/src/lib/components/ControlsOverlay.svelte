@@ -54,6 +54,8 @@
 
 {#if visible}
 	<div
+		role="region"
+		aria-label="Video controls"
 		class="controls-overlay"
 		onmouseenter={handleMouseEnter}
 		onmouseleave={handleMouseLeave}
