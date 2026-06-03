@@ -5,7 +5,7 @@ import GandalfShared
 class MainViewController: NSViewController {
     private let viewModel: VideoViewModel
     private var playerView: PlayerView!
-    private var hintView: HintOverlayView?
+    private var controlsOverlay: VideoControlsOverlay?
 
     // Overlay modal state
     private var overlayView: ModalOverlayView?
@@ -31,7 +31,7 @@ class MainViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupPlayerView()
-        setupHintOverlay()
+        setupControlsOverlay()
         setupKeyMonitor()
 
         MacAnalytics.logViewHomeScreen()
@@ -47,6 +47,12 @@ class MainViewController: NSViewController {
         playerView.onTap = { [weak self] in
             self?.handleVideoTap()
         }
+        playerView.onMouseMove = { [weak self] in
+            self?.controlsOverlay?.show()
+        }
+        playerView.onMouseIdle = { [weak self] in
+            self?.controlsOverlay?.hide()
+        }
         view.addSubview(playerView)
         NSLayoutConstraint.activate([
             playerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -56,15 +62,26 @@ class MainViewController: NSViewController {
         ])
     }
 
-    private func setupHintOverlay() {
-        let hint = HintOverlayView()
-        hint.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(hint)
+    private func setupControlsOverlay() {
+        let controls = VideoControlsOverlay()
+        controls.translatesAutoresizingMaskIntoConstraints = false
+
+        controls.onVolumeChange = { [weak self] volume in
+            self?.viewModel.player.volume = volume
+        }
+
+        controls.onToggleFullscreen = { [weak self] in
+            self?.view.window?.toggleFullScreen(nil)
+        }
+
+        view.addSubview(controls)
         NSLayoutConstraint.activate([
-            hint.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -8),
-            hint.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -8),
+            controls.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            controls.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            controls.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -16),
         ])
-        hintView = hint
+
+        controlsOverlay = controls
     }
 
     // MARK: - Actions

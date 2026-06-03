@@ -67,6 +67,10 @@ class VideoViewModel: ObservableObject {
         player.pause()
     }
 
+    func play() {
+        player.play()
+    }
+
     func syncVideo() {
         Task {
             if syncedTimeMicros == 0 {
