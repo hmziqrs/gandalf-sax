@@ -6,12 +6,12 @@
 		toggleMute,
 		setVolume,
 	} from "$lib/stores.svelte";
-	import { Button } from "$lib/components/ui/button/index.js";
+	import { Button } from "$lib/components/ui/button";
 	import {
 		Root as TooltipRoot,
 		Trigger as TooltipTrigger,
 		Provider as TooltipProvider,
-	} from "$lib/components/ui/tooltip/index.js";
+	} from "$lib/components/ui/tooltip";
 	import TooltipContent from "$lib/components/ui/tooltip/TooltipContent.svelte";
 	import {
 		Maximize,
@@ -112,8 +112,8 @@
 							{videoState.isMuted ? "Unmute" : "Mute"}
 						</TooltipContent>
 					</TooltipRoot>
-					<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-				<div class="volume-slider-wrapper" role="slider" onclick={handleVolumeClick}>
+				<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
+				<div class="volume-slider-wrapper" role="slider" tabindex="0" aria-valuenow={videoState.volume} aria-valuemin="0" aria-valuemax="1" onclick={handleVolumeClick}>
 						<input
 							type="range"
 							min="0"

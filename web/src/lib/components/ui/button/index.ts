@@ -34,6 +34,7 @@ type ButtonProps = HTMLButtonAttributes & {
 	size?: Size;
 	children?: Snippet;
 	class?: string;
+	href?: string;
 };
 
 export { default as Button } from "./Button.svelte";

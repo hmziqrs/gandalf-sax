@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button } from "$lib/components/ui/button/index.js";
+	import { Button } from "$lib/components/ui/button";
 	import GitHubIcon from "$lib/components/icons/GitHub.svelte";
 	import XBrandIcon from "$lib/components/icons/XBrand.svelte";
 	import {

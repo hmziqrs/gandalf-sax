@@ -2,7 +2,7 @@
 	import { getThemeMode, setThemeMode } from "$lib/stores.svelte";
 	import type { ThemeMode } from "$lib/stores.svelte";
 	import { Sun, Moon, Monitor } from "@lucide/svelte";
-	import { Button } from "$lib/components/ui/button/index.js";
+	import { Button } from "$lib/components/ui/button";
 
 	function cycleTheme() {
 		const mode = getThemeMode();

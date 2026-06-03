@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button } from "$lib/components/ui/button/index.js";
+	import { Button } from "$lib/components/ui/button";
 	import ThemeToggle from "./ThemeToggle.svelte";
 	import { Menu, X, Music } from "@lucide/svelte";
 	import { page } from "$app/state";

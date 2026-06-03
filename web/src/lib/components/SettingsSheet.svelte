@@ -2,13 +2,13 @@
   import {
     Root as SheetRoot,
     Close as SheetClose,
-  } from '$lib/components/ui/sheet/index.js';
+  } from '$lib/components/ui/sheet';
   import SheetContent from '$lib/components/ui/sheet/SheetContent.svelte';
   import SheetHeader from '$lib/components/ui/sheet/SheetHeader.svelte';
   import SheetTitle from '$lib/components/ui/sheet/SheetTitle.svelte';
   import SheetDescription from '$lib/components/ui/sheet/SheetDescription.svelte';
-  import { Button } from '$lib/components/ui/button/index.js';
-  import { Separator } from '$lib/components/ui/separator/index.js';
+  import { Button } from '$lib/components/ui/button';
+  import { Separator } from '$lib/components/ui/separator';
   import {
     Sun,
     Moon,
@@ -22,7 +22,6 @@
   import XBrandIcon from '$lib/components/icons/XBrand.svelte';
   import {
     videoState,
-    ntpClient,
     getThemeMode,
     setThemeMode,
     pause,

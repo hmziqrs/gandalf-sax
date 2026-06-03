@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Separator } from "$lib/components/ui/separator/index.js";
+	import { Separator } from "$lib/components/ui/separator";
 	import GitHubIcon from "$lib/components/icons/GitHub.svelte";
 	import XBrandIcon from "$lib/components/icons/XBrand.svelte";
 	import { Globe } from "@lucide/svelte";
