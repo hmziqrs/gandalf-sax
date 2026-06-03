@@ -172,38 +172,36 @@
 
       <!-- Developer Footer -->
       <div class="dev-footer">
-        <div class="dev-pill">
-          <span class="dev-text">Built by <strong class="dev-name">hmziqrs</strong></span>
-          <div class="dev-sep"></div>
-          <div class="dev-links">
-            <a
-              href="https://hmziq.rs"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="dev-link"
-              aria-label="Website"
-            >
-              <Globe size={14} />
-            </a>
-            <a
-              href="https://github.com/hmziqrs"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="dev-link"
-              aria-label="GitHub"
-            >
-              <GitHubIcon size={14} />
-            </a>
-            <a
-              href="https://x.com/hmziqrs"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="dev-link"
-              aria-label="X (Twitter)"
-            >
-              <XBrandIcon size={14} />
-            </a>
-          </div>
+        <span class="dev-text">Built by <strong class="dev-name">hmziqrs</strong></span>
+        <div class="dev-sep"></div>
+        <div class="dev-links">
+          <a
+            href="https://hmziq.rs"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="dev-link"
+            aria-label="Website"
+          >
+            <Globe size={14} />
+          </a>
+          <a
+            href="https://github.com/hmziqrs"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="dev-link"
+            aria-label="GitHub"
+          >
+            <GitHubIcon size={14} />
+          </a>
+          <a
+            href="https://x.com/hmziqrs"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="dev-link"
+            aria-label="X (Twitter)"
+          >
+            <XBrandIcon size={14} />
+          </a>
         </div>
       </div>
     </div>
@@ -234,7 +232,6 @@
     --sheet-scroll-thumb: oklch(0 0 0 / 0.1);
     --sheet-pill-bg: oklch(0 0 0 / 0.02);
     --sheet-pill-border: oklch(0 0 0 / 0.05);
-    --sheet-sep: oklch(0 0 0 / 0.08);
   }
 
   :global(.dark) {
@@ -259,7 +256,6 @@
     --sheet-scroll-thumb: oklch(1 0 0 / 0.1);
     --sheet-pill-bg: oklch(1 0 0 / 0.03);
     --sheet-pill-border: oklch(1 0 0 / 0.05);
-    --sheet-sep: oklch(1 0 0 / 0.08);
   }
 
   /* ── Frosted glass container ── */
@@ -492,18 +488,11 @@
 
   /* Developer footer */
   .dev-footer {
-    padding-top: 0.25rem;
-  }
-
-  .dev-pill {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.75rem;
-    padding: 0.5rem 1rem;
-    border-radius: 100px;
-    background: var(--sheet-pill-bg);
-    border: 1px solid var(--sheet-pill-border);
+    padding-top: 0.5rem;
   }
 
   .dev-text {
@@ -519,13 +508,13 @@
   .dev-sep {
     width: 1px;
     height: 0.875rem;
-    background: var(--sheet-sep);
+    background: var(--sheet-card-border);
   }
 
   .dev-links {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.6rem;
   }
 
   .dev-link {
