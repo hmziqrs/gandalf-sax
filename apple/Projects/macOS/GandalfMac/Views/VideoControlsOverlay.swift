@@ -70,32 +70,24 @@ final class VideoControlsOverlay: NSView {
         volumeSlider.doubleValue = 1
         volumeSlider.isContinuous = true
         volumeSlider.controlSize = .small
-        volumeSlider.setContentHuggingPriority(.defaultLow, for: .horizontal)
         volumeSlider.target = self
         volumeSlider.action = #selector(volumeSliderMoved)
+        NSLayoutConstraint.activate([
+            volumeSlider.widthAnchor.constraint(equalToConstant: 100),
+        ])
 
         let icon = NSImageView()
         icon.image = NSImage(systemSymbolName: "speaker.wave.2.fill",
                              accessibilityDescription: "Volume")
         icon.contentTintColor = .white
         icon.translatesAutoresizingMaskIntoConstraints = false
-        icon.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         NSLayoutConstraint.activate([
-            icon.widthAnchor.constraint(equalToConstant: 18),
-            icon.heightAnchor.constraint(equalToConstant: 18),
+            icon.widthAnchor.constraint(equalToConstant: 16),
+            icon.heightAnchor.constraint(equalToConstant: 16),
         ])
 
-        // Wrap icon + slider together
-        let container = NSStackView()
-        container.orientation = .horizontal
-        container.spacing = 6
-        container.alignment = .centerY
-        container.translatesAutoresizingMaskIntoConstraints = false
-        container.addArrangedSubview(icon)
-        container.addArrangedSubview(volumeSlider)
-        container.setContentHuggingPriority(.defaultLow, for: .horizontal)
-
-        stackView.addArrangedSubview(container)
+        stackView.addArrangedSubview(icon)
+        stackView.addArrangedSubview(volumeSlider)
     }
 
     // MARK: - Fullscreen Button

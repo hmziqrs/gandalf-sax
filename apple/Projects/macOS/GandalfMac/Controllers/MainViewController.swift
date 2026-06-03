@@ -76,7 +76,6 @@ class MainViewController: NSViewController {
 
         view.addSubview(controls)
         NSLayoutConstraint.activate([
-            controls.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             controls.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             controls.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -16),
         ])
