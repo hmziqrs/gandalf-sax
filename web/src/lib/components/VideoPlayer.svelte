@@ -48,6 +48,13 @@
 		}
 	});
 
+	// Sync volume level to the video element reactively
+	$effect(() => {
+		if (videoElement) {
+			videoElement.volume = videoState.volume;
+		}
+	});
+
 	/**
 	 * Tap handler — opens settings sheet.
 	 * Respects the pauseOnSheetOpen setting.

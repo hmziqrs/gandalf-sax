@@ -12,6 +12,8 @@ export interface VideoState {
 	isSettingsOpen: boolean;
 	isFullscreen: boolean;
 	isMuted: boolean;
+	/** Volume level 0–1 */
+	volume: number;
 	/** Whether clicking the video pauses it before opening settings */
 	pauseOnSheetOpen: boolean;
 }
@@ -60,6 +62,7 @@ export const videoState = $state<VideoState>({
 	isSettingsOpen: true,
 	isFullscreen: false,
 	isMuted: true,
+	volume: 1,
 	pauseOnSheetOpen: true,
 });
 
@@ -105,5 +108,24 @@ export function toggleFullscreen() {
 }
 
 export function toggleMute() {
-	videoState.isMuted = !videoState.isMuted;
+	if (videoState.isMuted || videoState.volume === 0) {
+		videoState.isMuted = false;
+		videoState.volume = _prevVolume > 0 ? _prevVolume : 1;
+	} else {
+		_prevVolume = videoState.volume;
+		videoState.isMuted = true;
+		videoState.volume = 0;
+	}
+}
+
+let _prevVolume = 1;
+
+export function setVolume(v: number) {
+	videoState.volume = v;
+	if (v === 0) {
+		videoState.isMuted = true;
+	} else {
+		videoState.isMuted = false;
+		_prevVolume = v;
+	}
 }

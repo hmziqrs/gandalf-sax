@@ -1,15 +1,24 @@
 @import "tailwindcss";
 
 @font-face {
-	font-family: "Inter";
+	font-family: "Plus Jakarta Sans";
 	font-style: normal;
-	font-weight: 100 900;
+	font-weight: 200 800;
 	font-display: swap;
-	src: url("https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfAZ9hiA.woff2") format("woff2");
+	src: url("https://fonts.gstatic.com/s/plusjakartasans/v8/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20zM.woff2") format("woff2");
+}
+
+@font-face {
+	font-family: "JetBrains Mono";
+	font-style: normal;
+	font-weight: 100 800;
+	font-display: swap;
+	src: url("https://fonts.gstatic.com/s/jetbrainsmono/v21/tDbY2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKxjPVmUsaaDhw.woff2") format("woff2");
 }
 
 @theme {
-	--font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+	--font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+	--font-mono: "JetBrains Mono", ui-monospace, monospace;
 	--color-background: oklch(1 0 0);
 	--color-foreground: oklch(0.145 0 0);
 	--color-card: oklch(1 0 0);
@@ -57,6 +66,9 @@
 		@apply border-border;
 	}
 	body {
-		@apply bg-background text-foreground;
+		@apply bg-background text-foreground font-sans;
+	}
+	code, pre, kbd, samp, monospace {
+		font-family: var(--font-mono);
 	}
 }

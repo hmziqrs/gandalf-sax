@@ -10,3 +10,4 @@ type SeparatorProps = HTMLAttributes<HTMLDivElement> & {
 };
 
 export { type SeparatorProps };
+export { default as Separator } from "./Separator.svelte";
