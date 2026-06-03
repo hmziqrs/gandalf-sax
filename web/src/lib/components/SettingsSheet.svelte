@@ -15,11 +15,13 @@
 		Send,
 		ExternalLink,
 		Share2,
+		Maximize,
+		Minimize,
 		X,
 	} from "@lucide/svelte";
 	import GitHubIcon from "$lib/components/icons/GitHub.svelte";
 	import XBrandIcon from "$lib/components/icons/XBrand.svelte";
-	import { videoState, ntpClient, getThemeMode, setThemeMode, pause, play } from "$lib/stores.svelte";
+	import { videoState, ntpClient, getThemeMode, setThemeMode, pause, play, toggleFullscreen } from "$lib/stores.svelte";
 	import type { ThemeMode } from "$lib/stores.svelte";
 	import {
 		Root as TooltipRoot,
@@ -256,6 +258,22 @@
 							>
 								<Share2 size={16} />
 								Share
+							</Button>
+						</div>
+						<div class="flex gap-2 mt-2">
+							<Button
+								variant="outline"
+								size="sm"
+								onclick={toggleFullscreen}
+								class="flex-1 gap-2"
+							>
+							{#if videoState.isFullscreen}
+								<Minimize size={16} />
+								Exit Fullscreen
+							{:else}
+								<Maximize size={16} />
+								Fullscreen
+							{/if}
 							</Button>
 						</div>
 					</div>
