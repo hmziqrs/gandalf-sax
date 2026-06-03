@@ -6,6 +6,7 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
+		"postbuild": "npx svelte-sitemap",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -20,6 +21,7 @@
 		"@types/node": "^25.9.1",
 		"svelte": "^5.55.2",
 		"svelte-check": "^4.4.6",
+		"svelte-sitemap": "^3.2.0",
 		"tailwindcss": "^4.3.0",
 		"typescript": "^6.0.2",
 		"vite": "^8.0.7"

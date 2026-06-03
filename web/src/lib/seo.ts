@@ -1,7 +1,7 @@
 export const SITE = {
 	name: 'Epic Sax Gandalf',
 	tagline: 'Billions must be entertained!',
-	url: 'https://sax.hmziq.rs',
+	url: 'https://gandalf.hmziq.xyz',
 	creator: 'hmziqrs',
 	twitter: '@hmziqrs',
 	ogImage: '/og-image.png',
