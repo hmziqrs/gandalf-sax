@@ -119,6 +119,14 @@ export function toggleMute() {
 }
 
 let _prevVolume = 1;
+let _hasPlayedOnce = false;
+
+/** Unmute on first user interaction (satisfies browser autoplay policy). */
+export function firstPlayUnmute() {
+	if (_hasPlayedOnce) return;
+	videoState.isMuted = false;
+	_hasPlayedOnce = true;
+}
 
 export function setVolume(v: number) {
 	videoState.volume = v;

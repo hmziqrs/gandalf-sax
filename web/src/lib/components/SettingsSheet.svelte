@@ -24,6 +24,7 @@
     setThemeMode,
     pause,
     play,
+    firstPlayUnmute,
   } from '$lib/stores.svelte';
   import type { ThemeMode } from '$lib/stores.svelte';
 
@@ -118,7 +119,7 @@
                   ? "bg-gradient-to-br from-primary to-primary/80 border-transparent text-primary-foreground shadow-[0_2px_8px_oklch(0.52_0.2_30/0.25)]"
                   : "border border-border bg-muted/30 text-muted-foreground hover:border-foreground/20 hover:text-foreground"
               )}
-              onclick={() => { videoState.pauseOnSheetOpen = false; play(); }}
+              onclick={() => { videoState.pauseOnSheetOpen = false; play(); firstPlayUnmute(); }}
             >
               Keep Playing
             </button>

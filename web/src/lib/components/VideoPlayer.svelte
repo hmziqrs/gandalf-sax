@@ -7,12 +7,12 @@
 		seekToSyncedPosition,
 		play,
 		pause,
+		firstPlayUnmute,
 	} from "$lib/stores.svelte";
 	import ControlsOverlay from "./ControlsOverlay.svelte";
 
 	let videoElement: HTMLVideoElement;
 	let animationFrame: number;
-	let hasPlayedOnce = false;
 
 	onMount(() => {
 		if (!videoElement) return;
@@ -76,10 +76,7 @@
 	 */
 	export function onResumeFromSettings() {
 		play();
-		if (!hasPlayedOnce) {
-			videoState.isMuted = false;
-			hasPlayedOnce = true;
-		}
+		firstPlayUnmute();
 	}
 
 	function handleLoadedMetadata() {
