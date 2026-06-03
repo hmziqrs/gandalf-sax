@@ -1,18 +1,25 @@
 <script>
 	import Seo from "$lib/components/Seo.svelte";
+	import PageHeader from "$lib/components/PageHeader.svelte";
 	import { pages } from "$lib/seo";
 </script>
 
 <Seo seo={pages['/terms']} />
 
-<div class="mx-auto max-w-3xl px-4 py-12">
-	<h1 class="text-3xl font-bold md:text-4xl">Terms of Service</h1>
-	<p class="mt-2 text-sm text-muted-foreground">Last updated: June 3, 2026</p>
+<PageHeader
+	eyebrow="Legal"
+	title="Terms of Service"
+	meta="Last updated: June 3, 2026"
+/>
 
-	<div class="mt-6 space-y-6 leading-relaxed text-muted-foreground">
+<div class="mx-auto max-w-3xl px-4 py-14">
+	<div class="space-y-10 leading-relaxed text-muted-foreground">
 		<section>
-			<h2 class="text-lg font-semibold text-foreground">Acceptance</h2>
-			<p class="mt-2">
+			<h2 class="flex items-center gap-3 text-lg font-semibold text-foreground">
+				<span class="font-mono text-sm text-primary">01</span>
+				Acceptance
+			</h2>
+			<p class="mt-3">
 				By accessing and using Epic Sax Gandalf, you agree to be bound by these
 				Terms of Service. If you do not agree with any part of these terms, you
 				should not use the application.
@@ -20,8 +27,11 @@
 		</section>
 
 		<section>
-			<h2 class="text-lg font-semibold text-foreground">Use of Service</h2>
-			<p class="mt-2">
+			<h2 class="flex items-center gap-3 text-lg font-semibold text-foreground">
+				<span class="font-mono text-sm text-primary">02</span>
+				Use of Service
+			</h2>
+			<p class="mt-3">
 				Epic Sax Gandalf is a free entertainment application provided as-is. You
 				may use it for personal, non-commercial entertainment purposes. The
 				service is provided without any guarantees of availability, reliability,
@@ -30,8 +40,11 @@
 		</section>
 
 		<section>
-			<h2 class="text-lg font-semibold text-foreground">Intellectual Property</h2>
-			<p class="mt-2">
+			<h2 class="flex items-center gap-3 text-lg font-semibold text-foreground">
+				<span class="font-mono text-sm text-primary">03</span>
+				Intellectual Property
+			</h2>
+			<p class="mt-3">
 				The application code is open source under the terms of its repository
 				license. The video content features a meme based on the character Gandalf
 				from "The Lord of the Rings." The original video is credited to its
@@ -49,8 +62,11 @@
 		</section>
 
 		<section>
-			<h2 class="text-lg font-semibold text-foreground">Limitation of Liability</h2>
-			<p class="mt-2">
+			<h2 class="flex items-center gap-3 text-lg font-semibold text-foreground">
+				<span class="font-mono text-sm text-primary">04</span>
+				Limitation of Liability
+			</h2>
+			<p class="mt-3">
 				The application is provided "as is" without warranty of any kind. In no
 				event shall the developer be liable for any damages arising from the use
 				of this application. Use at your own risk.
@@ -58,8 +74,11 @@
 		</section>
 
 		<section>
-			<h2 class="text-lg font-semibold text-foreground">Governing Law</h2>
-			<p class="mt-2">
+			<h2 class="flex items-center gap-3 text-lg font-semibold text-foreground">
+				<span class="font-mono text-sm text-primary">05</span>
+				Governing Law
+			</h2>
+			<p class="mt-3">
 				These terms are governed by and construed in accordance with applicable
 				federal and state laws, without regard to conflict of law provisions.
 				Any disputes arising from the use of this application shall be resolved
@@ -73,8 +92,11 @@
 		</section>
 
 		<section>
-			<h2 class="text-lg font-semibold text-foreground">Changes to Terms</h2>
-			<p class="mt-2">
+			<h2 class="flex items-center gap-3 text-lg font-semibold text-foreground">
+				<span class="font-mono text-sm text-primary">06</span>
+				Changes to Terms
+			</h2>
+			<p class="mt-3">
 				We reserve the right to modify these terms at any time. Changes will be
 				reflected on this page with an updated "Last updated" date. Continued use
 				of the application after changes constitutes acceptance of the new terms.
@@ -82,8 +104,11 @@
 		</section>
 
 		<section>
-			<h2 class="text-lg font-semibold text-foreground">Contact</h2>
-			<p class="mt-2">
+			<h2 class="flex items-center gap-3 text-lg font-semibold text-foreground">
+				<span class="font-mono text-sm text-primary">07</span>
+				Contact
+			</h2>
+			<p class="mt-3">
 				For questions about these terms, reach out via the
 				<a
 					href="/contact"

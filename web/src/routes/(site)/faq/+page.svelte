@@ -1,5 +1,6 @@
 <script>
 	import Seo from "$lib/components/Seo.svelte";
+	import PageHeader from "$lib/components/PageHeader.svelte";
 	import { pages } from "$lib/seo";
 	import { Button } from "$lib/components/ui/button";
 
@@ -44,22 +45,30 @@
 
 <Seo seo={pages['/faq']} />
 
-<div class="mx-auto max-w-3xl px-4 py-12">
-	<h1 class="text-3xl font-bold md:text-4xl">Frequently Asked Questions</h1>
-	<p class="mt-2 text-muted-foreground">
-		Everything you wanted to know about Epic Sax Gandalf (and maybe a few things you didn't).
-	</p>
+<PageHeader
+	eyebrow="FAQ"
+	title="Frequently Asked Questions"
+	lead="Everything you wanted to know about Epic Sax Gandalf (and maybe a few things you didn't)."
+/>
 
-	<div class="mt-8 divide-y divide-border">
-		{#each faqs as faq}
-			<div class="py-6">
-				<h2 class="text-lg font-semibold text-foreground">{faq.question}</h2>
-				<p class="mt-2 leading-relaxed text-muted-foreground">{faq.answer}</p>
+<div class="mx-auto max-w-3xl px-4 py-14">
+	<div class="divide-y divide-border border-y border-border">
+		{#each faqs as faq, i}
+			<div class="group flex gap-5 py-7">
+				<span
+					class="mt-0.5 font-mono text-sm text-muted-foreground/70 transition-colors group-hover:text-primary"
+				>
+					0{i + 1}
+				</span>
+				<div>
+					<h2 class="text-lg font-semibold text-foreground">{faq.question}</h2>
+					<p class="mt-2 leading-relaxed text-muted-foreground">{faq.answer}</p>
+				</div>
 			</div>
 		{/each}
 	</div>
 
-	<div class="mt-10 flex flex-col gap-3 sm:flex-row">
+	<div class="mt-12 flex flex-col gap-3 sm:flex-row">
 		<a href="/">
 			<Button>Watch the Video</Button>
 		</a>

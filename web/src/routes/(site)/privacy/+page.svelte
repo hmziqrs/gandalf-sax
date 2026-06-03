@@ -1,18 +1,25 @@
 <script>
 	import Seo from "$lib/components/Seo.svelte";
+	import PageHeader from "$lib/components/PageHeader.svelte";
 	import { pages } from "$lib/seo";
 </script>
 
 <Seo seo={pages['/privacy']} />
 
-<div class="mx-auto max-w-3xl px-4 py-12">
-	<h1 class="text-3xl font-bold md:text-4xl">Privacy Policy</h1>
-	<p class="mt-2 text-sm text-muted-foreground">Last updated: June 3, 2026</p>
+<PageHeader
+	eyebrow="Legal"
+	title="Privacy Policy"
+	meta="Last updated: June 3, 2026"
+/>
 
-	<div class="mt-6 space-y-6 leading-relaxed text-muted-foreground">
+<div class="mx-auto max-w-3xl px-4 py-14">
+	<div class="space-y-10 leading-relaxed text-muted-foreground">
 		<section>
-			<h2 class="text-lg font-semibold text-foreground">Information We Collect</h2>
-			<p class="mt-2">
+			<h2 class="flex items-center gap-3 text-lg font-semibold text-foreground">
+				<span class="font-mono text-sm text-primary">01</span>
+				Information We Collect
+			</h2>
+			<p class="mt-3">
 				Epic Sax Gandalf is a simple entertainment application. We do not
 				collect, store, or transmit any personal information. The app does not
 				require an account, does not use cookies for tracking, does not
@@ -21,8 +28,11 @@
 		</section>
 
 		<section>
-			<h2 class="text-lg font-semibold text-foreground">Local Storage</h2>
-			<p class="mt-2">
+			<h2 class="flex items-center gap-3 text-lg font-semibold text-foreground">
+				<span class="font-mono text-sm text-primary">02</span>
+				Local Storage
+			</h2>
+			<p class="mt-3">
 				The application stores your theme preference (light, dark, or system)
 				locally in your browser's <strong class="text-foreground">localStorage</strong>
 				under the key <code class="rounded bg-muted px-1.5 py-0.5 text-sm text-foreground">gandalf_theme</code>.
@@ -38,8 +48,11 @@
 		</section>
 
 		<section>
-			<h2 class="text-lg font-semibold text-foreground">NTP Synchronization</h2>
-			<p class="mt-2">
+			<h2 class="flex items-center gap-3 text-lg font-semibold text-foreground">
+				<span class="font-mono text-sm text-primary">03</span>
+				NTP Synchronization
+			</h2>
+			<p class="mt-3">
 				To synchronize the video playback across all viewers, the app connects
 				to public Network Time Protocol (NTP) servers. This connection is used
 				only to determine the current time with high precision. These servers never
@@ -48,8 +61,11 @@
 		</section>
 
 		<section>
-			<h2 class="text-lg font-semibold text-foreground">Third-Party Services</h2>
-			<p class="mt-2">
+			<h2 class="flex items-center gap-3 text-lg font-semibold text-foreground">
+				<span class="font-mono text-sm text-primary">04</span>
+				Third-Party Services
+			</h2>
+			<p class="mt-3">
 				The app links to external content (such as the original video on
 				YouTube). These external services have their own privacy policies, which
 				we encourage you to review. We don't control how third-party
@@ -58,13 +74,16 @@
 		</section>
 
 		<section>
-			<h2 class="text-lg font-semibold text-foreground">GDPR Compliance (EU)</h2>
-			<p class="mt-2">
+			<h2 class="flex items-center gap-3 text-lg font-semibold text-foreground">
+				<span class="font-mono text-sm text-primary">05</span>
+				GDPR Compliance (EU)
+			</h2>
+			<p class="mt-3">
 				This site is accessible worldwide, including to visitors from the
 				European Economic Area (EEA). Under the General Data Protection Regulation
 				(GDPR), we confirm that:
 			</p>
-			<ul class="mt-2 list-inside list-disc space-y-1">
+			<ul class="mt-3 list-inside list-disc space-y-1">
 				<li>We do not act as a data controller or data processor for any personal data.</li>
 				<li>No personal data is collected, processed, or transferred.</li>
 				<li>No cookies or tracking technologies are deployed.</li>
@@ -85,8 +104,11 @@
 		</section>
 
 		<section>
-			<h2 class="text-lg font-semibold text-foreground">CCPA Compliance (California)</h2>
-			<p class="mt-2">
+			<h2 class="flex items-center gap-3 text-lg font-semibold text-foreground">
+				<span class="font-mono text-sm text-primary">06</span>
+				CCPA Compliance (California)
+			</h2>
+			<p class="mt-3">
 				Under the California Consumer Privacy Act (CCPA), California residents
 				have the right to know what personal information is collected. Here's the
 				full disclosure: we collect <strong class="text-foreground">none</strong>.
@@ -101,8 +123,11 @@
 		</section>
 
 		<section>
-			<h2 class="text-lg font-semibold text-foreground">Your Rights</h2>
-			<p class="mt-2">
+			<h2 class="flex items-center gap-3 text-lg font-semibold text-foreground">
+				<span class="font-mono text-sm text-primary">07</span>
+				Your Rights
+			</h2>
+			<p class="mt-3">
 				Since we do not collect any personal data, there is no data to access,
 				modify, or delete. You can clear your theme preference at any time by
 				clearing your browser's localStorage. No matter where you are in the
@@ -112,8 +137,11 @@
 		</section>
 
 		<section>
-			<h2 class="text-lg font-semibold text-foreground">Contact</h2>
-			<p class="mt-2">
+			<h2 class="flex items-center gap-3 text-lg font-semibold text-foreground">
+				<span class="font-mono text-sm text-primary">08</span>
+				Contact
+			</h2>
+			<p class="mt-3">
 				If you have questions about this privacy policy, reach out via the
 				<a
 					href="/contact"

@@ -72,3 +72,48 @@
 		font-family: var(--font-mono);
 	}
 }
+
+@layer utilities {
+	/* Moving sheen swept across text via a clipped gradient */
+	.text-shimmer {
+		background: linear-gradient(
+			110deg,
+			var(--color-muted-foreground) 0%,
+			var(--color-muted-foreground) 40%,
+			var(--color-primary) 50%,
+			var(--color-muted-foreground) 60%,
+			var(--color-muted-foreground) 100%
+		);
+		background-size: 220% 100%;
+		background-clip: text;
+		-webkit-background-clip: text;
+		color: transparent;
+		-webkit-text-fill-color: transparent;
+		animation: text-shimmer 3.5s linear infinite;
+	}
+
+	@keyframes text-shimmer {
+		from {
+			background-position: 220% 0;
+		}
+		to {
+			background-position: -20% 0;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.text-shimmer {
+			animation: none;
+		}
+	}
+
+	/* Faded blueprint grid used behind hero / page-header bands */
+	.bg-grid {
+		background-image:
+			linear-gradient(to right, var(--color-border) 1px, transparent 1px),
+			linear-gradient(to bottom, var(--color-border) 1px, transparent 1px);
+		background-size: 56px 56px;
+		mask-image: radial-gradient(ellipse 65% 60% at 50% 0%, #000 35%, transparent 100%);
+		-webkit-mask-image: radial-gradient(ellipse 65% 60% at 50% 0%, #000 35%, transparent 100%);
+	}
+}

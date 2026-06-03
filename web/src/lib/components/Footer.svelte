@@ -7,7 +7,7 @@
 
 <footer class="border-t border-border bg-background">
 	<div class="container mx-auto px-4 py-8">
-		<div class="grid grid-cols-1 gap-8 md:grid-cols-4">
+		<div class="grid grid-cols-1 gap-8 md:grid-cols-3">
 			<!-- Brand -->
 			<div>
 				<h3 class="text-lg font-bold">Epic Sax Gandalf</h3>
@@ -58,45 +58,44 @@
 				</div>
 			</div>
 
-			<!-- Social -->
-			<div>
-				<h4 class="mb-3 text-sm font-semibold">Connect</h4>
-				<div class="flex gap-3">
-					<a
-						href="https://hmziq.rs"
-						target="_blank"
-						rel="noopener noreferrer"
-						class="text-muted-foreground transition-colors hover:text-foreground"
-						aria-label="Website"
-					>
-						<Globe size={18} />
-					</a>
-					<a
-						href="https://github.com/hmziqrs"
-						target="_blank"
-						rel="noopener noreferrer"
-						class="text-muted-foreground transition-colors hover:text-foreground"
-						aria-label="GitHub"
-					>
-						<GitHubIcon size={18} />
-					</a>
-					<a
-						href="https://x.com/hmziqrs"
-						target="_blank"
-						rel="noopener noreferrer"
-						class="text-muted-foreground transition-colors hover:text-foreground"
-						aria-label="X (Twitter)"
-					>
-						<XBrandIcon size={18} />
-					</a>
-				</div>
-			</div>
 		</div>
 
 		<Separator class="my-6" />
 
-		<p class="text-center text-xs text-muted-foreground">
-			&copy; 2026 hmziqrs. All rights reserved.
-		</p>
+		<div class="flex flex-col items-center gap-4">
+			<div class="flex gap-5">
+				<a
+					href="https://hmziq.rs"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="text-muted-foreground transition-colors hover:text-foreground"
+					aria-label="Website"
+				>
+					<Globe size={18} />
+				</a>
+				<a
+					href="https://github.com/hmziqrs"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="text-muted-foreground transition-colors hover:text-foreground"
+					aria-label="GitHub"
+				>
+					<GitHubIcon size={18} />
+				</a>
+				<a
+					href="https://x.com/hmziqrs"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="text-muted-foreground transition-colors hover:text-foreground"
+					aria-label="X (Twitter)"
+				>
+					<XBrandIcon size={18} />
+				</a>
+			</div>
+
+			<p class="text-center text-xs text-muted-foreground">
+				&copy; 2026 <span class="text-shimmer font-medium">hmziqrs</span>. All rights reserved.
+			</p>
+		</div>
 	</div>
 </footer>
