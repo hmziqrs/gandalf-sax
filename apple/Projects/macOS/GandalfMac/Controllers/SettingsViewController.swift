@@ -36,16 +36,30 @@ class SettingsViewController: NSViewController {
         container.layer?.shadowOffset = NSSize(width: 0, height: -4)
         container.layer?.shadowRadius = 20
 
-        // Card — clips its own content to rounded corners
-        let card = NSView()
-        card.wantsLayer = true
-        card.layer?.backgroundColor = NSColor.windowBackgroundColor.cgColor
-        card.layer?.cornerRadius = 14
-        card.layer?.cornerCurve = .continuous
-        card.layer?.masksToBounds = true
-        // Subtle top border highlight
-        card.layer?.borderColor = NSColor.white.withAlphaComponent(0.08).cgColor
-        card.layer?.borderWidth = 1
+        // Glass-effect card — translucent liquid glass on macOS 26+, frosted glass fallback
+        let card: NSView
+        if #available(macOS 26.0, *) {
+            let glass = NSGlassEffectView()
+            glass.wantsLayer = true
+            glass.layer?.cornerRadius = 14
+            glass.layer?.cornerCurve = .continuous
+            glass.layer?.masksToBounds = true
+            glass.layer?.borderColor = NSColor.white.withAlphaComponent(0.08).cgColor
+            glass.layer?.borderWidth = 1
+            card = glass
+        } else {
+            let effect = NSVisualEffectView()
+            effect.material = .sheet
+            effect.blendingMode = .behindWindow
+            effect.state = .followsWindowActiveState
+            effect.wantsLayer = true
+            effect.layer?.cornerRadius = 14
+            effect.layer?.cornerCurve = .continuous
+            effect.layer?.masksToBounds = true
+            effect.layer?.borderColor = NSColor.white.withAlphaComponent(0.08).cgColor
+            effect.layer?.borderWidth = 1
+            card = effect
+        }
         card.translatesAutoresizingMaskIntoConstraints = false
         container.addSubview(card)
 

@@ -8,7 +8,7 @@ class ModalOverlayView: NSView {
     init() {
         super.init(frame: .zero)
         wantsLayer = true
-        layer?.backgroundColor = NSColor.black.withAlphaComponent(0.45).cgColor
+        layer?.backgroundColor = NSColor.black.withAlphaComponent(0.30).cgColor
         alphaValue = 0
     }
 
