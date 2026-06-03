@@ -22,7 +22,7 @@
 	<meta property="og:site_name" content={SITE.name} />
 
 	<!-- Twitter Card -->
-	<meta name="twitter:card" content="summary" />
+	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:title" content={seo.title} />
 	<meta name="twitter:description" content={seo.description} />
 	<meta name="twitter:image" content={`${SITE.url}${image}`} />

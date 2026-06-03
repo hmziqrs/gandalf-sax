@@ -4,7 +4,7 @@ export const SITE = {
 	url: 'https://sax.hmziq.rs',
 	creator: 'hmziqrs',
 	twitter: '@hmziqrs',
-	ogImage: '/logo.png',
+	ogImage: '/og-image.png',
 } as const;
 
 export interface PageSeo {
