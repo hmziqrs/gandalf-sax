@@ -10,15 +10,11 @@
 		Smartphone,
 		Globe,
 	} from "@lucide/svelte";
+	import Seo from "$lib/components/Seo.svelte";
+	import { pages } from "$lib/seo";
 </script>
 
-<svelte:head>
-	<title>Epic Sax Gandalf — Billions Must Be Entertained</title>
-	<meta
-		name="description"
-		content="Behold the glory of infinite Gandalf! Watch Gandalf play the saxophone in an endless, NTP-synced loop."
-	/>
-</svelte:head>
+<Seo seo={pages["/home"]} />
 
 <!-- Hero -->
 <section

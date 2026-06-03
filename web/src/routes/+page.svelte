@@ -39,9 +39,8 @@
 	}
 </script>
 
+<Seo seo={pages['/']} />
 <svelte:head>
-	<title>Epic Sax Gandalf</title>
-	<meta name="description" content="Behold the glory of infinite Gandalf! Billions must be entertained!" />
 	<meta name="theme-color" content="#1E1E1E" />
 	<link rel="icon" href="/favicon.png" />
 </svelte:head>

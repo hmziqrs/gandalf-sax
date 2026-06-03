@@ -6,10 +6,7 @@
 	import { pages } from "$lib/seo";
 </script>
 
-<svelte:head>
-	<title>Contact — Epic Sax Gandalf</title>
-	<meta name="description" content="Get in touch with the creator of Epic Sax Gandalf." />
-</svelte:head>
+<Seo seo={pages['/contact']} />
 
 <div class="mx-auto max-w-3xl px-4 py-12">
 	<h1 class="text-3xl font-bold md:text-4xl">Get in Touch</h1>

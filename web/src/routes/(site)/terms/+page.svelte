@@ -1,7 +1,9 @@
-<svelte:head>
-	<title>Terms of Service — Epic Sax Gandalf</title>
-	<meta name="description" content="Terms of service for Epic Sax Gandalf." />
-</svelte:head>
+<script>
+	import Seo from "$lib/components/Seo.svelte";
+	import { pages } from "$lib/seo";
+</script>
+
+<Seo seo={pages['/terms']} />
 
 <div class="mx-auto max-w-3xl px-4 py-12">
 	<h1 class="text-3xl font-bold md:text-4xl">Terms of Service</h1>

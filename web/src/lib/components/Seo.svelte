@@ -3,9 +3,9 @@
 
 	let { seo }: { seo: PageSeo } = $props();
 
-	const canonical = `${SITE.url}${seo.path}`;
-	const image = seo.image ?? SITE.ogImage;
-	const type = seo.type ?? 'website';
+	const canonical = $derived(`${SITE.url}${seo.path}`);
+	const image = $derived(seo.image ?? SITE.ogImage);
+	const type = $derived(seo.type ?? 'website');
 </script>
 
 <svelte:head>
