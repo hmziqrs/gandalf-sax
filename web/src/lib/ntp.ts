@@ -7,9 +7,8 @@
 // The offset is calculated using the RTT-midpoint technique with
 // performance.now() for sub-millisecond RTT measurement.
 
-// Buffer constants matching Swift: 165ms first sync (25 + 140), 25ms subsequent
-const BUFFER_FIRST_SYNC = 165;
-const BUFFER_SUBSEQUENT = 25;
+// Buffer matching Swift: 165ms (25 + 140)
+const BUFFER = 165;
 
 export enum SyncSource {
 	NTP = "NTP",
@@ -66,7 +65,6 @@ async function getTimeOffset(): Promise<number | null> {
 export class NtpClient {
 	private offsetMs = 0;
 	private synced = false;
-	private isFirstSync = true;
 
 	get isSynced(): boolean {
 		return this.synced;
@@ -76,14 +74,13 @@ export class NtpClient {
 		return this.synced ? SyncSource.NTP : SyncSource.DEVICE_CLOCK;
 	}
 
-	/** Sync — single request to measure clock offset */
+	/** Sync once per session — single request to measure clock offset */
 	async sync(): Promise<SyncResult> {
 		const offset = await getTimeOffset();
 
 		if (offset !== null) {
 			this.offsetMs = offset;
 			this.synced = true;
-			this.isFirstSync = false;
 		}
 
 		return {
@@ -97,8 +94,7 @@ export class NtpClient {
 	 */
 	seekPositionMs(durationMs: number): number {
 		const nowMs = Date.now();
-		const buffer = this.isFirstSync ? BUFFER_FIRST_SYNC : BUFFER_SUBSEQUENT;
-		let raw = ((nowMs + this.offsetMs) % durationMs) + buffer;
+		let raw = ((nowMs + this.offsetMs) % durationMs) + BUFFER;
 		if (raw >= durationMs) {
 			raw -= durationMs;
 		}
