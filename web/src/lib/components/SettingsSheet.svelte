@@ -170,8 +170,16 @@
         </section>
       </div>
 
-      <!-- Developer Footer -->
-      <div class="dev-footer">
+      <!-- Page links + Developer Footer -->
+      <div class="footer-row">
+        <div class="page-links">
+          <a href="/home" class="page-link">Home</a>
+          <div class="page-dot"></div>
+          <a href="/about" class="page-link">About</a>
+          <div class="page-dot"></div>
+          <a href="/contact" class="page-link">Contact</a>
+        </div>
+        <div class="dev-sep"></div>
         <span class="dev-text">Built by <strong class="dev-name">hmziqrs</strong></span>
         <div class="dev-sep"></div>
         <div class="dev-links">
@@ -486,13 +494,41 @@
     background: var(--sheet-card-bg);
   }
 
-  /* Developer footer */
-  .dev-footer {
+  /* Footer row: page links + dev info */
+  .footer-row {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.75rem;
     padding-top: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .page-links {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .page-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--sheet-accent-text);
+    opacity: 0.6;
+    flex-shrink: 0;
+  }
+
+  .page-link {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--sheet-muted);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .page-link:hover {
+    color: var(--sheet-fg);
   }
 
   .dev-text {
