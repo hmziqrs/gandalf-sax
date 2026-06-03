@@ -12,7 +12,6 @@
 		Moon,
 		Monitor,
 		Globe,
-		Send,
 		ExternalLink,
 		Share2,
 		Maximize,
@@ -215,22 +214,6 @@
 									{/snippet}
 								</TooltipTrigger>
 								<TooltipContent>X (Twitter)</TooltipContent>
-							</TooltipRoot>
-							<TooltipRoot>
-								<TooltipTrigger>
-									{#snippet child({ props })}
-										<Button
-											{...props}
-											variant="outline"
-											size="icon"
-											onclick={() => window.open("https://t.me/hmziqrs", "_blank")}
-											aria-label="Telegram"
-										>
-											<Send size={16} />
-										</Button>
-									{/snippet}
-								</TooltipTrigger>
-								<TooltipContent>Telegram</TooltipContent>
 							</TooltipRoot>
 						</div>
 					</div>

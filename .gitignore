@@ -54,3 +54,5 @@ google-services.json
 GoogleService-Info.plist
 *.keystore
 *.jks
+
+.playwright-mcp
