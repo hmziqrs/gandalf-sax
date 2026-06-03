@@ -1,120 +1,48 @@
 <script lang="ts">
-	import { Button } from "$lib/components/ui/button";
-	import Header from "$lib/components/Header.svelte";
-	import Footer from "$lib/components/Footer.svelte";
-	import {
-		Play,
-		Music,
-		Repeat,
-		Clock,
-		Smartphone,
-	} from "@lucide/svelte";
+	import VideoPlayer from "$lib/components/VideoPlayer.svelte";
+	import SettingsSheet from "$lib/components/SettingsSheet.svelte";
+	import { videoState, toggleFullscreen } from "$lib/stores.svelte";
+	import { onMount } from "svelte";
 	import Seo from "$lib/components/Seo.svelte";
 	import { pages } from "$lib/seo";
+
+	let videoPlayer: VideoPlayer;
+
+	onMount(() => {
+		function handleKeydown(e: KeyboardEvent) {
+			if (e.key === "f" || e.key === "F") {
+				toggleFullscreen();
+			} else if (e.key === "Escape") {
+				if (videoState.isFullscreen) {
+					document.exitFullscreen();
+					videoState.isFullscreen = false;
+				}
+			}
+		}
+
+		function handleFullscreenChange() {
+			videoState.isFullscreen = !!document.fullscreenElement;
+		}
+
+		document.addEventListener("keydown", handleKeydown);
+		document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+		return () => {
+			document.removeEventListener("keydown", handleKeydown);
+			document.removeEventListener("fullscreenchange", handleFullscreenChange);
+		};
+	});
+
+	/** Called when settings sheet closes — matching Swift sheet(onDismiss: syncVideo) */
+	function handleSettingsClose() {
+		videoPlayer?.onResumeFromSettings();
+	}
 </script>
 
-<Seo seo={pages["/"]} />
+<Seo seo={pages['/']} />
 <svelte:head>
 	<meta name="theme-color" content="#1E1E1E" />
 </svelte:head>
 
-<div class="flex min-h-screen flex-col bg-background text-foreground">
-	<Header />
-
-	<main class="flex-1">
-		<!-- Hero -->
-		<section
-			class="flex min-h-[calc(100vh-3.5rem)] flex-col items-center justify-center px-4 text-center"
-		>
-			<div class="mx-auto max-w-3xl">
-				<h1
-					class="text-4xl font-bold tracking-tight md:text-6xl"
-				>
-					Behold the Glory of
-					<span class="text-primary">Infinite Gandalf Saxophone</span>
-				</h1>
-				<p class="mt-4 text-lg text-muted-foreground md:text-xl">
-					Billions must be entertained! Watch Gandalf play the saxophone forever,
-					perfectly synchronized across the world.
-				</p>
-				<div class="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-					<Button size="lg" href="/play" class="gap-2 text-base">
-						<Play size={20} />
-						Watch Now
-					</Button>
-					<Button variant="outline" size="lg" href="/about" class="text-base">
-						Learn More
-					</Button>
-				</div>
-			</div>
-		</section>
-
-		<!-- Features -->
-		<section class="border-t border-border bg-card/50 px-4 py-16">
-			<div class="container mx-auto max-w-5xl">
-				<h2 class="mb-10 text-center text-2xl font-bold md:text-3xl">
-					Why Epic Sax Gandalf?
-				</h2>
-				<div class="grid gap-6 md:grid-cols-3">
-					<!-- Infinite Loop -->
-					<div class="rounded-lg border border-border bg-card p-6">
-						<div
-							class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10"
-						>
-							<Repeat size={20} class="text-primary" />
-						</div>
-						<h3 class="mb-2 font-semibold">Infinite Loop</h3>
-						<p class="text-sm text-muted-foreground">
-							Gandalf never stops playing. An endless, perfectly timed loop that
-							keeps going and going and going.
-						</p>
-					</div>
-
-					<!-- NTP Synced -->
-					<div class="rounded-lg border border-border bg-card p-6">
-						<div
-							class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10"
-						>
-							<Clock size={20} class="text-primary" />
-						</div>
-						<h3 class="mb-2 font-semibold">NTP Synced</h3>
-						<p class="text-sm text-muted-foreground">
-							Everyone sees the same frame at the same time. Billions of viewers,
-							perfectly synchronized via network time protocol.
-						</p>
-					</div>
-
-					<!-- Cross Platform -->
-					<div class="rounded-lg border border-border bg-card p-6">
-						<div
-							class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10"
-						>
-							<Smartphone size={20} class="text-primary" />
-						</div>
-						<h3 class="mb-2 font-semibold">Cross Platform</h3>
-						<p class="text-sm text-muted-foreground">
-							Available on web, macOS, and iOS. Entertain yourself on any
-							device.
-						</p>
-					</div>
-				</div>
-			</div>
-		</section>
-
-		<!-- CTA -->
-		<section class="px-4 py-16 text-center">
-			<div class="mx-auto max-w-2xl">
-				<h2 class="text-2xl font-bold md:text-3xl">Ready to be entertained?</h2>
-				<p class="mt-3 text-muted-foreground">
-					The greatest saxophone performance in Middle-earth awaits.
-				</p>
-				<Button size="lg" href="/play" class="mt-6 gap-2 text-base">
-					<Music size={20} />
-					Experience the Sax
-				</Button>
-			</div>
-		</section>
-	</main>
-
-	<Footer />
-</div>
+<VideoPlayer bind:this={videoPlayer} />
+<SettingsSheet onClose={handleSettingsClose} />

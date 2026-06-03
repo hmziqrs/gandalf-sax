@@ -124,7 +124,7 @@
 	<div class="mt-10 rounded-lg border border-border bg-muted/40 p-5">
 		<p class="text-sm text-muted-foreground">
 			While you're here, check out the
-			<a href="/play" class="font-medium text-primary transition-colors hover:text-primary/80">saxophone loop</a>
+			<a href="/" class="font-medium text-primary transition-colors hover:text-primary/80">saxophone loop</a>
 			or learn more
 			<a href="/about" class="font-medium text-primary transition-colors hover:text-primary/80">about the project</a>.
 		</p>

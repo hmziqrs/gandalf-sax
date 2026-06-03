@@ -5,7 +5,7 @@
 	import { page } from "$app/state";
 
 	const navItems = [
-		{ href: "/play", label: "Watch" },
+		{ href: "/home", label: "Home" },
 		{ href: "/about", label: "About" },
 		{ href: "/faq", label: "FAQ" },
 		{ href: "/contact", label: "Contact" },

@@ -34,7 +34,7 @@
 				<Home size={18} />
 				Go Home
 			</Button>
-			<Button variant="outline" href="/play" class="gap-2">
+			<Button variant="outline" href="/" class="gap-2">
 				<Play size={18} />
 				Watch Gandalf
 			</Button>

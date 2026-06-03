@@ -15,7 +15,7 @@
 			memes — the epic sax guy meme, remixed with Gandalf the Grey slaying on
 			the saxophone. This is an infinite, synchronized version of the
 			Gandalf sax meme, and
-			<a href="/play" class="font-medium text-primary transition-colors hover:text-primary/80">you can watch it right now</a>.
+			<a href="/" class="font-medium text-primary transition-colors hover:text-primary/80">you can watch it right now</a>.
 		</p>
 
 		<p>
@@ -98,7 +98,7 @@
 	</div>
 
 	<div class="mt-10 flex flex-col gap-3 sm:flex-row">
-		<a href="/play">
+		<a href="/">
 			<Button>Watch the Video</Button>
 		</a>
 		<a href="/contact">

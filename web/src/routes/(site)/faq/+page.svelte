@@ -60,7 +60,7 @@
 	</div>
 
 	<div class="mt-10 flex flex-col gap-3 sm:flex-row">
-		<a href="/play">
+		<a href="/">
 			<Button>Watch the Video</Button>
 		</a>
 		<a href="/about">

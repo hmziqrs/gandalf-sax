@@ -19,7 +19,7 @@
 				<h4 class="mb-3 text-sm font-semibold">Explore</h4>
 				<div class="flex flex-col gap-2">
 					<a
-						href="/play"
+						href="/"
 						class="text-sm text-muted-foreground transition-colors hover:text-foreground"
 					>
 						Watch

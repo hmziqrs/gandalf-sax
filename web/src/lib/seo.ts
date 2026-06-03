@@ -25,22 +25,22 @@ export const pages: Record<string, PageSeo> = {
 		path: '/',
 		jsonLd: {
 			'@context': 'https://schema.org',
-			'@type': 'WebSite',
-			name: SITE.name,
-			url: SITE.url,
-			description: 'Watch the Epic Sax Guy meme remixed with Gandalf from Lord of the Rings. An infinite, NTP-synced saxophone loop born from the Eurovision sax meme. Billions must be entertained!',
-		},
-	},
-	'/play': {
-		title: 'Watch — Epic Sax Gandalf',
-		description: 'Watch the Epic Sax Gandalf meme — the iconic Lord of the Rings saxophone moment in an infinite, NTP-synced loop. Billions must be entertained!',
-		path: '/play',
-		jsonLd: {
-			'@context': 'https://schema.org',
 			'@type': 'VideoObject',
 			name: 'Epic Sax Gandalf — Infinite Loop',
 			description: 'Watch Gandalf play the saxophone in an endless, NTP-synced loop.',
-			contentUrl: `${SITE.url}/play`,
+			contentUrl: SITE.url,
+		},
+	},
+	'/home': {
+		title: 'Epic Sax Gandalf — Billions Must Be Entertained',
+		description: 'Watch Gandalf play the saxophone forever, perfectly synchronized across the world. An infinite, NTP-synced entertainment experience.',
+		path: '/home',
+		jsonLd: {
+			'@context': 'https://schema.org',
+			'@type': 'WebSite',
+			name: SITE.name,
+			url: SITE.url,
+			description: 'Watch the Epic Sax Guy meme remixed with Gandalf from Lord of the Rings. An infinite, NTP-synced saxophone loop. Billions must be entertained!',
 		},
 	},
 	'/about': {
