@@ -42,7 +42,6 @@
 <Seo seo={pages['/']} />
 <svelte:head>
 	<meta name="theme-color" content="#1E1E1E" />
-	<link rel="icon" href="/favicon.png" />
 </svelte:head>
 
 <VideoPlayer bind:this={videoPlayer} />
