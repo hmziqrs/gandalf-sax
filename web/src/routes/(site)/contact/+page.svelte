@@ -2,6 +2,8 @@
 	import GitHubIcon from "$lib/components/icons/GitHub.svelte";
 	import XBrandIcon from "$lib/components/icons/XBrand.svelte";
 	import { Globe } from "@lucide/svelte";
+	import Seo from "$lib/components/Seo.svelte";
+	import { pages } from "$lib/seo";
 </script>
 
 <svelte:head>

@@ -3,6 +3,8 @@
 	import SettingsSheet from "$lib/components/SettingsSheet.svelte";
 	import { videoState, toggleFullscreen } from "$lib/stores.svelte";
 	import { onMount } from "svelte";
+	import Seo from "$lib/components/Seo.svelte";
+	import { pages } from "$lib/seo";
 
 	let videoPlayer: VideoPlayer;
 

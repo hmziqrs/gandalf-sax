@@ -69,6 +69,27 @@
   :global(.settings-sheet)::-webkit-scrollbar-track { background: transparent; }
   :global(.settings-sheet)::-webkit-scrollbar-thumb { background: oklch(0 0 0 / 0.1); border-radius: 2px; }
   :global(.dark .settings-sheet)::-webkit-scrollbar-thumb { background: oklch(1 0 0 / 0.1); }
+
+  :global(.shimmer-text) {
+    background: linear-gradient(
+      90deg,
+      oklch(0.52 0.2 30) 0%,
+      oklch(0.72 0.22 55) 40%,
+      oklch(0.95 0.08 80) 50%,
+      oklch(0.72 0.22 55) 60%,
+      oklch(0.52 0.2 30) 100%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 2.5s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 100% 50%; }
+    100% { background-position: -100% 50%; }
+  }
 </style>
 
 <SheetRoot bind:open onOpenChange={setOpen}>
@@ -204,7 +225,7 @@
 
         <div class="h-3.5 w-px bg-border"></div>
 
-        <span class="text-[0.7rem] text-muted-foreground">Built by <strong class="font-semibold text-primary">hmziqrs</strong></span>
+        <span class="text-[0.7rem] text-muted-foreground">Built by <strong class="font-semibold shimmer-text">hmziqrs</strong></span>
 
         <div class="h-3.5 w-px bg-border"></div>
 
