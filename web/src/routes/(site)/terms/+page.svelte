@@ -58,6 +58,21 @@
 		</section>
 
 		<section>
+			<h2 class="text-lg font-semibold text-foreground">Governing Law</h2>
+			<p class="mt-2">
+				These terms are governed by and construed in accordance with applicable
+				federal and state laws, without regard to conflict of law provisions.
+				Any disputes arising from the use of this application shall be resolved
+				in the applicable courts.
+			</p>
+			<p class="mt-2">
+				If you are accessing this service from outside the United States, you
+				are responsible for compliance with any applicable local laws. This
+				site is made available globally, but these terms are rooted in U.S. law.
+			</p>
+		</section>
+
+		<section>
 			<h2 class="text-lg font-semibold text-foreground">Changes to Terms</h2>
 			<p class="mt-2">
 				We reserve the right to modify these terms at any time. Changes will be

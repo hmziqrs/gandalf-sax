@@ -2,6 +2,7 @@
 	import "../app.css";
 	import { getThemeMode } from "$lib/stores.svelte";
 	import type { ThemeMode } from "$lib/stores.svelte";
+	import ConsentBanner from "$lib/components/ConsentBanner.svelte";
 
 	let { children } = $props();
 
@@ -35,4 +36,5 @@
 
 <div class="min-h-screen bg-background text-foreground">
 	{@render children()}
+	<ConsentBanner />
 </div>

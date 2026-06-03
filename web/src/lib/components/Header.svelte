@@ -5,8 +5,9 @@
 	import { page } from "$app/state";
 
 	const navItems = [
-		{ href: "/home", label: "Home" },
+		{ href: "/play", label: "Watch" },
 		{ href: "/about", label: "About" },
+		{ href: "/faq", label: "FAQ" },
 		{ href: "/contact", label: "Contact" },
 	];
 
@@ -22,7 +23,7 @@
 >
 	<div class="container mx-auto flex h-14 items-center justify-between px-4">
 		<!-- Brand -->
-		<a href="/home" class="flex items-center gap-2 text-lg font-bold">
+		<a href="/" class="flex items-center gap-2 text-lg font-bold">
 			<Music size={20} class="text-primary" />
 			<span>Epic Sax Gandalf</span>
 		</a>

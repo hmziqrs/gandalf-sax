@@ -5,8 +5,8 @@
 	"start_url": "/",
 	"display": "fullscreen",
 	"orientation": "landscape",
-	"background_color": "#FFFFFF",
-	"theme_color": "#E53935",
+	"background_color": "#1E1E1E",
+	"theme_color": "#1E1E1E",
 	"icons": [
 		{
 			"src": "/android-chrome-192x192.png",

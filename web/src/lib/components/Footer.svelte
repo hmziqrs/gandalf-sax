@@ -7,11 +7,36 @@
 
 <footer class="border-t border-border bg-background">
 	<div class="container mx-auto px-4 py-8">
-		<div class="grid grid-cols-1 gap-8 md:grid-cols-3">
+		<div class="grid grid-cols-1 gap-8 md:grid-cols-4">
 			<!-- Brand -->
 			<div>
 				<h3 class="text-lg font-bold">Epic Sax Gandalf</h3>
 				<p class="mt-1 text-sm text-muted-foreground">Billions must be entertained!</p>
+			</div>
+
+			<!-- Explore links -->
+			<div>
+				<h4 class="mb-3 text-sm font-semibold">Explore</h4>
+				<div class="flex flex-col gap-2">
+					<a
+						href="/play"
+						class="text-sm text-muted-foreground transition-colors hover:text-foreground"
+					>
+						Watch
+					</a>
+					<a
+						href="/about"
+						class="text-sm text-muted-foreground transition-colors hover:text-foreground"
+					>
+						About
+					</a>
+					<a
+						href="/faq"
+						class="text-sm text-muted-foreground transition-colors hover:text-foreground"
+					>
+						FAQ
+					</a>
+				</div>
 			</div>
 
 			<!-- Legal links -->

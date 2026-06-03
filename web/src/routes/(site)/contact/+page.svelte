@@ -62,15 +62,71 @@
 
 	</div>
 
-	<p class="mt-8 text-sm text-muted-foreground">
-		For bug reports or feature requests, please open an issue on
-		<a
-			href="https://github.com/hmziqrs/gandalf-sax/issues"
-			target="_blank"
-			rel="noopener noreferrer"
-			class="font-medium text-primary transition-colors hover:text-primary/80"
-		>
-			GitHub Issues
-		</a>.
-	</p>
+	<div class="mt-10">
+		<h2 class="text-xl font-semibold">Found a Bug? Got an Idea?</h2>
+		<p class="mt-2 text-muted-foreground">
+			The fastest way to reach me is through
+			<a
+				href="https://github.com/hmziqrs/gandalf-sax/issues"
+				target="_blank"
+				rel="noopener noreferrer"
+				class="font-medium text-primary transition-colors hover:text-primary/80"
+			>
+				GitHub Issues
+			</a>.
+			I try to respond within a day or two — though if I'm deep in a
+			sax-remix rabbit hole, it might take a beat longer.
+		</p>
+	</div>
+
+	<div class="mt-10">
+		<h2 class="text-xl font-semibold">FAQ</h2>
+
+		<div class="mt-4 space-y-5">
+			<div>
+				<h3 class="font-medium">Can I use this in my project?</h3>
+				<p class="mt-1 text-sm text-muted-foreground">
+					Yes — the code is open source under the MIT license. Fork it,
+					remix it, deploy your own synchronized meme. Just don't blame
+					me if it becomes your most-used project.
+				</p>
+			</div>
+
+			<div>
+				<h3 class="font-medium">How do I report a bug?</h3>
+				<p class="mt-1 text-sm text-muted-foreground">
+					Open an issue on
+					<a
+						href="https://github.com/hmziqrs/gandalf-sax/issues"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="font-medium text-primary transition-colors hover:text-primary/80"
+					>
+						GitHub
+					</a>
+					with steps to reproduce. Screenshots help. Dramatic
+					re-enactments are optional but appreciated.
+				</p>
+			</div>
+
+			<div>
+				<h3 class="font-medium">Is the video really synchronized for everyone?</h3>
+				<p class="mt-1 text-sm text-muted-foreground">
+					Yes. The player uses NTP-based time sync so every viewer sees
+					the same frame at the same moment, worldwide. Check out the
+					<a href="/about" class="font-medium text-primary transition-colors hover:text-primary/80">about page</a>
+					for the full technical rundown.
+				</p>
+			</div>
+		</div>
+	</div>
+
+	<div class="mt-10 rounded-lg border border-border bg-muted/40 p-5">
+		<p class="text-sm text-muted-foreground">
+			While you're here, check out the
+			<a href="/play" class="font-medium text-primary transition-colors hover:text-primary/80">saxophone loop</a>
+			or learn more
+			<a href="/about" class="font-medium text-primary transition-colors hover:text-primary/80">about the project</a>.
+		</p>
+	</div>
 </div>

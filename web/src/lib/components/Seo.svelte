@@ -19,13 +19,17 @@
 	<meta property="og:title" content={seo.title} />
 	<meta property="og:description" content={seo.description} />
 	<meta property="og:image" content={`${SITE.url}${image}`} />
+	<meta property="og:image:width" content={String(SITE.ogImageWidth)} />
+	<meta property="og:image:height" content={String(SITE.ogImageHeight)} />
 	<meta property="og:site_name" content={SITE.name} />
+	<meta property="og:locale" content="en_US" />
 
 	<!-- Twitter Card -->
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:title" content={seo.title} />
 	<meta name="twitter:description" content={seo.description} />
 	<meta name="twitter:image" content={`${SITE.url}${image}`} />
+	<meta name="twitter:image:alt" content={seo.title} />
 	<meta name="twitter:site" content={SITE.twitter} />
 	<meta name="twitter:creator" content={SITE.twitter} />
 
