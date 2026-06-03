@@ -68,10 +68,10 @@
         <X size={16} />
       </SheetClose>
       <SheetHeader>
-        <SheetTitle class="text-lg font-bold">
+        <SheetTitle class="text-lg font-medium">
           Behold the glory of infinite Gandalf!
         </SheetTitle>
-        <SheetDescription class="text-primary font-semibold text-sm">
+        <SheetDescription class="text-primary font-medium text-sm">
           Billions must be entertained!
         </SheetDescription>
       </SheetHeader>
