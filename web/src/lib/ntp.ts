@@ -3,42 +3,9 @@
 // All subsequent seek calculations simply do: (Date.now() + offset) % duration + buffer
 //
 // Browser limitation: cannot send raw UDP/NTP packets (port 123).
-// Each server is mapped to its own HTTP time endpoint and the offset is
-// calculated individually using the RTT-midpoint technique, then the median
-// of per-server offsets is taken to filter outliers.
-
-interface NtpServerConfig {
-	/** Human-readable name matching the Swift server list */
-	name: string;
-	/** Returns the URL to fetch (cache-busted with Date.now()) */
-	getUrl: () => string;
-	/** Parses the JSON response body and returns server time in ms since epoch */
-	parseTime: (data: unknown) => number;
-}
-
-// Three servers matching Swift NtpClient.
-// Each uses a different HTTP time endpoint so offsets are calculated
-// against independent time sources.
-const NTP_SERVERS: NtpServerConfig[] = [
-	{
-		name: "time.google.com",
-		getUrl: () =>
-			`https://worldtimeapi.org/api/timezone/Etc/UTC?t=${Date.now()}`,
-		parseTime: (data: any) => new Date(data.utc_datetime).getTime(),
-	},
-	{
-		name: "time.cloudflare.com",
-		getUrl: () =>
-			`https://timeapi.io/api/time/current/zone?timeZone=UTC&t=${Date.now()}`,
-		parseTime: (data: any) => new Date(data.dateTime).getTime(),
-	},
-	{
-		name: "time.apple.com",
-		getUrl: () =>
-			`https://worldtimeapi.org/api/timezone/Etc/UTC?t=${Date.now()}`,
-		parseTime: (data: any) => new Date(data.utc_datetime).getTime(),
-	},
-];
+// Uses timeapi.io which returns nanosecond-precision timestamps.
+// The offset is calculated using the RTT-midpoint technique with
+// performance.now() for sub-millisecond RTT measurement.
 
 // Buffer constants matching Swift: 165ms first sync (25 + 140), 25ms subsequent
 const BUFFER_FIRST_SYNC = 165;
@@ -54,31 +21,43 @@ export interface SyncResult {
 	source: SyncSource;
 }
 
-interface NtpResult {
-	offset: number;
-	rtt: number;
-	server: string;
+/**
+ * Parse timeapi.io's nanosecond-precision dateTime string into
+ * fractional milliseconds (preserving sub-ms precision).
+ * e.g. "2026-06-03T02:32:00.8729464" → 1780435920872.9464
+ */
+function parseNanoTime(dateTime: string): number {
+	const [datePart, timePart] = dateTime.split("T");
+	const [year, month, day] = datePart.split("-").map(Number);
+	const secPart = timePart.split(".")[0];
+	const fracPart = timePart.split(".")[1] || "0";
+	const [hours, minutes, seconds] = secPart.split(":").map(Number);
+
+	// Build ms since epoch for the whole-second portion
+	const epochMs = Date.UTC(year, month - 1, day, hours, minutes, seconds);
+
+	// Parse fractional seconds (7 digits = 100ns precision) → ms
+	const fracDigits = fracPart.length;
+	const fracMs = Number(fracPart) / 10 ** (fracDigits - 3);
+
+	return epochMs + fracMs;
 }
 
-/**
- * Query a single time server and calculate its offset individually.
- * offset = serverTime - (startTime + rtt/2)
- */
-async function getNtpOffset(server: NtpServerConfig): Promise<NtpResult | null> {
+async function getTimeOffset(): Promise<number | null> {
 	try {
-		const startTime = performance.now();
-		const response = await fetch(server.getUrl());
-		const endTime = performance.now();
+		const t0 = performance.now();
+		const res = await fetch(
+			`https://timeapi.io/api/time/current/zone?timeZone=UTC&t=${Date.now()}`
+		);
+		const t1 = performance.now();
 
-		if (!response.ok) return null;
+		if (!res.ok) return null;
 
-		const data = await response.json();
-		const serverTime = server.parseTime(data);
-		const rtt = endTime - startTime;
-		const clientTime = startTime + rtt / 2;
-		const offset = serverTime - clientTime;
-
-		return { offset, rtt, server: server.name };
+		const data = await res.json();
+		const serverTime = parseNanoTime(data.dateTime);
+		const rtt = t1 - t0;
+		const clientTime = t0 + rtt / 2;
+		return serverTime - clientTime;
 	} catch {
 		return null;
 	}
@@ -97,22 +76,12 @@ export class NtpClient {
 		return this.synced ? SyncSource.NTP : SyncSource.DEVICE_CLOCK;
 	}
 
-	/** Sync once on boot — measure offset, then reuse it forever */
+	/** Sync — single request to measure clock offset */
 	async sync(): Promise<SyncResult> {
-		const results: NtpResult[] = [];
+		const offset = await getTimeOffset();
 
-		const promises = NTP_SERVERS.map((server) => getNtpOffset(server));
-		const responses = await Promise.allSettled(promises);
-
-		for (const result of responses) {
-			if (result.status === "fulfilled" && result.value !== null) {
-				results.push(result.value);
-			}
-		}
-
-		if (results.length >= 2) {
-			results.sort((a, b) => a.offset - b.offset);
-			this.offsetMs = results[Math.floor(results.length / 2)].offset;
+		if (offset !== null) {
+			this.offsetMs = offset;
 			this.synced = true;
 			this.isFirstSync = false;
 		}
