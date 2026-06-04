@@ -66,40 +66,40 @@
 		<div class="flex flex-col items-center gap-4">
 			<div class="flex gap-5">
 				<a
-					href="https://hmziq.rs"
+					href="https://hmziq.rs?ref=gandalf.hmziq.xyz"
 					target="_blank"
 					rel="noopener noreferrer"
-					onclick={() => logClickSocialLink("hmziq.rs", "https://hmziq.rs")}
+					onclick={() => logClickSocialLink("hmziq.rs", "https://hmziq.rs?ref=gandalf.hmziq.xyz")}
 					class="text-muted-foreground transition-colors hover:text-foreground"
 					aria-label="Website"
 				>
 					<Globe size={18} />
 				</a>
 				<a
-					href="https://hmziq.xyz"
+					href="https://hmziq.xyz?ref=gandalf.hmziq.xyz"
 					target="_blank"
 					rel="noopener noreferrer"
-					onclick={() => logClickSocialLink("hmziq.xyz", "https://hmziq.xyz")}
+					onclick={() => logClickSocialLink("hmziq.xyz", "https://hmziq.xyz?ref=gandalf.hmziq.xyz")}
 					class="text-muted-foreground transition-colors hover:text-foreground"
 					aria-label="hmziq.xyz"
 				>
 					<Globe size={18} />
 				</a>
 				<a
-					href="https://github.com/hmziqrs"
+					href="https://github.com/hmziqrs?ref=gandalf.hmziq.xyz"
 					target="_blank"
 					rel="noopener noreferrer"
-					onclick={() => logClickSocialLink("github", "https://github.com/hmziqrs")}
+					onclick={() => logClickSocialLink("github", "https://github.com/hmziqrs?ref=gandalf.hmziq.xyz")}
 					class="text-muted-foreground transition-colors hover:text-foreground"
 					aria-label="GitHub"
 				>
 					<GitHubIcon size={18} />
 				</a>
 				<a
-					href="https://x.com/hmziqrs"
+					href="https://x.com/hmziqrs?ref=gandalf.hmziq.xyz"
 					target="_blank"
 					rel="noopener noreferrer"
-					onclick={() => logClickSocialLink("x", "https://x.com/hmziqrs")}
+					onclick={() => logClickSocialLink("x", "https://x.com/hmziqrs?ref=gandalf.hmziq.xyz")}
 					class="text-muted-foreground transition-colors hover:text-foreground"
 					aria-label="X (Twitter)"
 				>
@@ -108,11 +108,11 @@
 			</div>
 
 			<p class="text-center text-xs text-muted-foreground">
-				&copy; 2026 <a href="https://hmziq.rs" target="_blank" rel="noopener noreferrer" class="text-shimmer font-medium hover:text-foreground">hmziqrs</a>. All rights reserved.
+				&copy; 2026 <a href="https://hmziq.rs?ref=gandalf.hmziq.xyz" target="_blank" rel="noopener noreferrer" class="text-shimmer font-medium hover:text-foreground">hmziqrs</a>. All rights reserved.
 			</p>
 			<p class="text-center text-xs text-muted-foreground">
-				Built with <a href="https://kit.svelte.dev" target="_blank" rel="noopener noreferrer" class="underline transition-colors hover:text-foreground">SvelteKit 5</a>
-				and deployed by <a href="https://pages.cloudflare.com" target="_blank" rel="noopener noreferrer" class="underline transition-colors hover:text-foreground">Cloudflare Pages</a>.
+				Built with <a href="https://kit.svelte.dev?ref=gandalf.hmziq.xyz" target="_blank" rel="noopener noreferrer" class="underline transition-colors hover:text-foreground">SvelteKit 5</a>
+				and deployed by <a href="https://pages.cloudflare.com?ref=gandalf.hmziq.xyz" target="_blank" rel="noopener noreferrer" class="underline transition-colors hover:text-foreground">Cloudflare Pages</a>.
 			</p>
 		</div>
 	</div>

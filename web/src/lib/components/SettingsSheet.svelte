@@ -60,16 +60,16 @@
       navigator.share({
         title: 'Epic Sax Gandalf',
         text: 'Behold the glory of infinite Gandalf!',
-        url: 'https://youtu.be/BBGEG21CGo0',
+        url: 'https://youtu.be/BBGEG21CGo0?ref=gandalf.hmziq.xyz',
       });
     } else {
-      navigator.clipboard.writeText('https://youtu.be/BBGEG21CGo0');
+      navigator.clipboard.writeText('https://youtu.be/BBGEG21CGo0?ref=gandalf.hmziq.xyz');
     }
   }
 
   function openOriginalVideo() {
     logClickOriginalVideo('settings_sheet');
-    window.open('https://youtu.be/BBGEG21CGo0', '_blank');
+    window.open('https://youtu.be/BBGEG21CGo0?ref=gandalf.hmziq.xyz', '_blank');
   }
 </script>
 
@@ -246,16 +246,16 @@
         <div class="h-3.5 w-px bg-border"></div>
 
         <div class="flex items-center gap-2.5">
-          <a href="https://hmziq.rs" target="_blank" rel="noopener noreferrer" onclick={() => logClickSocialLink('hmziq.rs', 'https://hmziq.rs')} class="text-muted-foreground transition-all hover:text-primary hover:-translate-y-0.5" aria-label="hmziq.rs">
+          <a href="https://hmziq.rs?ref=gandalf.hmziq.xyz" target="_blank" rel="noopener noreferrer" onclick={() => logClickSocialLink('hmziq.rs', 'https://hmziq.rs?ref=gandalf.hmziq.xyz')} class="text-muted-foreground transition-all hover:text-primary hover:-translate-y-0.5" aria-label="hmziq.rs">
             <Globe size={14} />
           </a>
-          <a href="https://hmziq.xyz" target="_blank" rel="noopener noreferrer" onclick={() => logClickSocialLink('hmziq.xyz', 'https://hmziq.xyz')} class="text-muted-foreground transition-all hover:text-primary hover:-translate-y-0.5" aria-label="hmziq.xyz">
+          <a href="https://hmziq.xyz?ref=gandalf.hmziq.xyz" target="_blank" rel="noopener noreferrer" onclick={() => logClickSocialLink('hmziq.xyz', 'https://hmziq.xyz?ref=gandalf.hmziq.xyz')} class="text-muted-foreground transition-all hover:text-primary hover:-translate-y-0.5" aria-label="hmziq.xyz">
             <Globe size={14} />
           </a>
-          <a href="https://github.com/hmziqrs" target="_blank" rel="noopener noreferrer" onclick={() => logClickSocialLink('github', 'https://github.com/hmziqrs')} class="text-muted-foreground transition-all hover:text-primary hover:-translate-y-0.5" aria-label="GitHub">
+          <a href="https://github.com/hmziqrs?ref=gandalf.hmziq.xyz" target="_blank" rel="noopener noreferrer" onclick={() => logClickSocialLink('github', 'https://github.com/hmziqrs?ref=gandalf.hmziq.xyz')} class="text-muted-foreground transition-all hover:text-primary hover:-translate-y-0.5" aria-label="GitHub">
             <GitHubIcon size={14} />
           </a>
-          <a href="https://x.com/hmziqrs" target="_blank" rel="noopener noreferrer" onclick={() => logClickSocialLink('x', 'https://x.com/hmziqrs')} class="text-muted-foreground transition-all hover:text-primary hover:-translate-y-0.5" aria-label="X (Twitter)">
+          <a href="https://x.com/hmziqrs?ref=gandalf.hmziq.xyz" target="_blank" rel="noopener noreferrer" onclick={() => logClickSocialLink('x', 'https://x.com/hmziqrs?ref=gandalf.hmziq.xyz')} class="text-muted-foreground transition-all hover:text-primary hover:-translate-y-0.5" aria-label="X (Twitter)">
             <XBrandIcon size={14} />
           </a>
         </div>

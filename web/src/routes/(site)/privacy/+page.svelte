@@ -47,7 +47,7 @@
 				any personal information because we don't collect any. Google processes
 				this data as described in
 				<a
-					href="https://policies.google.com/privacy"
+					href="https://policies.google.com/privacy?ref=gandalf.hmziq.xyz"
 					target="_blank"
 					rel="noopener noreferrer"
 					class="font-medium text-primary transition-colors hover:text-primary/80"
@@ -57,7 +57,7 @@
 				You can opt out by using a browser that blocks analytics, an ad/tracker
 				blocker, enabling "Do Not Track," or installing the
 				<a
-					href="https://tools.google.com/dlpage/gaoptout"
+					href="https://tools.google.com/dlpage/gaoptout?ref=gandalf.hmziq.xyz"
 					target="_blank"
 					rel="noopener noreferrer"
 					class="font-medium text-primary transition-colors hover:text-primary/80"

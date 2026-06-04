@@ -8,19 +8,19 @@
 	import { logClickSocialLink } from "$lib/analytics";
 
 	const links = [
-		{ icon: Globe, label: "Website", handle: "hmziq.rs", href: "https://hmziq.rs" },
-		{ icon: Globe, label: "Website", handle: "hmziq.xyz", href: "https://hmziq.xyz" },
+		{ icon: Globe, label: "Website", handle: "hmziq.rs", href: "https://hmziq.rs?ref=gandalf.hmziq.xyz" },
+		{ icon: Globe, label: "Website", handle: "hmziq.xyz", href: "https://hmziq.xyz?ref=gandalf.hmziq.xyz" },
 		{
 			icon: GitHubIcon,
 			label: "GitHub",
 			handle: "github.com/hmziqrs",
-			href: "https://github.com/hmziqrs",
+			href: "https://github.com/hmziqrs?ref=gandalf.hmziq.xyz",
 		},
 		{
 			icon: XBrandIcon,
 			label: "X (Twitter)",
 			handle: "@hmziqrs",
-			href: "https://x.com/hmziqrs",
+			href: "https://x.com/hmziqrs?ref=gandalf.hmziq.xyz",
 		},
 	];
 </script>
@@ -68,42 +68,13 @@
 			<p class="mt-2 leading-relaxed text-muted-foreground">
 				The fastest way to reach me is through
 				<a
-					href="https://github.com/hmziqrs/gandalf-sax/issues"
+					href="https://github.com/hmziqrs/gandalf-sax/issues?ref=gandalf.hmziq.xyz"
 					target="_blank"
 					rel="noopener noreferrer"
 					class="font-medium text-primary transition-colors hover:text-primary/80"
 				>
 					GitHub Issues
-				</a>.
-				I try to respond within a day or two — though if I'm deep in a
-				sax-remix rabbit hole, it might take a beat longer.
-			</p>
-		</section>
-
-		<section class="border-l-2 border-primary/30 pl-6">
-			<h2 class="text-xl font-semibold">Quick Answers</h2>
-			<div class="mt-4 space-y-5">
-				<div>
-					<h3 class="font-medium">Can I use this in my project?</h3>
-					<p class="mt-1 text-sm leading-relaxed text-muted-foreground">
-						Yes — the code is open source under the MIT license. Fork it,
-						remix it, deploy your own synchronized meme. Just don't blame
-						me if it becomes your most-used project.
-					</p>
-				</div>
-
-				<div>
-					<h3 class="font-medium">How do I report a bug?</h3>
-					<p class="mt-1 text-sm leading-relaxed text-muted-foreground">
-						Open an issue on
-						<a
-							href="https://github.com/hmziqrs/gandalf-sax/issues"
-							target="_blank"
-							rel="noopener noreferrer"
-							class="font-medium text-primary transition-colors hover:text-primary/80"
-						>
-							GitHub
-						</a>
+				</a>
 						with steps to reproduce. Screenshots help. Dramatic
 						re-enactments are optional but appreciated.
 					</p>

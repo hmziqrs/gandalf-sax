@@ -51,7 +51,7 @@
 				from "The Lord of the Rings." The original video is credited to its
 				respective creator and is available on
 				<a
-					href="https://youtu.be/BBGEG21CGo0"
+					href="https://youtu.be/BBGEG21CGo0?ref=gandalf.hmziq.xyz"
 					target="_blank"
 					rel="noopener noreferrer"
 					onclick={() => logClickOriginalVideo("terms")}

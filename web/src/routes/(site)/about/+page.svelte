@@ -39,10 +39,10 @@
 				<p>
 					The roots of this meme trace back to the
 					<a
-						href="https://en.wikipedia.org/wiki/Eurovision_Song_Contest_2010"
+						href="https://en.wikipedia.org/wiki/Eurovision_Song_Contest_2010?ref=gandalf.hmziq.xyz"
 						target="_blank"
 						rel="noopener noreferrer"
-						onclick={() => logClickExternalLink("https://en.wikipedia.org/wiki/Eurovision_Song_Contest_2010", "eurovision_wiki")}
+						onclick={() => logClickExternalLink("https://en.wikipedia.org/wiki/Eurovision_Song_Contest_2010?ref=gandalf.hmziq.xyz", "eurovision_wiki")}
 						class="font-medium text-primary transition-colors hover:text-primary/80"
 					>Eurovision Song Contest 2010</a>,
 					where Moldova's SunStroke Project performed "Run Away" featuring
@@ -60,7 +60,7 @@
 					dropping bars on a brass instrument proved too perfect to ignore, and
 					the Gandalf sax meme was born. That remix is the
 					<a
-						href="https://youtu.be/BBGEG21CGo0"
+						href="https://youtu.be/BBGEG21CGo0?ref=gandalf.hmziq.xyz"
 						target="_blank"
 						rel="noopener noreferrer"
 						onclick={() => logClickOriginalVideo("about")}
@@ -115,10 +115,10 @@
 				<p>
 					This project is open source and available on
 					<a
-						href="https://github.com/hmziqrs/gandalf-sax"
+						href="https://github.com/hmziqrs/gandalf-sax?ref=gandalf.hmziq.xyz"
 						target="_blank"
 						rel="noopener noreferrer"
-						onclick={() => logClickExternalLink("https://github.com/hmziqrs/gandalf-sax", "github_repo")}
+						onclick={() => logClickExternalLink("https://github.com/hmziqrs/gandalf-sax?ref=gandalf.hmziq.xyz", "github_repo")}
 						class="font-medium text-primary transition-colors hover:text-primary/80"
 					>
 						GitHub
