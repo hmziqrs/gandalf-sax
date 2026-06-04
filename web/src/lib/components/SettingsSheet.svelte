@@ -27,6 +27,14 @@
     firstPlayUnmute,
   } from '$lib/stores.svelte';
   import type { ThemeMode } from '$lib/stores.svelte';
+  import {
+    logCloseSheet,
+    logShareContent,
+    logChangeTheme,
+    logTogglePauseOnOpen,
+    logClickSocialLink,
+    logClickOriginalVideo,
+  } from '$lib/analytics';
 
   let { onClose }: { onClose: () => void } = $props();
 
@@ -36,15 +44,18 @@
   function setOpen(val: boolean) {
     videoState.isSettingsOpen = val;
     if (!val) {
+      logCloseSheet();
       onClose();
     }
   }
 
   function changeTheme(mode: ThemeMode) {
     setThemeMode(mode);
+    logChangeTheme(mode);
   }
 
   function share() {
+    logShareContent();
     if (navigator.share) {
       navigator.share({
         title: 'Epic Sax Gandalf',
@@ -54,6 +65,11 @@
     } else {
       navigator.clipboard.writeText('https://youtu.be/BBGEG21CGo0');
     }
+  }
+
+  function openOriginalVideo() {
+    logClickOriginalVideo('settings_sheet');
+    window.open('https://youtu.be/BBGEG21CGo0', '_blank');
   }
 </script>
 
@@ -130,7 +146,7 @@
                   ? "bg-gradient-to-br from-primary to-primary/80 border-transparent text-primary-foreground shadow-[0_2px_8px_oklch(0.52_0.2_30/0.25)]"
                   : "border border-border bg-muted/30 text-muted-foreground hover:border-foreground/20 hover:text-foreground"
               )}
-              onclick={() => { videoState.pauseOnSheetOpen = true; pause(); }}
+              onclick={() => { videoState.pauseOnSheetOpen = true; pause(); logTogglePauseOnOpen(true); }}
             >
               Pause on Open
             </button>
@@ -140,7 +156,7 @@
                   ? "bg-gradient-to-br from-primary to-primary/80 border-transparent text-primary-foreground shadow-[0_2px_8px_oklch(0.52_0.2_30/0.25)]"
                   : "border border-border bg-muted/30 text-muted-foreground hover:border-foreground/20 hover:text-foreground"
               )}
-              onclick={() => { videoState.pauseOnSheetOpen = false; play(); firstPlayUnmute(); }}
+              onclick={() => { videoState.pauseOnSheetOpen = false; play(); firstPlayUnmute(); logTogglePauseOnOpen(false); }}
             >
               Keep Playing
             </button>
@@ -197,7 +213,7 @@
           <div class="grid grid-cols-2 gap-2">
             <button
               class="inline-flex items-center justify-center gap-1.5 rounded-lg border border-border bg-muted/30 px-3 py-2 text-sm font-medium text-muted-foreground transition-all hover:border-foreground/20 hover:bg-muted/50 hover:text-foreground"
-              onclick={() => window.open('https://youtu.be/BBGEG21CGo0', '_blank')}
+              onclick={openOriginalVideo}
             >
               <ExternalLink size={15} />
               Original Video
@@ -230,13 +246,16 @@
         <div class="h-3.5 w-px bg-border"></div>
 
         <div class="flex items-center gap-2.5">
-          <a href="https://hmziq.rs" target="_blank" rel="noopener noreferrer" class="text-muted-foreground transition-all hover:text-primary hover:-translate-y-0.5" aria-label="Website">
+          <a href="https://hmziq.rs" target="_blank" rel="noopener noreferrer" onclick={() => logClickSocialLink('hmziq.rs', 'https://hmziq.rs')} class="text-muted-foreground transition-all hover:text-primary hover:-translate-y-0.5" aria-label="hmziq.rs">
             <Globe size={14} />
           </a>
-          <a href="https://github.com/hmziqrs" target="_blank" rel="noopener noreferrer" class="text-muted-foreground transition-all hover:text-primary hover:-translate-y-0.5" aria-label="GitHub">
+          <a href="https://hmziq.xyz" target="_blank" rel="noopener noreferrer" onclick={() => logClickSocialLink('hmziq.xyz', 'https://hmziq.xyz')} class="text-muted-foreground transition-all hover:text-primary hover:-translate-y-0.5" aria-label="hmziq.xyz">
+            <Globe size={14} />
+          </a>
+          <a href="https://github.com/hmziqrs" target="_blank" rel="noopener noreferrer" onclick={() => logClickSocialLink('github', 'https://github.com/hmziqrs')} class="text-muted-foreground transition-all hover:text-primary hover:-translate-y-0.5" aria-label="GitHub">
             <GitHubIcon size={14} />
           </a>
-          <a href="https://x.com/hmziqrs" target="_blank" rel="noopener noreferrer" class="text-muted-foreground transition-all hover:text-primary hover:-translate-y-0.5" aria-label="X (Twitter)">
+          <a href="https://x.com/hmziqrs" target="_blank" rel="noopener noreferrer" onclick={() => logClickSocialLink('x', 'https://x.com/hmziqrs')} class="text-muted-foreground transition-all hover:text-primary hover:-translate-y-0.5" aria-label="X (Twitter)">
             <XBrandIcon size={14} />
           </a>
         </div>

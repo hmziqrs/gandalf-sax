@@ -30,8 +30,10 @@
 			<p class="text-sm text-muted-foreground">
 				This site uses
 				<strong class="text-foreground">localStorage</strong>
-				to remember your theme preference. No cookies, no tracking, no data
-				leaves your device.
+				for your theme preference and
+				<strong class="text-foreground">Firebase Analytics</strong>
+				(Google Analytics) with cookies to measure anonymous, aggregate usage.
+				No accounts, no ads, no selling of data.
 				<a
 					href="/privacy"
 					class="font-medium text-primary transition-colors hover:text-primary/80"

@@ -9,6 +9,16 @@
 		pause,
 		firstPlayUnmute,
 	} from "$lib/stores.svelte";
+	import {
+		logViewHomeScreen,
+		logVideoLoaded,
+		logPlayerError,
+		logOpenSheet,
+		logResync,
+		logSyncCompleted,
+		logSyncFailed,
+	} from "$lib/analytics";
+	import { SyncSource } from "$lib/ntp";
 	import ControlsOverlay from "./ControlsOverlay.svelte";
 
 	let videoElement: HTMLVideoElement;
@@ -17,14 +27,21 @@
 	onMount(() => {
 		if (!videoElement) return;
 
+		logViewHomeScreen();
+
 		// Register the video element so store actions can control it
 		registerVideoElement(videoElement);
 
 		// Sync NTP once on boot to measure offset, then reuse it forever
-		ntpClient.sync().then(() => {
+		ntpClient.sync().then((result) => {
 			videoState.isSynced = ntpClient.isSynced;
 			videoState.syncSource = ntpClient.syncSource;
 			seekToSyncedPosition();
+
+			logSyncCompleted(result.source, result.offsetMs);
+			if (result.source === SyncSource.DEVICE_CLOCK) {
+				logSyncFailed();
+			}
 		});
 
 		// Track position
@@ -62,9 +79,10 @@
 	function handleVideoClick(e: MouseEvent) {
 		e.stopPropagation();
 		if (videoState.pauseOnSheetOpen) {
-			pause();
+			pause("open_sheet");
 		}
 		videoState.isSettingsOpen = true;
+		logOpenSheet();
 	}
 
 	/**
@@ -75,12 +93,19 @@
 	 * the user's close click satisfies the browser autoplay policy.
 	 */
 	export function onResumeFromSettings() {
-		play();
+		play("sheet_close");
 		firstPlayUnmute();
+		logResync("sheet_close");
 	}
 
 	function handleLoadedMetadata() {
 		seekToSyncedPosition();
+		logVideoLoaded(videoElement.duration * 1000);
+	}
+
+	function handleVideoError() {
+		const err = videoElement?.error;
+		logPlayerError(err ? `code ${err.code}: ${err.message}` : "unknown");
 	}
 </script>
 
@@ -99,6 +124,7 @@
 		muted
 		playsinline
 		onloadedmetadata={handleLoadedMetadata}
+		onerror={handleVideoError}
 		class="w-full h-full object-contain bg-black"
 	></video>
 

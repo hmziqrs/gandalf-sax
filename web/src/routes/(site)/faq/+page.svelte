@@ -38,7 +38,7 @@
 		{
 			question: "Does Epic Sax Gandalf collect any personal data?",
 			answer:
-				"No. The app collects no personal data, uses no tracking cookies, and requires no account. It only stores your theme preference (light/dark) locally in your browser. That's it. No catches, no fine print.",
+				"No personal data — no names, no emails, no accounts. The site uses Firebase Analytics (Google Analytics) to measure anonymous, aggregate usage like which features get used and rough geography, which relies on cookies. Nothing is ever sold, and there are no ads. Your theme preference stays in your browser's local storage. See the Privacy Policy for the full breakdown.",
 		},
 	];
 </script>

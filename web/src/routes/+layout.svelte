@@ -1,10 +1,21 @@
 <script lang="ts">
 	import "../app.css";
+	import { onMount } from "svelte";
+	import { afterNavigate } from "$app/navigation";
 	import { getThemeMode } from "$lib/stores.svelte";
 	import type { ThemeMode } from "$lib/stores.svelte";
+	import { initAnalytics, logPageView } from "$lib/analytics";
 	import ConsentBanner from "$lib/components/ConsentBanner.svelte";
 
 	let { children } = $props();
+
+	onMount(() => {
+		initAnalytics();
+	});
+
+	afterNavigate((nav) => {
+		logPageView(nav.to?.url.pathname ?? location.pathname);
+	});
 
 	function applyTheme(mode: ThemeMode) {
 		if (typeof document === "undefined") return;

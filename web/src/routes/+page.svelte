@@ -5,6 +5,7 @@
 	import { onMount } from "svelte";
 	import Seo from "$lib/components/Seo.svelte";
 	import { pages } from "$lib/seo";
+	import { logToggleFullscreen } from "$lib/analytics";
 
 	let videoPlayer: VideoPlayer;
 
@@ -22,6 +23,7 @@
 
 		function handleFullscreenChange() {
 			videoState.isFullscreen = !!document.fullscreenElement;
+			logToggleFullscreen(videoState.isFullscreen);
 		}
 
 		document.addEventListener("keydown", handleKeydown);

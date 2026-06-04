@@ -1,4 +1,11 @@
 import { NtpClient, SyncSource } from "./ntp";
+import {
+	logPlaybackStarted,
+	logPlaybackResumed,
+	logPlaybackPaused,
+	logToggleMute,
+	logChangeVolume,
+} from "./analytics";
 
 export type ThemeMode = "light" | "dark" | "system";
 
@@ -82,19 +89,28 @@ export function seekToSyncedPosition() {
 	_videoElement.currentTime = ntpClient.seekPositionSec(durationSec);
 }
 
-/** Pause the video */
-export function pause() {
+let _hasStartedPlayback = false;
+
+/** Pause the video. `reason` is reported to analytics (e.g. "open_sheet", "manual"). */
+export function pause(reason = "manual") {
 	if (!_videoElement) return;
 	_videoElement.pause();
 	videoState.isPlaying = false;
+	logPlaybackPaused(reason);
 }
 
-/** Seek to synced position and play */
-export function play() {
+/** Seek to synced position and play. `reason` is reported to analytics. */
+export function play(reason = "manual") {
 	if (!_videoElement) return;
 	seekToSyncedPosition();
 	_videoElement.play();
 	videoState.isPlaying = true;
+	if (_hasStartedPlayback) {
+		logPlaybackResumed(reason);
+	} else {
+		_hasStartedPlayback = true;
+		logPlaybackStarted();
+	}
 }
 
 // --- Action functions ---
@@ -116,10 +132,12 @@ export function toggleMute() {
 		videoState.isMuted = true;
 		videoState.volume = 0;
 	}
+	logToggleMute(videoState.isMuted);
 }
 
 let _prevVolume = 1;
 let _hasPlayedOnce = false;
+let _volumeLogTimer: ReturnType<typeof setTimeout> | undefined;
 
 /** Unmute on first user interaction (satisfies browser autoplay policy). */
 export function firstPlayUnmute() {
@@ -136,4 +154,7 @@ export function setVolume(v: number) {
 		videoState.isMuted = false;
 		_prevVolume = v;
 	}
+	// Debounce: the slider fires many events while dragging.
+	clearTimeout(_volumeLogTimer);
+	_volumeLogTimer = setTimeout(() => logChangeVolume(videoState.volume), 400);
 }

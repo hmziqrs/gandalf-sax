@@ -2,6 +2,7 @@
 	import Seo from "$lib/components/Seo.svelte";
 	import PageHeader from "$lib/components/PageHeader.svelte";
 	import { pages } from "$lib/seo";
+	import { logClickOriginalVideo } from "$lib/analytics";
 </script>
 
 <Seo seo={pages['/terms']} />
@@ -53,6 +54,7 @@
 					href="https://youtu.be/BBGEG21CGo0"
 					target="_blank"
 					rel="noopener noreferrer"
+					onclick={() => logClickOriginalVideo("terms")}
 					class="font-medium text-primary transition-colors hover:text-primary/80"
 				>
 					YouTube

@@ -5,9 +5,11 @@
 	import Seo from "$lib/components/Seo.svelte";
 	import PageHeader from "$lib/components/PageHeader.svelte";
 	import { pages } from "$lib/seo";
+	import { logClickSocialLink } from "$lib/analytics";
 
 	const links = [
 		{ icon: Globe, label: "Website", handle: "hmziq.rs", href: "https://hmziq.rs" },
+		{ icon: Globe, label: "Website", handle: "hmziq.xyz", href: "https://hmziq.xyz" },
 		{
 			icon: GitHubIcon,
 			label: "GitHub",
@@ -32,12 +34,13 @@
 />
 
 <div class="mx-auto max-w-3xl px-4 py-14">
-	<div class="grid gap-4 sm:grid-cols-3">
+	<div class="grid gap-4 sm:grid-cols-2">
 		{#each links as link}
 			<a
 				href={link.href}
 				target="_blank"
 				rel="noopener noreferrer"
+				onclick={() => logClickSocialLink(link.handle, link.href)}
 				class="group relative flex flex-col gap-4 rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/40 hover:bg-accent/40"
 			>
 				<div class="flex items-center justify-between">

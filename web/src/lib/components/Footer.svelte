@@ -3,6 +3,7 @@
 	import GitHubIcon from "$lib/components/icons/GitHub.svelte";
 	import XBrandIcon from "$lib/components/icons/XBrand.svelte";
 	import { Globe } from "@lucide/svelte";
+	import { logClickSocialLink } from "$lib/analytics";
 </script>
 
 <footer class="border-t border-border bg-background">
@@ -68,8 +69,19 @@
 					href="https://hmziq.rs"
 					target="_blank"
 					rel="noopener noreferrer"
+					onclick={() => logClickSocialLink("hmziq.rs", "https://hmziq.rs")}
 					class="text-muted-foreground transition-colors hover:text-foreground"
 					aria-label="Website"
+				>
+					<Globe size={18} />
+				</a>
+				<a
+					href="https://hmziq.xyz"
+					target="_blank"
+					rel="noopener noreferrer"
+					onclick={() => logClickSocialLink("hmziq.xyz", "https://hmziq.xyz")}
+					class="text-muted-foreground transition-colors hover:text-foreground"
+					aria-label="hmziq.xyz"
 				>
 					<Globe size={18} />
 				</a>
@@ -77,6 +89,7 @@
 					href="https://github.com/hmziqrs"
 					target="_blank"
 					rel="noopener noreferrer"
+					onclick={() => logClickSocialLink("github", "https://github.com/hmziqrs")}
 					class="text-muted-foreground transition-colors hover:text-foreground"
 					aria-label="GitHub"
 				>
@@ -86,6 +99,7 @@
 					href="https://x.com/hmziqrs"
 					target="_blank"
 					rel="noopener noreferrer"
+					onclick={() => logClickSocialLink("x", "https://x.com/hmziqrs")}
 					class="text-muted-foreground transition-colors hover:text-foreground"
 					aria-label="X (Twitter)"
 				>
@@ -94,7 +108,11 @@
 			</div>
 
 			<p class="text-center text-xs text-muted-foreground">
-				&copy; 2026 <span class="text-shimmer font-medium">hmziqrs</span>. All rights reserved.
+				&copy; 2026 <a href="https://hmziq.rs" target="_blank" rel="noopener noreferrer" class="text-shimmer font-medium hover:text-foreground">hmziqrs</a>. All rights reserved.
+			</p>
+			<p class="text-center text-xs text-muted-foreground">
+				Built with <a href="https://kit.svelte.dev" target="_blank" rel="noopener noreferrer" class="underline transition-colors hover:text-foreground">SvelteKit 5</a>
+				and deployed by <a href="https://pages.cloudflare.com" target="_blank" rel="noopener noreferrer" class="underline transition-colors hover:text-foreground">Cloudflare Pages</a>.
 			</p>
 		</div>
 	</div>

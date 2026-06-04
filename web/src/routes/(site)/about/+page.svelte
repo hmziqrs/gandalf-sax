@@ -3,6 +3,7 @@
 	import PageHeader from "$lib/components/PageHeader.svelte";
 	import { pages } from "$lib/seo";
 	import { Button } from "$lib/components/ui/button";
+	import { logClickOriginalVideo, logClickExternalLink } from "$lib/analytics";
 </script>
 
 <Seo seo={pages['/about']} />
@@ -41,6 +42,7 @@
 						href="https://en.wikipedia.org/wiki/Eurovision_Song_Contest_2010"
 						target="_blank"
 						rel="noopener noreferrer"
+						onclick={() => logClickExternalLink("https://en.wikipedia.org/wiki/Eurovision_Song_Contest_2010", "eurovision_wiki")}
 						class="font-medium text-primary transition-colors hover:text-primary/80"
 					>Eurovision Song Contest 2010</a>,
 					where Moldova's SunStroke Project performed "Run Away" featuring
@@ -61,6 +63,7 @@
 						href="https://youtu.be/BBGEG21CGo0"
 						target="_blank"
 						rel="noopener noreferrer"
+						onclick={() => logClickOriginalVideo("about")}
 						class="font-medium text-primary transition-colors hover:text-primary/80"
 					>video that started it all</a>.
 				</p>
@@ -115,6 +118,7 @@
 						href="https://github.com/hmziqrs/gandalf-sax"
 						target="_blank"
 						rel="noopener noreferrer"
+						onclick={() => logClickExternalLink("https://github.com/hmziqrs/gandalf-sax", "github_repo")}
 						class="font-medium text-primary transition-colors hover:text-primary/80"
 					>
 						GitHub
