@@ -74,7 +74,36 @@
 					class="font-medium text-primary transition-colors hover:text-primary/80"
 				>
 					GitHub Issues
-				</a>
+				</a>.
+				I try to respond within a day or two — though if I'm deep in a
+				sax-remix rabbit hole, it might take a beat longer.
+			</p>
+		</section>
+
+		<section class="border-l-2 border-primary/30 pl-6">
+			<h2 class="text-xl font-semibold">Quick Answers</h2>
+			<div class="mt-4 space-y-5">
+				<div>
+					<h3 class="font-medium">Can I use this in my project?</h3>
+					<p class="mt-1 text-sm leading-relaxed text-muted-foreground">
+						Yes — the code is open source under the MIT license. Fork it,
+						remix it, deploy your own synchronized meme. Just don't blame
+						me if it becomes your most-used project.
+					</p>
+				</div>
+
+				<div>
+					<h3 class="font-medium">How do I report a bug?</h3>
+					<p class="mt-1 text-sm leading-relaxed text-muted-foreground">
+						Open an issue on
+						<a
+							href="https://github.com/hmziqrs/gandalf-sax/issues?ref=gandalf.hmziq.xyz"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="font-medium text-primary transition-colors hover:text-primary/80"
+						>
+							GitHub
+						</a>
 						with steps to reproduce. Screenshots help. Dramatic
 						re-enactments are optional but appreciated.
 					</p>
