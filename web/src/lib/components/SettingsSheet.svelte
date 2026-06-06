@@ -232,7 +232,7 @@
       <!-- Footer: page links + dev info -->
       <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
         <div class="flex items-center gap-2">
-          <a href="/" class="text-[0.7rem] font-medium text-muted-foreground transition-colors hover:text-foreground">Home</a>
+          <a href="/home" class="text-[0.7rem] font-medium text-muted-foreground transition-colors hover:text-foreground">Home</a>
           <div class="h-1 w-1 rounded-full bg-primary/60"></div>
           <a href="/about" class="text-[0.7rem] font-medium text-muted-foreground transition-colors hover:text-foreground">About</a>
           <div class="h-1 w-1 rounded-full bg-primary/60"></div>
