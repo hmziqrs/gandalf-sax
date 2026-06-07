@@ -10,9 +10,9 @@ class SettingsViewController: NSViewController {
 
     private let linkURLs: [String] = [
         "https://hmziq.rs",
+        "https://hmziq.xyz",
         "https://github.com/hmziqrs",
         "https://x.com/hmziqrs",
-        "https://t.me/hmziqrs",
     ]
 
     init(syncSource: NtpClient.SyncSource, onDismiss: @escaping () -> Void) {
@@ -131,7 +131,7 @@ class SettingsViewController: NSViewController {
 
         // Developer section
         stack.addArrangedSubview(makeSectionHeader("Developer", icon: "curlybraces"))
-        stack.addArrangedSubview(makeDevLinksRow())
+        stack.addArrangedSubview(makeBuiltByRow())
         stack.addArrangedSubview(makeSeparator())
 
         // Video section
@@ -163,7 +163,7 @@ class SettingsViewController: NSViewController {
         container.orientation = .vertical
         container.spacing = 3
 
-        let title = NSTextField(labelWithString: "Epic Sax Gandalf")
+        let title = NSTextField(labelWithString: "Behold the glory of infinite Gandalf!")
         title.font = NSFont.systemFont(ofSize: 17, weight: .bold)
 
         let subtitle = NSTextField(labelWithString: "Billions must be entertained!")
@@ -264,17 +264,35 @@ class SettingsViewController: NSViewController {
         return checkbox
     }
 
-    private func makeDevLinksRow() -> NSView {
+    private func makeBuiltByRow() -> NSView {
         let container = NSStackView()
         container.orientation = .horizontal
         container.spacing = 8
+        container.alignment = .centerY
 
-        let icons = ["globe", "chevron.left.forwardslash.chevron.right", "xmark", "paperplane"]
-        let tooltips = ["Website", "GitHub", "X (Twitter)", "Telegram"]
+        let builtLabel = NSTextField(labelWithString: "Built by ")
+        builtLabel.font = NSFont.systemFont(ofSize: 11, weight: .regular)
+        builtLabel.textColor = .tertiaryLabelColor
+        builtLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+
+        let nameLabel = NSTextField(labelWithString: user)
+        nameLabel.font = NSFont.systemFont(ofSize: 11, weight: .semibold)
+        nameLabel.textColor = .controlAccentColor
+        nameLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+
+        container.addArrangedSubview(builtLabel)
+        container.addArrangedSubview(nameLabel)
+
+        let spacer = NSView()
+        container.addArrangedSubview(spacer)
+
+        // Social links
+        let icons = ["globe", "globe", "chevron.left.forwardslash.chevron.right", "xmark"]
+        let tooltips = ["hmziq.rs", "hmziq.xyz", "GitHub", "X (Twitter)"]
 
         for (index, icon) in icons.enumerated() {
             let button = NSButton()
-            let config = NSImage.SymbolConfiguration(pointSize: 14, weight: .regular)
+            let config = NSImage.SymbolConfiguration(pointSize: 13, weight: .regular)
             button.image = NSImage(systemSymbolName: icon,
                                    accessibilityDescription: nil)?.withSymbolConfiguration(config)
             button.imagePosition = .imageOnly

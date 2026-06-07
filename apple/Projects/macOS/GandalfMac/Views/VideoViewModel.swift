@@ -1,7 +1,6 @@
 import Foundation
 import AVFoundation
 import os.log
-import Combine
 import GandalfShared
 
 @MainActor
@@ -13,7 +12,6 @@ class VideoViewModel: ObservableObject {
     private var playerLooper: AVPlayerLooper?
     private var ntpClient = NtpClient()
     private var isFirstSync = true
-    private var resyncTimer: Timer?
     private var videoDurationMicros: Int64 = 0
 
     // Stored sync reference state
@@ -59,7 +57,6 @@ class VideoViewModel: ObservableObject {
             await performSync()
             player.play()
             logger.info("Playback started")
-            startResyncTimer()
         }
     }
 
@@ -123,18 +120,5 @@ class VideoViewModel: ObservableObject {
         await player.seek(to: time, toleranceBefore: .zero, toleranceAfter: .zero)
 
         isFirstSync = false
-    }
-
-    private func startResyncTimer() {
-        resyncTimer?.invalidate()
-        resyncTimer = Timer.scheduledTimer(withTimeInterval: NtpClient.resyncIntervalSeconds, repeats: true) { [weak self] _ in
-            Task { @MainActor in
-                await self?.performSync()
-            }
-        }
-    }
-
-    deinit {
-        resyncTimer?.invalidate()
     }
 }

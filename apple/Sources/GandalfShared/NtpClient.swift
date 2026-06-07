@@ -84,7 +84,19 @@ public actor NtpClient {
         logger.info("NTP: \(offsets.count)/\(Self.ntpServers.count) servers responded")
 
         if offsets.count < 2 {
-            logger.warning("NTP sync failed: only \(offsets.count) server(s) responded")
+            logger.warning("NTP sync failed: only \(offsets.count) server(s) responded, falling back to device clock")
+
+            // If we've never synced before, use device time as reference (offset = 0)
+            // so the seek calculation still produces a valid position.
+            if !isSynced {
+                let refMicros = Int64(Date().timeIntervalSince1970 * 1_000_000)
+                localReferenceMicros = refMicros
+                syncedTimeMicros = refMicros  // offset = 0 → synced = local
+                offsetMicros = 0
+            }
+            // Otherwise keep the previous successful NTP values — they remain
+            // valid until the next successful re-sync.
+
             return SyncResult(
                 offsetMicros: offsetMicros,
                 source: syncSource,
