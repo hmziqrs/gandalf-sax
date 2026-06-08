@@ -43,6 +43,25 @@ class MainViewController: NSViewController {
         viewModel.initialize()
     }
 
+    override func viewDidAppear() {
+        super.viewDidAppear()
+        guard let window = view.window else { return }
+
+        NotificationCenter.default.addObserver(
+            forName: NSWindow.didEnterFullScreenNotification,
+            object: window, queue: .main
+        ) { [weak self] _ in
+            self?.controlsOverlay?.setFullscreenState(true)
+        }
+
+        NotificationCenter.default.addObserver(
+            forName: NSWindow.didExitFullScreenNotification,
+            object: window, queue: .main
+        ) { [weak self] _ in
+            self?.controlsOverlay?.setFullscreenState(false)
+        }
+    }
+
     // MARK: - Setup
 
     private func setupPlayerView() {
