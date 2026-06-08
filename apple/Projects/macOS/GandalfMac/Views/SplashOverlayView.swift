@@ -4,6 +4,9 @@ import AppKit
 /// Blocks all taps and consumes mouse events while visible.
 class SplashOverlayView: NSView {
 
+    /// When true, hitTest returns nil so events pass through during fade-out.
+    var stopsHitTesting = false
+
     private let spinner = NSProgressIndicator()
     private let statusLabel = NSTextField(labelWithString: "Syncing time…")
     private let titleLabel = NSTextField(labelWithString: "Epic Sax Gandalf")
@@ -72,6 +75,11 @@ class SplashOverlayView: NSView {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    /// Pass-through events once dismiss has started; consume them otherwise.
+    override func hitTest(_ point: NSPoint) -> NSView? {
+        return stopsHitTesting ? nil : super.hitTest(point)
     }
 
     /// Consume all mouse events so nothing behind the splash is clickable.

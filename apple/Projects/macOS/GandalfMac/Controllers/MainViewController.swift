@@ -116,6 +116,9 @@ class MainViewController: NSViewController {
     private func dismissSplash() {
         guard let splash = splashView else { return }
 
+        // Stop consuming events immediately — the fade is purely visual
+        splash.stopsHitTesting = true
+
         NSAnimationContext.runAnimationGroup({ ctx in
             ctx.duration = 0.3
             ctx.timingFunction = CAMediaTimingFunction(name: .easeOut)

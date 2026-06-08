@@ -28,10 +28,10 @@ class VideoViewModel: ObservableObject {
 
         guard let url = Bundle.main.url(forResource: "video", withExtension: "mp4") else {
             logger.error("ERROR: video.mp4 not found in bundle")
-            // List bundle resources for debugging
             if let urls = Bundle.main.urls(forResourcesWithExtension: "mp4", subdirectory: nil) {
                 logger.error("Found mp4 files: \(urls)")
             }
+            isReady = true  // Dismiss splash even on failure
             return
         }
 
@@ -50,6 +50,12 @@ class VideoViewModel: ObservableObject {
             let durationSecs = CMTimeGetSeconds(duration ?? .zero)
             videoDurationMicros = Int64(durationSecs * 1_000_000)
             logger.info("Video duration: \(durationSecs)s (\(self.videoDurationMicros)µs)")
+
+            guard videoDurationMicros > 0 else {
+                logger.error("Video duration is 0 — asset may be unreadable")
+                isReady = true
+                return
+            }
 
             // Set up looper now that we have the item loaded
             playerLooper = AVPlayerLooper(player: player, templateItem: item)
