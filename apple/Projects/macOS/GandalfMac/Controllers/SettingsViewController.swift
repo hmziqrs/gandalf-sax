@@ -251,6 +251,7 @@ class SettingsViewController: NSViewController {
             action: #selector(themeChanged(_:))
         )
         segmented.selectedSegment = currentThemeSegmentIndex()
+        segmented.toolTip = "Switch between light, dark, or system appearance"
         segmented.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         container.addArrangedSubview(segmented)
 
@@ -263,44 +264,45 @@ class SettingsViewController: NSViewController {
     private func makePlaybackRow() -> NSView {
         let container = NSStackView()
         container.orientation = .horizontal
-        container.spacing = 8
+        container.spacing = 10
+        container.alignment = .centerY
+        container.distribution = .fillEqually
 
         let pauseOnOpen = UserDefaults.standard.object(forKey: "pause_on_open") as? Bool ?? true
 
-        let pauseBtn = makeToggleButton(
+        container.addArrangedSubview(makeToggleButton(
             title: "Pause on Open",
             tag: 0,
             active: pauseOnOpen,
-            action: #selector(pauseOnOpenTapped(_:))
-        )
+            action: #selector(pauseOnOpenTapped(_:)),
+            toolTip: "Pause the video when this panel opens"
+        ))
 
-        let keepPlayingBtn = makeToggleButton(
+        container.addArrangedSubview(makeToggleButton(
             title: "Keep Playing",
             tag: 1,
             active: !pauseOnOpen,
-            action: #selector(keepPlayingTapped(_:))
-        )
-
-        container.addArrangedSubview(pauseBtn)
-        container.addArrangedSubview(keepPlayingBtn)
-
-        let spacer = NSView()
-        container.addArrangedSubview(spacer)
+            action: #selector(keepPlayingTapped(_:)),
+            toolTip: "Continue playing the video while this panel is open"
+        ))
 
         return container
     }
 
-    private func makeToggleButton(title: String, tag: Int, active: Bool, action: Selector) -> NSButton {
+    private func makeToggleButton(title: String, tag: Int, active: Bool, action: Selector, toolTip: String) -> NSButton {
         let button = NSButton(title: title, target: self, action: action)
         button.tag = tag
         button.isBordered = false
-        button.font = NSFont.systemFont(ofSize: 13, weight: .semibold)
+        button.font = NSFont.systemFont(ofSize: 12, weight: .semibold)
+        button.alignment = .center
+        button.toolTip = toolTip
         button.wantsLayer = true
         button.layer?.cornerRadius = 8
         button.layer?.cornerCurve = .continuous
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.setContentHuggingPriority(.defaultLow, for: .horizontal)
         NSLayoutConstraint.activate([
-            button.heightAnchor.constraint(equalToConstant: 32),
+            button.heightAnchor.constraint(equalToConstant: 34),
         ])
         applyToggleStyle(button, active: active)
         return button
@@ -309,18 +311,19 @@ class SettingsViewController: NSViewController {
     private func applyToggleStyle(_ button: NSButton, active: Bool) {
         if active {
             button.contentTintColor = .white
-            button.layer?.backgroundColor = NSColor.controlAccentColor.cgColor
-            button.layer?.shadowColor = NSColor.controlAccentColor.withAlphaComponent(0.3).cgColor
+            let accent = NSColor.controlAccentColor.usingColorSpace(.sRGB) ?? NSColor.systemBlue
+            button.layer?.backgroundColor = accent.cgColor
+            button.layer?.shadowColor = accent.withAlphaComponent(0.35).cgColor
             button.layer?.shadowOpacity = 1
-            button.layer?.shadowRadius = 6
+            button.layer?.shadowRadius = 8
             button.layer?.shadowOffset = NSSize(width: 0, height: 2)
             button.layer?.borderWidth = 0
         } else {
-            button.contentTintColor = .labelColor
-            button.layer?.backgroundColor = NSColor.controlBackgroundColor.withAlphaComponent(0.6).cgColor
+            button.contentTintColor = .tertiaryLabelColor
+            button.layer?.backgroundColor = NSColor.white.withAlphaComponent(0.04).cgColor
             button.layer?.shadowOpacity = 0
-            button.layer?.borderColor = NSColor.separatorColor.withAlphaComponent(0.8).cgColor
-            button.layer?.borderWidth = 1.5
+            button.layer?.borderColor = NSColor.white.withAlphaComponent(0.1).cgColor
+            button.layer?.borderWidth = 1
         }
     }
 
@@ -348,7 +351,12 @@ class SettingsViewController: NSViewController {
 
         // Social links
         let icons = ["globe", "globe", "chevron.left.forwardslash.chevron.right", "xmark"]
-        let tooltips = ["hmziq.rs", "hmziq.xyz", "GitHub", "X (Twitter)"]
+        let tooltips = [
+            "Visit hmziq.rs — developer portfolio",
+            "Visit hmziq.xyz — developer website",
+            "View GitHub profile",
+            "Follow on X (Twitter)",
+        ]
 
         for (index, icon) in icons.enumerated() {
             let button = NSButton()
@@ -377,6 +385,7 @@ class SettingsViewController: NSViewController {
                                   target: self,
                                   action: #selector(openVideoLink(_:)))
         linkButton.bezelStyle = .accessoryBarAction
+        linkButton.toolTip = "Open the original YouTube video in your browser"
         let playConfig = NSImage.SymbolConfiguration(pointSize: 12, weight: .regular)
         linkButton.image = NSImage(systemSymbolName: "play.rectangle",
                                    accessibilityDescription: nil)?.withSymbolConfiguration(playConfig)
@@ -391,7 +400,7 @@ class SettingsViewController: NSViewController {
         shareButton.bezelStyle = .accessoryBarAction
         shareButton.target = self
         shareButton.action = #selector(shareLink(_:))
-        shareButton.toolTip = "Share"
+        shareButton.toolTip = "Share this video with others"
         container.addArrangedSubview(shareButton)
 
         let spacer = NSView()

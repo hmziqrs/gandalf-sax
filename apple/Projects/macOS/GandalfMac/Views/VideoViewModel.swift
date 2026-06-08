@@ -5,8 +5,11 @@ import GandalfShared
 
 @MainActor
 class VideoViewModel: ObservableObject {
-    @Published var isInitialized = false
+    @Published var isReady = false
     @Published var syncSource: NtpClient.SyncSource = .deviceClock
+
+    /// Set by MainViewController to track whether the settings sheet is open.
+    var isSettingsOpen = false
 
     let player = AVQueuePlayer()
     private var playerLooper: AVPlayerLooper?
@@ -51,12 +54,19 @@ class VideoViewModel: ObservableObject {
             // Set up looper now that we have the item loaded
             playerLooper = AVPlayerLooper(player: player, templateItem: item)
 
-            isInitialized = true
             logger.info("Player initialized, starting NTP sync...")
 
             await performSync()
-            player.play()
-            logger.info("Playback started")
+
+            // Only auto-play if settings sheet isn't open
+            if !isSettingsOpen {
+                player.play()
+                logger.info("Playback started")
+            } else {
+                logger.info("Settings sheet is open — deferring playback")
+            }
+
+            isReady = true
         }
     }
 
@@ -70,6 +80,13 @@ class VideoViewModel: ObservableObject {
 
     func syncVideo() {
         Task {
+            // If the initial sync hasn't completed yet, skip — the
+            // initialize() pipeline will handle playback when ready.
+            guard isReady else {
+                logger.info("syncVideo skipped — initial sync still pending")
+                return
+            }
+
             if syncedTimeMicros == 0 {
                 // No stored reference yet — fall back to full sync
                 await performSync()

@@ -16,6 +16,8 @@
 		A5C0BDC56211C957B5469ED3 /* PlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D968431797741159D1101E /* PlayerView.swift */; };
 		F2E1D0C9B8A7F6E5D4C3B2A1 /* VideoControlsOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F2 /* VideoControlsOverlay.swift */; };
 		B29F3DD36898C350B6ECACBD /* ModalOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69BADC01F41A61A985EE482E /* ModalOverlayView.swift */; };
+		A7F1D2E3B4C5A6987D8E9F01 /* SplashOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D2E3F4A5B6C7D8E9F0A1B2 /* SplashOverlayView.swift */; };
+
 		BCD1A8951D4E3B1188C51B72 /* GandalfShared in Frameworks */ = {isa = PBXBuildFile; productRef = 135080D7AF2FA86D4BE1EB41 /* GandalfShared */; };
 		D281228E437A20D3C862B622 /* MainWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B7EE0D28211AE98A40D4A8C /* MainWindowController.swift */; };
 		DBEF6EDA24200D41C9F296CE /* video.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 87E1DD2870310A892F189A01 /* video.mp4 */; };
@@ -31,6 +33,8 @@
 		4B7EE0D28211AE98A40D4A8C /* MainWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowController.swift; sourceTree = "<group>"; };
 		5350FDB45F4B88FA76AF194A /* VideoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoViewModel.swift; sourceTree = "<group>"; };
 		69BADC01F41A61A985EE482E /* ModalOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalOverlayView.swift; sourceTree = "<group>"; };
+		C1D2E3F4A5B6C7D8E9F0A1B2 /* SplashOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashOverlayView.swift; sourceTree = "<group>"; };
+
 		8432A622FA316ACE620750FC /* apple */ = {isa = PBXFileReference; lastKnownFileType = folder; name = apple; path = ../..; sourceTree = SOURCE_ROOT; };
 		87E1DD2870310A892F189A01 /* video.mp4 */ = {isa = PBXFileReference; path = video.mp4; sourceTree = "<group>"; };
 		A42E081BA303D2F2D6A95A01 /* Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Analytics.swift; sourceTree = "<group>"; };
@@ -83,6 +87,7 @@
 			children = (
 				3387F70C14B63B0FDA8A19B4 /* HintOverlayView.swift */,
 				69BADC01F41A61A985EE482E /* ModalOverlayView.swift */,
+				C1D2E3F4A5B6C7D8E9F0A1B2 /* SplashOverlayView.swift */,
 				D7D968431797741159D1101E /* PlayerView.swift */,
 				A1B2C3D4E5F6A7B8C9D0E1F2 /* VideoControlsOverlay.swift */,
 				5350FDB45F4B88FA76AF194A /* VideoViewModel.swift */,
@@ -211,6 +216,7 @@
 				1C39859F37C456DAEB984122 /* MainViewController.swift in Sources */,
 				D281228E437A20D3C862B622 /* MainWindowController.swift in Sources */,
 				B29F3DD36898C350B6ECACBD /* ModalOverlayView.swift in Sources */,
+				A7F1D2E3B4C5A6987D8E9F01 /* SplashOverlayView.swift in Sources */,
 				A5C0BDC56211C957B5469ED3 /* PlayerView.swift in Sources */,
 				F2E1D0C9B8A7F6E5D4C3B2A1 /* VideoControlsOverlay.swift in Sources */,
 				2CDC99E39DF4B8A4C57B37D2 /* SettingsViewController.swift in Sources */,

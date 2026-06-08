@@ -1,15 +1,18 @@
 import AppKit
 import AVFoundation
 import GandalfShared
+import Combine
 
 class MainViewController: NSViewController {
     private let viewModel: VideoViewModel
     private var playerView: PlayerView!
     private var controlsOverlay: VideoControlsOverlay?
+    private var splashView: SplashOverlayView?
 
     // Overlay modal state
     private var overlayView: ModalOverlayView?
     private var settingsViewController: SettingsViewController?
+    private var cancellables = Set<AnyCancellable>()
 
     init(viewModel: VideoViewModel) {
         self.viewModel = viewModel
@@ -32,7 +35,9 @@ class MainViewController: NSViewController {
         super.viewDidLoad()
         setupPlayerView()
         setupControlsOverlay()
+        setupSplash()
         setupKeyMonitor()
+        observeViewModel()
 
         MacAnalytics.logViewHomeScreen()
         viewModel.initialize()
@@ -48,7 +53,8 @@ class MainViewController: NSViewController {
             self?.handleVideoTap()
         }
         playerView.onMouseMove = { [weak self] in
-            self?.controlsOverlay?.show()
+            guard let self, self.viewModel.isReady else { return }
+            self.controlsOverlay?.show()
         }
         playerView.onMouseIdle = { [weak self] in
             self?.controlsOverlay?.hide()
@@ -83,9 +89,49 @@ class MainViewController: NSViewController {
         controlsOverlay = controls
     }
 
+    private func setupSplash() {
+        let splash = SplashOverlayView()
+        splash.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(splash)
+        NSLayoutConstraint.activate([
+            splash.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            splash.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            splash.topAnchor.constraint(equalTo: view.topAnchor),
+            splash.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+        splashView = splash
+    }
+
+    private func observeViewModel() {
+        viewModel.$isReady
+            .filter { $0 }
+            .first()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.dismissSplash()
+            }
+            .store(in: &cancellables)
+    }
+
+    private func dismissSplash() {
+        guard let splash = splashView else { return }
+
+        NSAnimationContext.runAnimationGroup({ ctx in
+            ctx.duration = 0.3
+            ctx.timingFunction = CAMediaTimingFunction(name: .easeOut)
+            splash.animator().alphaValue = 0
+        }, completionHandler: { [weak self] in
+            splash.removeFromSuperview()
+            self?.splashView = nil
+        })
+    }
+
     // MARK: - Actions
 
     private func handleVideoTap() {
+        // Block taps while loading
+        guard viewModel.isReady else { return }
+
         let pauseOnOpen = UserDefaults.standard.object(forKey: "pause_on_open") as? Bool ?? true
         if pauseOnOpen {
             viewModel.pause()
@@ -98,6 +144,8 @@ class MainViewController: NSViewController {
 
     private func showSettings() {
         guard overlayView == nil else { return }
+
+        viewModel.isSettingsOpen = true
 
         let settingsVC = SettingsViewController(
             syncSource: viewModel.syncSource,
@@ -177,6 +225,8 @@ class MainViewController: NSViewController {
             self.settingsViewController?.removeFromParent()
             self.settingsViewController = nil
             self.overlayView = nil
+            self.viewModel.isSettingsOpen = false
+
             let pauseOnOpen = UserDefaults.standard.object(forKey: "pause_on_open") as? Bool ?? true
             if pauseOnOpen {
                 self.viewModel.syncVideo()
@@ -196,7 +246,7 @@ class MainViewController: NSViewController {
         guard let chars = event.charactersIgnoringModifiers else { return event }
         let mods = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
 
-        // Cmd+Q → quit, Cmd+W → close window
+        // Cmd+Q → quit, Cmd+W → close window — always allowed
         if mods.contains(.command) {
             if chars == "q" {
                 NSApp.terminate(nil)
@@ -208,22 +258,24 @@ class MainViewController: NSViewController {
             }
         }
 
-        if chars == "f" && mods.isEmpty {
-            view.window?.toggleFullScreen(nil)
-            return nil
-        }
-
+        // Dismiss settings overlay if open (Escape or click-outside already handled)
         if event.keyCode == 53 { // Escape
-            // Dismiss settings overlay if open
             if overlayView != nil {
                 hideSettings()
                 return nil
             }
-            // Otherwise exit fullscreen
-            if view.window?.styleMask.contains(.fullScreen) == true {
+            // Only toggle fullscreen after loading is complete
+            if viewModel.isReady, view.window?.styleMask.contains(.fullScreen) == true {
                 view.window?.toggleFullScreen(nil)
                 return nil
             }
+            return nil
+        }
+
+        // F for fullscreen — only after loading
+        if chars == "f" && mods.isEmpty && viewModel.isReady {
+            view.window?.toggleFullScreen(nil)
+            return nil
         }
 
         return event
