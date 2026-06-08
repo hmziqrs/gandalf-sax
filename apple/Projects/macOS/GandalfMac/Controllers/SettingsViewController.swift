@@ -293,11 +293,15 @@ class SettingsViewController: NSViewController {
     private func makeToggleButton(title: String, tag: Int, active: Bool, action: Selector) -> NSButton {
         let button = NSButton(title: title, target: self, action: action)
         button.tag = tag
-        button.isBordered = true
-        button.font = NSFont.systemFont(ofSize: 12, weight: .semibold)
+        button.isBordered = false
+        button.font = NSFont.systemFont(ofSize: 13, weight: .semibold)
         button.wantsLayer = true
-        button.layer?.cornerRadius = 6
+        button.layer?.cornerRadius = 8
         button.layer?.cornerCurve = .continuous
+        button.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            button.heightAnchor.constraint(equalToConstant: 32),
+        ])
         applyToggleStyle(button, active: active)
         return button
     }
@@ -306,15 +310,17 @@ class SettingsViewController: NSViewController {
         if active {
             button.contentTintColor = .white
             button.layer?.backgroundColor = NSColor.controlAccentColor.cgColor
-            button.bezelStyle = .rounded
-            button.isBordered = false
+            button.layer?.shadowColor = NSColor.controlAccentColor.withAlphaComponent(0.3).cgColor
+            button.layer?.shadowOpacity = 1
+            button.layer?.shadowRadius = 6
+            button.layer?.shadowOffset = NSSize(width: 0, height: 2)
+            button.layer?.borderWidth = 0
         } else {
-            button.contentTintColor = .secondaryLabelColor
-            button.layer?.backgroundColor = NSColor.controlBackgroundColor.withAlphaComponent(0.5).cgColor
-            button.bezelStyle = .rounded
-            button.isBordered = false
-            button.layer?.borderColor = NSColor.separatorColor.cgColor
-            button.layer?.borderWidth = 1
+            button.contentTintColor = .labelColor
+            button.layer?.backgroundColor = NSColor.controlBackgroundColor.withAlphaComponent(0.6).cgColor
+            button.layer?.shadowOpacity = 0
+            button.layer?.borderColor = NSColor.separatorColor.withAlphaComponent(0.8).cgColor
+            button.layer?.borderWidth = 1.5
         }
     }
 
