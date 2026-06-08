@@ -86,7 +86,10 @@ class MainViewController: NSViewController {
     // MARK: - Actions
 
     private func handleVideoTap() {
-        viewModel.pause()
+        let pauseOnOpen = UserDefaults.standard.object(forKey: "pause_on_open") as? Bool ?? true
+        if pauseOnOpen {
+            viewModel.pause()
+        }
         MacAnalytics.logOpenSheet()
         showSettings()
     }
@@ -102,6 +105,12 @@ class MainViewController: NSViewController {
                 self?.hideSettings()
             }
         )
+        settingsVC.onPause = { [weak self] in
+            self?.viewModel.pause()
+        }
+        settingsVC.onPlay = { [weak self] in
+            self?.viewModel.play()
+        }
         self.settingsViewController = settingsVC
         addChild(settingsVC)
 
@@ -168,7 +177,10 @@ class MainViewController: NSViewController {
             self.settingsViewController?.removeFromParent()
             self.settingsViewController = nil
             self.overlayView = nil
-            self.viewModel.syncVideo()
+            let pauseOnOpen = UserDefaults.standard.object(forKey: "pause_on_open") as? Bool ?? true
+            if pauseOnOpen {
+                self.viewModel.syncVideo()
+            }
         })
     }
 

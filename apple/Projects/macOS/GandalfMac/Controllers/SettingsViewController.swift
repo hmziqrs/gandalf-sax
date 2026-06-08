@@ -15,6 +15,9 @@ class SettingsViewController: NSViewController {
         "https://x.com/hmziqrs",
     ]
 
+    var onPause: (() -> Void)?
+    var onPlay: (() -> Void)?
+
     init(syncSource: NtpClient.SyncSource, onDismiss: @escaping () -> Void) {
         self.syncSource = syncSource
         self.onDismiss = onDismiss
@@ -123,10 +126,14 @@ class SettingsViewController: NSViewController {
         stack.addArrangedSubview(makeSyncStatusRow())
         stack.addArrangedSubview(makeSeparator())
 
+        // Playback section
+        stack.addArrangedSubview(makeSectionHeader("Playback", icon: "play.circle"))
+        stack.addArrangedSubview(makePlaybackRow())
+        stack.addArrangedSubview(makeSeparator())
+
         // Appearance section
         stack.addArrangedSubview(makeSectionHeader("Appearance", icon: "paintbrush.fill"))
         stack.addArrangedSubview(makeThemeRow())
-        stack.addArrangedSubview(makeBackgroundPlaybackRow())
         stack.addArrangedSubview(makeSeparator())
 
         // Developer section
@@ -253,15 +260,62 @@ class SettingsViewController: NSViewController {
         return container
     }
 
-    private func makeBackgroundPlaybackRow() -> NSView {
-        let checkbox = NSButton(
-            checkboxWithTitle: "Background playback",
-            target: self,
-            action: #selector(backgroundPlaybackToggled(_:))
+    private func makePlaybackRow() -> NSView {
+        let container = NSStackView()
+        container.orientation = .horizontal
+        container.spacing = 8
+
+        let pauseOnOpen = UserDefaults.standard.object(forKey: "pause_on_open") as? Bool ?? true
+
+        let pauseBtn = makeToggleButton(
+            title: "Pause on Open",
+            tag: 0,
+            active: pauseOnOpen,
+            action: #selector(pauseOnOpenTapped(_:))
         )
-        checkbox.state = UserDefaults.standard.bool(forKey: "background_playback") ? .on : .off
-        checkbox.font = NSFont.systemFont(ofSize: 12)
-        return checkbox
+
+        let keepPlayingBtn = makeToggleButton(
+            title: "Keep Playing",
+            tag: 1,
+            active: !pauseOnOpen,
+            action: #selector(keepPlayingTapped(_:))
+        )
+
+        container.addArrangedSubview(pauseBtn)
+        container.addArrangedSubview(keepPlayingBtn)
+
+        let spacer = NSView()
+        container.addArrangedSubview(spacer)
+
+        return container
+    }
+
+    private func makeToggleButton(title: String, tag: Int, active: Bool, action: Selector) -> NSButton {
+        let button = NSButton(title: title, target: self, action: action)
+        button.tag = tag
+        button.isBordered = true
+        button.font = NSFont.systemFont(ofSize: 12, weight: .semibold)
+        button.wantsLayer = true
+        button.layer?.cornerRadius = 6
+        button.layer?.cornerCurve = .continuous
+        applyToggleStyle(button, active: active)
+        return button
+    }
+
+    private func applyToggleStyle(_ button: NSButton, active: Bool) {
+        if active {
+            button.contentTintColor = .white
+            button.layer?.backgroundColor = NSColor.controlAccentColor.cgColor
+            button.bezelStyle = .rounded
+            button.isBordered = false
+        } else {
+            button.contentTintColor = .secondaryLabelColor
+            button.layer?.backgroundColor = NSColor.controlBackgroundColor.withAlphaComponent(0.5).cgColor
+            button.bezelStyle = .rounded
+            button.isBordered = false
+            button.layer?.borderColor = NSColor.separatorColor.cgColor
+            button.layer?.borderWidth = 1
+        }
     }
 
     private func makeBuiltByRow() -> NSView {
@@ -373,10 +427,30 @@ class SettingsViewController: NSViewController {
         MacAnalytics.logChangeTheme(mode: mode)
     }
 
-    @objc private func backgroundPlaybackToggled(_ sender: NSButton) {
-        let enabled = sender.state == .on
-        UserDefaults.standard.set(enabled, forKey: "background_playback")
-        MacAnalytics.logToggleBackgroundPlayback(enabled: enabled)
+    @objc private func pauseOnOpenTapped(_ sender: NSButton) {
+        UserDefaults.standard.set(true, forKey: "pause_on_open")
+        updatePlaybackButtons(activeTag: 0)
+        onPause?()
+        MacAnalytics.logTogglePauseOnOpen(true)
+    }
+
+    @objc private func keepPlayingTapped(_ sender: NSButton) {
+        UserDefaults.standard.set(false, forKey: "pause_on_open")
+        updatePlaybackButtons(activeTag: 1)
+        onPlay?()
+        MacAnalytics.logTogglePauseOnOpen(false)
+    }
+
+    private func updatePlaybackButtons(activeTag: Int) {
+        guard let container = view.subviews.first?.subviews.first(where: { $0 is NSStackView }) as? NSStackView else { return }
+        for section in container.subviews {
+            guard let row = section as? NSStackView else { continue }
+            for btn in row.subviews.compactMap({ $0 as? NSButton }) {
+                guard btn.action == #selector(pauseOnOpenTapped(_:)) ||
+                      btn.action == #selector(keepPlayingTapped(_:)) else { continue }
+                applyToggleStyle(btn, active: btn.tag == activeTag)
+            }
+        }
     }
 
     @objc private func openDevLink(_ sender: NSButton) {
