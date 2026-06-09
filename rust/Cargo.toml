@@ -6,32 +6,15 @@ description = "Epic Sax Gandalf — NTP-synced infinite video loop"
 authors = ["hmziqrs"]
 
 [dependencies]
-# Video playback via mpv
-libmpv2 = "4"
-
-# Windowing and rendering
-winit = "0.30"
-glow = "0.14"
-raw-window-handle = "0.6"
-
-# UI overlay
-egui = "0.29"
-egui-winit = "0.29"
-egui-glow = "0.29"
-
-# Async runtime
+# Async runtime (for NTP)
 tokio = { version = "1", features = ["full"] }
+
+# Serialization (for mpv JSON IPC)
+serde_json = "1"
 
 # Logging
 log = "0.4"
 env_logger = "0.11"
-
-# Serialization
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
-
-# Directories for config
-dirs = "5"
 
 [target.'cfg(windows)'.build-dependencies]
 winres = "0.1"

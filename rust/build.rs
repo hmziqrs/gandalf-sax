@@ -1,4 +1,10 @@
 fn main() {
+    // On macOS, tell the linker where to find Homebrew's libmpv
+    #[cfg(target_os = "macos")]
+    {
+        println!("cargo:rustc-link-search=native=/opt/homebrew/lib");
+    }
+
     #[cfg(windows)]
     {
         let mut res = winres::WindowsResource::new();

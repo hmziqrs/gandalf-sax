@@ -44,6 +44,12 @@ object Analytics {
         })
     }
 
+    fun logTogglePauseOnOpen(enabled: Boolean) {
+        firebase.logEvent("toggle_pause_on_open", Bundle().apply {
+            putBoolean("enabled", enabled)
+        })
+    }
+
     fun logClickSocialLink(platform: String, url: String) {
         firebase.logEvent("click_social_link", Bundle().apply {
             putString("platform", platform)

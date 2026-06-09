@@ -54,6 +54,9 @@ class VideoPlayerViewModel : ViewModel() {
     private val _state = MutableStateFlow(VideoState())
     val state: StateFlow<VideoState> = _state.asStateFlow()
 
+    private val _volume = MutableStateFlow(1f)
+    val volume: StateFlow<Float> = _volume.asStateFlow()
+
     /**
      * Create and configure the ExoPlayer instance.
      * Call this from the Activity/Composable lifecycle.
@@ -64,6 +67,7 @@ class VideoPlayerViewModel : ViewModel() {
             .build()
 
         exoPlayer.repeatMode = Player.REPEAT_MODE_ONE
+        exoPlayer.volume = _volume.value
         exoPlayer.setMediaItem(MediaItem.fromUri(Uri.parse(VIDEO_URI)))
         exoPlayer.prepare()
 
@@ -168,6 +172,11 @@ class VideoPlayerViewModel : ViewModel() {
 
     fun play() {
         player?.play()
+    }
+
+    fun setVolume(volume: Float) {
+        _volume.value = volume
+        player?.volume = volume
     }
 
     /**

@@ -1,5 +1,5 @@
 use std::net::UdpSocket;
-use std::time::{Duration, Instant};
+use std::time::Duration;
 use log::{debug, info, warn};
 
 const NTP_PORT: u16 = 123;

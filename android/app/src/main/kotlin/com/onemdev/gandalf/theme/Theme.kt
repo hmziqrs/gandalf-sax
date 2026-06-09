@@ -15,6 +15,7 @@ val Application.dataStore: DataStore<Preferences> by preferencesDataStore(name =
 object SettingsKeys {
     val THEME_MODE = stringPreferencesKey("theme_mode")
     val BACKGROUND_PLAYBACK = booleanPreferencesKey("background_playback")
+    val PAUSE_ON_OPEN = booleanPreferencesKey("pause_on_open")
 }
 
 enum class ThemeMode { LIGHT, DARK, SYSTEM }
@@ -22,6 +23,7 @@ enum class ThemeMode { LIGHT, DARK, SYSTEM }
 data class AppSettings(
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
     val backgroundPlayback: Boolean = false,
+    val pauseOnOpen: Boolean = true,
 )
 
 class SettingsRepository(private val dataStore: DataStore<Preferences>) {
@@ -32,6 +34,7 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
                 try { ThemeMode.valueOf(it) } catch (_: Exception) { ThemeMode.SYSTEM }
             } ?: ThemeMode.SYSTEM,
             backgroundPlayback = prefs[SettingsKeys.BACKGROUND_PLAYBACK] ?: false,
+            pauseOnOpen = prefs[SettingsKeys.PAUSE_ON_OPEN] ?: true,
         )
     }
 
@@ -41,5 +44,9 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
 
     suspend fun setBackgroundPlayback(enabled: Boolean) {
         dataStore.edit { it[SettingsKeys.BACKGROUND_PLAYBACK] = enabled }
+    }
+
+    suspend fun setPauseOnOpen(enabled: Boolean) {
+        dataStore.edit { it[SettingsKeys.PAUSE_ON_OPEN] = enabled }
     }
 }

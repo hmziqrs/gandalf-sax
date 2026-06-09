@@ -1,47 +1,23 @@
 mod ntp;
-mod video;
-mod ui;
 
+use std::io::{BufRead, BufReader, Write};
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
+
 use log::{error, info};
-use winit::{
-    application::ApplicationHandler,
-    event::{ElementState, KeyEvent, WindowEvent},
-    event_loop::{ActiveEventLoop, EventLoop},
-    window::{Window, WindowAttributes},
-};
-use raw_window_handle::HasWindowHandle;
+use serde_json::Value;
 
 use ntp::NtpClient;
-use video::VideoPlayer;
-use ui::SettingsUi;
 
 const APP_NAME: &str = "Epic Sax Gandalf";
+const SOCKET_PATH: &str = "/tmp/gandalf-sax-mpv.sock";
 
-struct AppState {
-    ntp: Arc<Mutex<NtpClient>>,
-    player: Arc<Mutex<Option<VideoPlayer>>>,
-    settings: Arc<Mutex<SettingsUi>>,
-    is_first_sync: bool,
-    video_duration_micros: i64,
-}
-
-impl AppState {
-    fn new() -> Self {
-        Self {
-            ntp: Arc::new(Mutex::new(NtpClient::new())),
-            player: Arc::new(Mutex::new(None)),
-            settings: Arc::new(Mutex::new(SettingsUi::new())),
-            is_first_sync: true,
-            video_duration_micros: 117_540_000, // will be updated from video
-        }
-    }
-}
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
 
 fn find_video_path() -> PathBuf {
-    // Try multiple locations
     let candidates = [
         "assets/video.mp4",
         "video.mp4",
@@ -53,8 +29,51 @@ fn find_video_path() -> PathBuf {
             return path;
         }
     }
-    PathBuf::from("assets/video.mp4") // fallback
+    PathBuf::from("assets/video.mp4")
 }
+
+/// Wait for mpv's IPC socket to appear, then connect.
+fn connect_ipc() -> std::os::unix::net::UnixStream {
+    let timeout = std::time::Instant::now() + Duration::from_secs(5);
+    loop {
+        if let Ok(stream) = std::os::unix::net::UnixStream::connect(SOCKET_PATH) {
+            return stream;
+        }
+        if std::time::Instant::now() > timeout {
+            panic!("Timed out waiting for mpv IPC socket at {}", SOCKET_PATH);
+        }
+        std::thread::sleep(Duration::from_millis(50));
+    }
+}
+
+/// Send a command to mpv via JSON IPC. Returns the response data field.
+fn mpv_command(stream: &mut std::os::unix::net::UnixStream, args: &[&str]) -> Option<Value> {
+    let cmd = serde_json::json!({ "command": args });
+    let line = format!("{}\n", cmd);
+    if let Err(e) = stream.write_all(line.as_bytes()) {
+        error!("IPC write error: {}", e);
+        return None;
+    }
+
+    // Read response
+    let mut reader = BufReader::new(stream.try_clone().ok()?);
+    let mut response = String::new();
+    if reader.read_line(&mut response).ok()? == 0 {
+        return None;
+    }
+
+    serde_json::from_str::<Value>(&response).ok()
+}
+
+/// Get a property from mpv via JSON IPC.
+fn mpv_get_property(stream: &mut std::os::unix::net::UnixStream, property: &str) -> Option<f64> {
+    let resp = mpv_command(stream, &["get_property", property])?;
+    resp.get("data").and_then(|d| d.as_f64())
+}
+
+// ---------------------------------------------------------------------------
+// main
+// ---------------------------------------------------------------------------
 
 fn main() {
     env_logger::init();
@@ -63,161 +82,86 @@ fn main() {
     let video_path = find_video_path();
     info!("Video path: {:?}", video_path);
 
-    let state = Arc::new(Mutex::new(AppState::new()));
+    // NTP sync (blocking)
+    let ntp = Arc::new(Mutex::new(NtpClient::new()));
+    info!("Syncing NTP...");
+    {
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        rt.block_on(async {
+            ntp.lock().unwrap().sync().await;
+        });
+    }
 
-    // Initial NTP sync (blocking, with timeout)
-    let ntp_clone = state.lock().unwrap().ntp.clone();
+    // Calculate initial seek position
+    const DEFAULT_DURATION_MICROS: i64 = 117_540_000;
+    let ntp_guard = ntp.lock().unwrap();
+    let seek_micros = ntp_guard.seek_position(DEFAULT_DURATION_MICROS, true);
+    let seek_secs = seek_micros as f64 / 1_000_000.0;
+    drop(ntp_guard);
+    info!("Initial seek position: {:.3}s", seek_secs);
+
+    // Clean up stale socket
+    let _ = std::fs::remove_file(SOCKET_PATH);
+
+    // Spawn mpv as a subprocess — it handles its own window natively
+    let video_str = video_path.to_str().expect("Invalid video path");
+    let mut child = std::process::Command::new("mpv")
+        .args([
+            video_str,
+            "--fullscreen",
+            "--loop-file=inf",
+            &format!("--start={:.3}", seek_secs),
+            &format!("--input-ipc-server={}", SOCKET_PATH),
+            "--hwdec=auto",
+            "--force-window",
+            &format!("--title={}", APP_NAME),
+            "--no-terminal",
+            "--osc=no",
+            "--no-osd-bar",
+        ])
+        .spawn()
+        .expect("Failed to start mpv. Is 'mpv' installed?");
+
+    info!("mpv spawned (PID {})", child.id());
+
+    // Connect to mpv's IPC socket
+    let mut ipc_stream = connect_ipc();
+    info!("Connected to mpv IPC");
+
+    // Read actual duration from mpv
+    let duration_micros = mpv_get_property(&mut ipc_stream, "duration")
+        .map(|d| (d * 1_000_000.0) as i64)
+        .unwrap_or(DEFAULT_DURATION_MICROS);
+    info!("Video duration: {:.2}s", duration_micros as f64 / 1_000_000.0);
+
+    // Periodic NTP re-sync
+    let ntp_resync = ntp.clone();
+    let ipc_resync = ipc_stream.try_clone().expect("Failed to clone IPC stream");
     std::thread::spawn(move || {
         let rt = tokio::runtime::Runtime::new().unwrap();
         rt.block_on(async {
-            let mut ntp = ntp_clone.lock().unwrap();
-            ntp.sync().await;
-            info!("Initial NTP sync done");
+            loop {
+                tokio::time::sleep(Duration::from_secs(ntp::RESYNC_INTERVAL_SECS)).await;
+                {
+                    let mut ntp = ntp_resync.lock().unwrap();
+                    ntp.sync().await;
+                    info!("Periodic NTP re-sync done");
+
+                    let seek_micros = ntp.seek_position(duration_micros, false);
+                    let seek_secs = seek_micros as f64 / 1_000_000.0;
+                    let mut stream = ipc_resync.try_clone().unwrap();
+                    let cmd = serde_json::json!({ "command": ["seek", seek_secs, "absolute"] });
+                    let _ = stream.write_all(format!("{}\n", cmd).as_bytes());
+                    info!("Re-synced to {:.3}s", seek_secs);
+                }
+            }
         });
     });
 
-    // Create the video player
-    match VideoPlayer::new(&video_path) {
-        Ok(player) => {
-            let mut s = state.lock().unwrap();
-            s.video_duration_micros = player.duration_micros;
-            *s.player.lock().unwrap() = Some(player);
-        }
-        Err(e) => {
-            error!("Failed to create video player: {}", e);
-            error!("Make sure libmpv is installed (Linux: libmpv-dev, Windows: mpv-2.dll)");
-            std::process::exit(1);
-        }
-    }
+    // Wait for mpv to exit
+    let status = child.wait().expect("Failed to wait for mpv");
+    info!("mpv exited with status: {}", status);
 
-    // Perform initial seek based on NTP
-    {
-        let s = state.lock().unwrap();
-        let ntp = s.ntp.lock().unwrap();
-        let player_guard = s.player.lock().unwrap();
-        if let Some(ref player) = *player_guard {
-            let seek_micros = ntp.seek_position(s.video_duration_micros, true);
-            let seek_secs = seek_micros as f64 / 1_000_000.0;
-            player.seek_to(seek_secs);
-            player.play();
-            info!("Initial seek to {:.3}s", seek_secs);
-        }
-    }
-
-    // Set up the winit event loop
-    let event_loop = EventLoop::new().expect("Failed to create event loop");
-
-    let mut app_handler = GandalfApp {
-        state,
-        window: None,
-        egui_state: None,
-        gl: None,
-    };
-
-    event_loop.run_app(&mut app_handler).expect("Event loop error");
-}
-
-struct GandalfApp {
-    state: Arc<Mutex<AppState>>,
-    window: Option<Window>,
-    egui_state: Option<egui_winit::State>,
-    gl: Option<Arc<glow::Context>>,
-}
-
-impl ApplicationHandler for GandalfApp {
-    fn resumed(&mut self, event_loop: &ActiveEventLoop) {
-        if self.window.is_some() {
-            return;
-        }
-
-        let attrs = WindowAttributes::default()
-            .with_title(APP_NAME)
-            .with_fullscreen(Some(winit::window::Fullscreen::Borderless(None)))
-            .with_inner_size(winit::dpi::LogicalSize::new(1280, 720));
-
-        let window = event_loop.create_window(attrs).expect("Failed to create window");
-        let window = Arc::new(window);
-
-        // Create OpenGL context via glow
-        let gl = unsafe {
-            let gl_ctx = glow::Context::from_loader_function(|proc_name| {
-                // This would need a proper GL loading mechanism
-                // For now, this is a placeholder
-                std::ptr::null()
-            });
-            Arc::new(gl_ctx)
-        };
-
-        // Set up egui
-        let egui_state = egui_winit::State::new(
-            egui::ViewportId::ROOT,
-            window.as_ref(),
-            event_loop,
-            None,
-            None,
-        );
-
-        self.window = Some(Arc::into_inner(window).unwrap());
-        self.egui_state = Some(egui_state);
-        self.gl = Some(gl);
-    }
-
-    fn window_event(
-        &mut self,
-        event_loop: &ActiveEventLoop,
-        window_id: winit::window::WindowId,
-        event: WindowEvent,
-    ) {
-        match event {
-            WindowEvent::CloseRequested => {
-                event_loop.exit();
-            }
-            WindowEvent::MouseInput { state: ElementState::Pressed, .. } => {
-                let mut s = self.state.lock().unwrap();
-                let settings = &mut s.settings.lock().unwrap();
-                settings.visible = !settings.visible;
-
-                if settings.visible {
-                    let player_guard = s.player.lock().unwrap();
-                    if let Some(ref player) = *player_guard {
-                        player.pause();
-                    }
-                } else {
-                    // Re-sync on close
-                    let ntp = s.ntp.lock().unwrap();
-                    let player_guard = s.player.lock().unwrap();
-                    if let Some(ref player) = *player_guard {
-                        let seek_micros = ntp.seek_position(s.video_duration_micros, false);
-                        player.seek_to(seek_micros as f64 / 1_000_000.0);
-                        player.play();
-                    }
-                }
-            }
-            WindowEvent::Key(KeyEvent { logical_key, state: ElementState::Pressed, .. }) => {
-                match logical_key {
-                    winit::keyboard::Key::Character(c) if c == "f" => {
-                        if let Some(ref window) = self.window {
-                            if window.fullscreen().is_some() {
-                                window.set_fullscreen(None);
-                            } else {
-                                window.set_fullscreen(Some(winit::window::Fullscreen::Borderless(None)));
-                            }
-                        }
-                    }
-                    winit::keyboard::Key::Escape => {
-                        if let Some(ref window) = self.window {
-                            window.set_fullscreen(None);
-                        }
-                    }
-                    _ => {}
-                }
-            }
-            WindowEvent::Resized(size) => {
-                if let (Some(ref mut egui_state), Some(ref window)) = (&mut self.egui_state, &self.window) {
-                    egui_state.on_window_event(window, &WindowEvent::Resized(size));
-                }
-            }
-            _ => {}
-        }
-    }
+    // Clean up socket
+    let _ = std::fs::remove_file(SOCKET_PATH);
 }
