@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Epic Sax Gandalf</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #000; overflow: hidden; }
+    #video-container {
+      position: fixed; top: 0; left: 0;
+      width: 100vw; height: 100vh;
+    }
+    video {
+      width: 100%; height: 100%;
+      object-fit: contain;
+    }
+    #controls {
+      position: fixed; bottom: 16px; right: 16px;
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);
+      border-radius: 8px; padding: 8px 12px;
+      opacity: 0; transition: opacity 0.3s;
+      z-index: 10;
+    }
+    body.mouse-active #controls { opacity: 1; }
+    #controls button {
+      background: none; border: none; color: rgba(255,255,255,0.8);
+      cursor: pointer; font-size: 18px; padding: 4px;
+    }
+    #controls button:hover { color: #fff; }
+    #controls input[type="range"] {
+      width: 80px; height: 4px;
+      -webkit-appearance: none; appearance: none;
+      background: rgba(255,255,255,0.25); border-radius: 2px;
+      outline: none; cursor: pointer;
+    }
+    #controls input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 14px; height: 14px;
+      border-radius: 50%; background: white; cursor: pointer;
+    }
+    #sync-status {
+      position: fixed; top: 8px; right: 8px;
+      color: rgba(255,255,255,0.2); font-size: 11px;
+      font-family: monospace; z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <div id="video-container">
+    <video id="video" loop playsinline muted></video>
+    <div id="unmute-hint" style="position:fixed;bottom:50%;left:50%;transform:translate(-50%,50%);color:rgba(255,255,255,0.7);font:16px system-ui;z-index:20;pointer-events:none;transition:opacity 0.5s;">Click anywhere to enable audio</div>
+  </div>
+  <div id="controls">
+    <button id="mute-btn" title="Mute/Unmute (M)">&#x1f50a;</button>
+    <input type="range" id="volume" min="0" max="1" step="0.01" value="1" />
+  </div>
+  <div id="sync-status">Syncing...</div>
+  <script src="./app.js"></script>
+</body>
+</html>

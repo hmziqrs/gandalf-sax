@@ -6,12 +6,13 @@ mac subcommand: (_run subcommand)
 rust subcommand:
     #!/usr/bin/env bash
     case "{{subcommand}}" in
-        dev)   cd rust && cargo check                            ;;
-        build) cd rust && cargo build --release                   ;;
-        run)   cd rust && RUST_LOG=info cargo run                 ;;
+        dev)   cd rust && cargo tauri dev                              ;;
+        build) cd rust && cargo tauri build                            ;;
+        run)   cd rust && RUST_LOG=info cargo tauri dev                ;;
+        check) cd rust && cargo check                                  ;;
         *)
             echo "Unknown subcommand: {{subcommand}}"
-            echo "Usage: just rust [dev|build|run]"
+            echo "Usage: just rust [dev|build|run|check]"
             exit 1
             ;;
     esac

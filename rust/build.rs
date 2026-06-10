@@ -1,17 +1,3 @@
 fn main() {
-    // On macOS, tell the linker where to find Homebrew's libmpv
-    #[cfg(target_os = "macos")]
-    {
-        println!("cargo:rustc-link-search=native=/opt/homebrew/lib");
-    }
-
-    #[cfg(windows)]
-    {
-        let mut res = winres::WindowsResource::new();
-        res.set_icon("assets/icon.ico");
-        res.setProductName("Epic Sax Gandalf");
-        res.setFileDescription("Epic Sax Gandalf - NTP-synced infinite video loop");
-        res.setCompanyName("com.onemdev");
-        res.compile().expect("Failed to compile Windows resources");
-    }
+    tauri_build::build()
 }
