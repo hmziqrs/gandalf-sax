@@ -16,11 +16,6 @@ const NTP_SERVERS: &[&str] = &[
     "pool.ntp.org",
 ];
 
-/// Buffer matching legacy: 25ms base + 140ms on first sync = 165ms
-pub const BUFFER_FIRST_SYNC_MICROS: i64 = 165_000;
-pub const BUFFER_MICROS: i64 = 25_000;
-pub const RESYNC_INTERVAL_SECS: u64 = 60;
-
 /// NTP client state
 pub struct NtpClient {
     /// Offset in microseconds: ntpTime - deviceTime
@@ -112,18 +107,6 @@ impl NtpClient {
             .duration_since(SystemTime::UNIX_EPOCH)
             .unwrap()
             .as_millis() as u64
-    }
-
-    /// Calculate the global-synced seek position in microseconds.
-    pub fn seek_position(&self, video_duration_micros: i64, is_first_sync: bool) -> i64 {
-        let device_micros = Self::millis_since_epoch() as i64 * 1000;
-        let corrected = device_micros + self.offset_micros;
-        let buffer = if is_first_sync {
-            BUFFER_FIRST_SYNC_MICROS
-        } else {
-            BUFFER_MICROS
-        };
-        (corrected % video_duration_micros) + buffer
     }
 
     fn write_timestamp(buf: &mut [u8], offset: usize, millis: u64) {

@@ -1,14 +1,22 @@
 // ---------------------------------------------------------------------------
 // Epic Sax Gandalf — NTP-synced video loop (Tauri v2)
+//
+// Rust syncs NTP at startup (raw UDP). JS reads the offset ONCE and does
+// all seek math locally. Zero ongoing IPC after that single call.
 // ---------------------------------------------------------------------------
 
-const RESYNC_INTERVAL_MS = 60_000;
 const SEEK_POLL_INTERVAL_MS = 1000;
 const CURSOR_HIDE_DELAY_MS = 3000;
+const BUFFER_FIRST_SYNC_SECS = 0.165;  // 165ms — larger buffer for initial sync
+const BUFFER_SECS = 0.025;             // 25ms — tight buffer after first sync
 
 let isPaused = false;
 let isFirstSync = true;
 let cursorTimer = null;
+
+// NTP state — read once from Rust, used locally forever
+let ntpOffsetMicros = 0;
+let videoDurationMicros = 0;
 
 const video = document.getElementById('video');
 const controls = document.getElementById('controls');
@@ -20,6 +28,18 @@ function showError(msg) {
   console.error('[gandalf]', msg);
   syncStatus.textContent = 'Error: ' + msg;
   syncStatus.style.color = 'red';
+}
+
+// ---------------------------------------------------------------------------
+// Seek position — pure JS math
+// seek_position = ((Date.now() * 1000 + ntpOffsetMicros) % duration) + buffer
+// ---------------------------------------------------------------------------
+
+function calcSeekSecs(bufferSecs) {
+  const deviceMicros = Date.now() * 1000;
+  const corrected = deviceMicros + ntpOffsetMicros;
+  const seekMicros = (corrected % videoDurationMicros) + (bufferSecs * 1_000_000);
+  return seekMicros / 1_000_000;
 }
 
 // ---------------------------------------------------------------------------
@@ -39,7 +59,7 @@ function hideCursor() {
 }
 
 document.addEventListener('mousemove', showCursor);
-showCursor(); // Show cursor initially
+showCursor();
 
 // ---------------------------------------------------------------------------
 // Init
@@ -53,7 +73,6 @@ async function init() {
 
   // Wait for enough data buffered for smooth playback
   await new Promise((resolve, reject) => {
-    // canplaythrough fires when browser estimates it can play without buffering
     video.addEventListener('canplaythrough', () => resolve(), { once: true });
     video.addEventListener('error', () => {
       const err = video.error;
@@ -62,9 +81,16 @@ async function init() {
     setTimeout(() => reject(new Error('Video buffer timeout (15s)')), 15_000);
   });
 
-  // Initial NTP sync + seek
-  await syncAndSeek(invoke);
+  // ONE Rust call — get the offset from the startup NTP sync
+  const ntp = await invoke('get_ntp_state');
+  ntpOffsetMicros = ntp.offset_micros;
+  videoDurationMicros = ntp.video_duration_micros;
+
+  // Seek to NTP-corrected position
+  video.currentTime = calcSeekSecs(BUFFER_FIRST_SYNC_SECS);
   isFirstSync = false;
+
+  syncStatus.textContent = 'Offset: ' + (ntpOffsetMicros / 1000).toFixed(1) + 'ms';
 
   // Give the decoder a moment after seek to render the target frame
   await new Promise(r => setTimeout(r, 100));
@@ -88,25 +114,14 @@ async function init() {
   document.addEventListener('click', unmute);
   document.addEventListener('keydown', unmute);
 
-  // Periodic NTP re-sync every 60s
-  setInterval(async () => {
-    try {
-      await invoke('sync_ntp');
-      const status = await invoke('get_ntp_status');
-      syncStatus.textContent = 'Offset: ' + (status.offset_micros / 1000).toFixed(1) + 'ms';
-    } catch (e) { /* ignore */ }
-  }, RESYNC_INTERVAL_MS);
-
-  // Periodic seek correction every 1s
-  setInterval(async () => {
+  // Seek correction — pure JS, zero IPC, runs every second
+  setInterval(() => {
     if (isPaused) return;
-    try {
-      const result = await invoke('get_seek_position', { isFirstSync: false });
-      const diff = Math.abs(video.currentTime - result.seek_secs);
-      if (diff > 0.5 && diff < 116) {
-        video.currentTime = result.seek_secs;
-      }
-    } catch (e) { /* ignore */ }
+    const target = calcSeekSecs(BUFFER_SECS);
+    const diff = Math.abs(video.currentTime - target);
+    if (diff > 0.5 && diff < 116) {
+      video.currentTime = target;
+    }
   }, SEEK_POLL_INTERVAL_MS);
 
   syncStatus.textContent = 'Synced';
@@ -114,30 +129,16 @@ async function init() {
 }
 
 // ---------------------------------------------------------------------------
-// NTP sync + seek
-// ---------------------------------------------------------------------------
-
-async function syncAndSeek(invoke) {
-  await invoke('sync_ntp');
-  const result = await invoke('get_seek_position', { isFirstSync: isFirstSync });
-  video.currentTime = result.seek_secs;
-  syncStatus.textContent = 'Offset: ' + (result.offset_micros / 1000).toFixed(1) + 'ms';
-}
-
-// ---------------------------------------------------------------------------
 // Keyboard
 // ---------------------------------------------------------------------------
 
 document.addEventListener('keydown', async (e) => {
-  const { invoke } = window.__TAURI__.core;
   switch (e.code) {
     case 'Space':
       e.preventDefault();
       if (isPaused) {
-        try {
-          const result = await invoke('get_seek_position', { isFirstSync: false });
-          video.currentTime = result.seek_secs;
-        } catch (e) { /* seek failed, still unpause */ }
+        // Seek to NTP position BEFORE unpausing — atomic, no jerk
+        video.currentTime = calcSeekSecs(BUFFER_SECS);
         await video.play();
         isPaused = false;
       } else {
@@ -149,6 +150,7 @@ document.addEventListener('keydown', async (e) => {
     case 'Escape':
       e.preventDefault();
       try {
+        const { invoke } = window.__TAURI__.core;
         await invoke('plugin:window|set_fullscreen', { label: 'main', fullscreen: false });
       } catch (e) { /* ignore */ }
       break;
@@ -172,6 +174,7 @@ document.addEventListener('keydown', async (e) => {
     case 'KeyF':
       e.preventDefault();
       try {
+        const { invoke } = window.__TAURI__.core;
         await invoke('plugin:window|set_fullscreen', { label: 'main', fullscreen: true });
       } catch (e) { /* ignore */ }
       break;

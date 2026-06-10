@@ -20,50 +20,23 @@ pub struct AppState {
 }
 
 // ---------------------------------------------------------------------------
-// Response types
+// One command: return the offset from the startup sync. JS calls this ONCE.
 // ---------------------------------------------------------------------------
 
 #[derive(Serialize)]
-pub struct SeekResult {
-    seek_secs: f64,
+pub struct NtpState {
     offset_micros: i64,
     is_synced: bool,
+    video_duration_micros: i64,
 }
-
-#[derive(Serialize)]
-pub struct NtpStatus {
-    offset_micros: i64,
-    is_synced: bool,
-}
-
-// ---------------------------------------------------------------------------
-// Tauri commands
-// ---------------------------------------------------------------------------
 
 #[tauri::command]
-fn get_seek_position(state: tauri::State<AppState>, is_first_sync: bool) -> SeekResult {
+fn get_ntp_state(state: tauri::State<AppState>) -> NtpState {
     let ntp = state.ntp.lock().unwrap();
-    let seek_micros = ntp.seek_position(VIDEO_DURATION_MICROS, is_first_sync);
-    SeekResult {
-        seek_secs: seek_micros as f64 / 1_000_000.0,
+    NtpState {
         offset_micros: ntp.offset_micros,
         is_synced: ntp.is_synced,
-    }
-}
-
-#[tauri::command]
-fn sync_ntp(state: tauri::State<AppState>) -> Result<i64, String> {
-    let mut ntp = state.ntp.lock().map_err(|e| e.to_string())?;
-    let rt = tokio::runtime::Runtime::new().unwrap();
-    Ok(rt.block_on(ntp.sync()))
-}
-
-#[tauri::command]
-fn get_ntp_status(state: tauri::State<AppState>) -> NtpStatus {
-    let ntp = state.ntp.lock().unwrap();
-    NtpStatus {
-        offset_micros: ntp.offset_micros,
-        is_synced: ntp.is_synced,
+        video_duration_micros: VIDEO_DURATION_MICROS,
     }
 }
 
@@ -88,11 +61,7 @@ pub fn run() {
         .manage(AppState {
             ntp: Mutex::new(NtpClient::new()),
         })
-        .invoke_handler(tauri::generate_handler![
-            get_seek_position,
-            sync_ntp,
-            get_ntp_status,
-        ])
+        .invoke_handler(tauri::generate_handler![get_ntp_state])
         .register_uri_scheme_protocol("gandalf", move |_ctx, request| {
             let data = &*video_data;
             let total = data.len();
@@ -138,7 +107,7 @@ pub fn run() {
                 .unwrap()
         })
         .setup(|app| {
-            // Initial NTP sync (blocks briefly, ~2s)
+            // NTP sync at startup — blocks ~2s, happens before window is visible
             let state = app.state::<AppState>();
             {
                 let rt = tokio::runtime::Runtime::new().unwrap();
