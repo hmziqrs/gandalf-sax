@@ -33,7 +33,7 @@ impl NtpClient {
 
     /// Query NTP servers and compute the median offset.
     /// Returns the offset in microseconds.
-    pub async fn sync(&mut self) -> i64 {
+    pub fn sync(&mut self) -> i64 {
         let mut offsets: Vec<i64> = Vec::new();
 
         for server in NTP_SERVERS {

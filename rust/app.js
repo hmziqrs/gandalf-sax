@@ -1,45 +1,36 @@
 // ---------------------------------------------------------------------------
 // Epic Sax Gandalf — NTP-synced video loop (Tauri v2)
 //
-// Rust syncs NTP at startup (raw UDP). JS reads the offset ONCE and does
-// all seek math locally. Zero ongoing IPC after that single call.
+// Mirrors the web (Svelte) version exactly:
+//   1. Sync NTP once via Rust → get offset in micros
+//   2. Seek to (Date.now() + offset) % duration + buffer
+//   3. Play. No periodic corrections. Trust the video to loop.
+//
+// Space resumes by re-seeking to current global position (like web's play()).
 // ---------------------------------------------------------------------------
 
-const SEEK_POLL_INTERVAL_MS = 1000;
+const BUFFER_FIRST_SYNC_SECS = 0.165; // 165ms — matches web & Android
 const CURSOR_HIDE_DELAY_MS = 3000;
-const BUFFER_FIRST_SYNC_SECS = 0.165;  // 165ms — larger buffer for initial sync
-const BUFFER_SECS = 0.025;             // 25ms — tight buffer after first sync
+const DURATION_MICROS = 117_540_000; // 117.54s — hard-coded, same as Rust
 
+let ntpOffsetMicros = 0;
 let isPaused = false;
-let isFirstSync = true;
 let cursorTimer = null;
 
-// NTP state — read once from Rust, used locally forever
-let ntpOffsetMicros = 0;
-let videoDurationMicros = 0;
-
 const video = document.getElementById('video');
-const controls = document.getElementById('controls');
 const muteBtn = document.getElementById('mute-btn');
 const volumeSlider = document.getElementById('volume');
 const syncStatus = document.getElementById('sync-status');
 
-function showError(msg) {
-  console.error('[gandalf]', msg);
-  syncStatus.textContent = 'Error: ' + msg;
-  syncStatus.style.color = 'red';
-}
-
-// ---------------------------------------------------------------------------
-// Seek position — pure JS math
-// seek_position = ((Date.now() * 1000 + ntpOffsetMicros) % duration) + buffer
-// ---------------------------------------------------------------------------
-
+// seek_position = (Date.now() * 1000 + offset) % duration + buffer
+// Same formula as web: (Date.now() + offsetMs) % durationMs + BUFFER
 function calcSeekSecs(bufferSecs) {
   const deviceMicros = Date.now() * 1000;
   const corrected = deviceMicros + ntpOffsetMicros;
-  const seekMicros = (corrected % videoDurationMicros) + (bufferSecs * 1_000_000);
-  return seekMicros / 1_000_000;
+  let raw = (corrected % DURATION_MICROS) + (bufferSecs * 1_000_000);
+  // Wrap-around: if adding buffer pushes past duration, wrap back
+  if (raw >= DURATION_MICROS) raw -= DURATION_MICROS;
+  return raw / 1_000_000;
 }
 
 // ---------------------------------------------------------------------------
@@ -62,47 +53,42 @@ document.addEventListener('mousemove', showCursor);
 showCursor();
 
 // ---------------------------------------------------------------------------
-// Init
+// Init — matches web's VideoPlayer.svelte onMount
 // ---------------------------------------------------------------------------
 
 async function init() {
   const { invoke, convertFileSrc } = window.__TAURI__.core;
 
-  // Set video source via custom gandalf:// protocol
+  // Set video source immediately — let it start buffering in background
   video.src = convertFileSrc('video.mp4', 'gandalf');
 
-  // Wait for enough data buffered for smooth playback
-  await new Promise((resolve, reject) => {
-    video.addEventListener('canplaythrough', () => resolve(), { once: true });
-    video.addEventListener('error', () => {
-      const err = video.error;
-      reject(new Error('Video load: code=' + (err ? err.code : '?')));
-    }, { once: true });
-    setTimeout(() => reject(new Error('Video buffer timeout (15s)')), 15_000);
-  });
+  // Fire NTP sync and wait for metadata in parallel — same as web
+  const [ntpResult] = await Promise.all([
+    invoke('sync_ntp'),
+    new Promise((resolve, reject) => {
+      video.addEventListener('loadedmetadata', () => resolve(), { once: true });
+      video.addEventListener('error', () => {
+        reject(new Error('Video load failed: code=' + (video.error ? video.error.code : '?')));
+      }, { once: true });
+      setTimeout(() => reject(new Error('Metadata timeout')), 10_000);
+    }),
+  ]);
 
-  // ONE Rust call — get the offset from the startup NTP sync
-  const ntp = await invoke('get_ntp_state');
-  ntpOffsetMicros = ntp.offset_micros;
-  videoDurationMicros = ntp.video_duration_micros;
+  ntpOffsetMicros = ntpResult.offset_micros;
 
-  // Seek to NTP-corrected position
+  // Seek to synced position — same as web's seekToSyncedPosition()
   video.currentTime = calcSeekSecs(BUFFER_FIRST_SYNC_SECS);
-  isFirstSync = false;
 
-  syncStatus.textContent = 'Offset: ' + (ntpOffsetMicros / 1000).toFixed(1) + 'ms';
-
-  // Give the decoder a moment after seek to render the target frame
-  await new Promise(r => setTimeout(r, 100));
-
-  // Start playback (muted to bypass autoplay restrictions)
+  // Play
   try {
     await video.play();
   } catch (e) {
     console.warn('[gandalf] Autoplay blocked:', e.message);
   }
 
-  // Unmute on first user interaction (WKWebView requires user gesture)
+  syncStatus.textContent = 'Synced';
+
+  // Unmute on first user interaction — matches web's firstPlayUnmute()
   const unmuteHint = document.getElementById('unmute-hint');
   function unmute() {
     video.muted = false;
@@ -113,23 +99,10 @@ async function init() {
   }
   document.addEventListener('click', unmute);
   document.addEventListener('keydown', unmute);
-
-  // Seek correction — pure JS, zero IPC, runs every second
-  setInterval(() => {
-    if (isPaused) return;
-    const target = calcSeekSecs(BUFFER_SECS);
-    const diff = Math.abs(video.currentTime - target);
-    if (diff > 0.5 && diff < 116) {
-      video.currentTime = target;
-    }
-  }, SEEK_POLL_INTERVAL_MS);
-
-  syncStatus.textContent = 'Synced';
-  syncStatus.style.color = '';
 }
 
 // ---------------------------------------------------------------------------
-// Keyboard
+// Keyboard — Space matches web's play()/pause()
 // ---------------------------------------------------------------------------
 
 document.addEventListener('keydown', async (e) => {
@@ -137,11 +110,12 @@ document.addEventListener('keydown', async (e) => {
     case 'Space':
       e.preventDefault();
       if (isPaused) {
-        // Seek to NTP position BEFORE unpausing — atomic, no jerk
-        video.currentTime = calcSeekSecs(BUFFER_SECS);
+        // Resume: re-seek to current global position + play (like web's play())
+        video.currentTime = calcSeekSecs(BUFFER_FIRST_SYNC_SECS);
         await video.play();
         isPaused = false;
       } else {
+        // Pause: just pause (like web's pause())
         video.pause();
         isPaused = true;
       }
@@ -152,7 +126,7 @@ document.addEventListener('keydown', async (e) => {
       try {
         const { invoke } = window.__TAURI__.core;
         await invoke('plugin:window|set_fullscreen', { label: 'main', fullscreen: false });
-      } catch (e) { /* ignore */ }
+      } catch (_) {}
       break;
 
     case 'KeyM':
@@ -176,7 +150,7 @@ document.addEventListener('keydown', async (e) => {
       try {
         const { invoke } = window.__TAURI__.core;
         await invoke('plugin:window|set_fullscreen', { label: 'main', fullscreen: true });
-      } catch (e) { /* ignore */ }
+      } catch (_) {}
       break;
   }
 });
@@ -201,4 +175,8 @@ volumeSlider.addEventListener('input', (e) => {
 // Boot
 // ---------------------------------------------------------------------------
 
-init().catch(e => showError(e.message));
+init().catch(e => {
+  console.error('[gandalf]', e);
+  syncStatus.textContent = 'Error: ' + e.message;
+  syncStatus.style.color = 'red';
+});

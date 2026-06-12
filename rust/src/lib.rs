@@ -5,7 +5,6 @@ use std::sync::{Arc, Mutex};
 use log::info;
 use serde::Serialize;
 use tauri::http;
-use tauri::Manager;
 
 use ntp::NtpClient;
 
@@ -20,7 +19,8 @@ pub struct AppState {
 }
 
 // ---------------------------------------------------------------------------
-// One command: return the offset from the startup sync. JS calls this ONCE.
+// One command: sync NTP and return everything. Called once by JS at init.
+// Window appears instantly — no blocking in setup().
 // ---------------------------------------------------------------------------
 
 #[derive(Serialize)]
@@ -31,13 +31,14 @@ pub struct NtpState {
 }
 
 #[tauri::command]
-fn get_ntp_state(state: tauri::State<AppState>) -> NtpState {
-    let ntp = state.ntp.lock().unwrap();
-    NtpState {
+fn sync_ntp(state: tauri::State<AppState>) -> Result<NtpState, String> {
+    let mut ntp = state.ntp.lock().map_err(|e| e.to_string())?;
+    ntp.sync();
+    Ok(NtpState {
         offset_micros: ntp.offset_micros,
         is_synced: ntp.is_synced,
         video_duration_micros: VIDEO_DURATION_MICROS,
-    }
+    })
 }
 
 // ---------------------------------------------------------------------------
@@ -61,12 +62,20 @@ pub fn run() {
         .manage(AppState {
             ntp: Mutex::new(NtpClient::new()),
         })
-        .invoke_handler(tauri::generate_handler![get_ntp_state])
+        .invoke_handler(tauri::generate_handler![sync_ntp])
         .register_uri_scheme_protocol("gandalf", move |_ctx, request| {
+            // Only serve video.mp4 — reject anything else (favicon.ico, etc.)
+            let path = request.uri().path();
+            if !path.ends_with("video.mp4") {
+                return http::Response::builder()
+                    .status(http::StatusCode::NOT_FOUND)
+                    .body(b"not found".to_vec())
+                    .unwrap();
+            }
+
             let data = &*video_data;
             let total = data.len();
 
-            // Parse Range header for video seeking
             let range_header = request
                 .headers()
                 .get("range")
@@ -98,29 +107,10 @@ pub fn run() {
                 .header(http::header::CONTENT_TYPE, "video/mp4")
                 .header(http::header::CONTENT_LENGTH, content_len)
                 .header("Accept-Ranges", "bytes")
-                .header(
-                    "Content-Range",
-                    format!("bytes {start}-{end}/{total}"),
-                )
+                .header("Content-Range", format!("bytes {start}-{end}/{total}"))
                 .header("Cache-Control", "no-cache")
                 .body(body)
                 .unwrap()
-        })
-        .setup(|app| {
-            // NTP sync at startup — blocks ~2s, happens before window is visible
-            let state = app.state::<AppState>();
-            {
-                let rt = tokio::runtime::Runtime::new().unwrap();
-                rt.block_on(async {
-                    state.ntp.lock().unwrap().sync().await;
-                });
-            }
-            info!(
-                "NTP offset: {:.3}ms",
-                state.ntp.lock().unwrap().offset_micros as f64 / 1_000.0
-            );
-
-            Ok(())
         })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

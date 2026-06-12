@@ -8,9 +8,8 @@ authors = ["hmziqrs"]
 [dependencies]
 tauri = { version = "2", features = [] }
 serde = { version = "1", features = ["derive"] }
-tokio = { version = "1", features = ["rt"] }
 log = "0.4"
 env_logger = "0.11"
 
 [build-dependencies]
-tauri-build = { version = "2" }
+tauri-build = { version = "2", features = [] }
