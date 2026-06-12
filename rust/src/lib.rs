@@ -56,6 +56,45 @@ fn open_url(url: String) {
 }
 
 // ---------------------------------------------------------------------------
+// Copy text to system clipboard
+// ---------------------------------------------------------------------------
+
+#[tauri::command]
+fn copy_to_clipboard(text: String) -> Result<(), String> {
+    use std::io::Write;
+
+    #[cfg(target_os = "macos")]
+    let mut child = std::process::Command::new("pbcopy")
+        .stdin(std::process::Stdio::piped())
+        .spawn()
+        .map_err(|e| e.to_string())?;
+
+    #[cfg(target_os = "windows")]
+    let mut child = std::process::Command::new("cmd")
+        .args(["/c", "clip"])
+        .stdin(std::process::Stdio::piped())
+        .spawn()
+        .map_err(|e| e.to_string())?;
+
+    #[cfg(target_os = "linux")]
+    let mut child = std::process::Command::new("xclip")
+        .args(["-selection", "clipboard"])
+        .stdin(std::process::Stdio::piped())
+        .spawn()
+        .map_err(|e| e.to_string())?;
+
+    child
+        .stdin
+        .take()
+        .unwrap()
+        .write_all(text.as_bytes())
+        .map_err(|e| e.to_string())?;
+
+    child.wait().map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+// ---------------------------------------------------------------------------
 // App entry
 // ---------------------------------------------------------------------------
 
@@ -76,7 +115,7 @@ pub fn run() {
         .manage(AppState {
             ntp: Mutex::new(NtpClient::new()),
         })
-        .invoke_handler(tauri::generate_handler![sync_ntp, open_url])
+        .invoke_handler(tauri::generate_handler![sync_ntp, open_url, copy_to_clipboard])
         .register_uri_scheme_protocol("gandalf", move |_ctx, request| {
             // Only serve video.mp4 — reject anything else (favicon.ico, etc.)
             let path = request.uri().path();

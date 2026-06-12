@@ -73,8 +73,9 @@
   var systemThemeHandler = null;
 
   function applyTheme(mode) {
-    document.documentElement.setAttribute('data-theme', mode === 'system'
-      ? (systemDarkQuery.matches ? 'dark' : 'light') : mode);
+    var resolved = mode === 'system'
+      ? (systemDarkQuery.matches ? 'dark' : 'light') : mode;
+    document.documentElement.classList.toggle('dark', resolved === 'dark');
 
     if (systemThemeHandler) {
       systemDarkQuery.removeEventListener('change', systemThemeHandler);
@@ -82,7 +83,7 @@
     }
     if (mode === 'system') {
       systemThemeHandler = function (e) {
-        document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+        document.documentElement.classList.toggle('dark', e.matches);
       };
       systemDarkQuery.addEventListener('change', systemThemeHandler);
     }
@@ -227,11 +228,16 @@
     settings.pauseOnSheetOpen = true;
     localStorage.setItem('gandalf_pause_on_open', 'true');
     updatePlaybackToggle();
+    if (sheetOpen) video.pause();
   });
   if (toggleKeep) toggleKeep.addEventListener('click', function () {
     settings.pauseOnSheetOpen = false;
     localStorage.setItem('gandalf_pause_on_open', 'false');
     updatePlaybackToggle();
+    if (sheetOpen && !isPaused) {
+      video.currentTime = calcSeekSecs(BUFFER_FIRST_SYNC_SECS);
+      video.play().catch(function () {});
+    }
   });
 
   if (themeLight) themeLight.addEventListener('click', function () {
@@ -249,7 +255,7 @@
   });
 
   if (btnShare) btnShare.addEventListener('click', function () {
-    navigator.clipboard.writeText(SHARE_TEXT).then(function () {
+    invoke('copy_to_clipboard', { text: SHARE_TEXT }).then(function () {
       if (shareFeedback) {
         shareFeedback.classList.add('visible');
         setTimeout(function () { shareFeedback.classList.remove('visible'); }, 2000);
