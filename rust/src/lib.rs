@@ -42,6 +42,20 @@ fn sync_ntp(state: tauri::State<AppState>) -> Result<NtpState, String> {
 }
 
 // ---------------------------------------------------------------------------
+// Open URL in system browser
+// ---------------------------------------------------------------------------
+
+#[tauri::command]
+fn open_url(url: String) {
+    #[cfg(target_os = "macos")]
+    let _ = std::process::Command::new("open").arg(&url).spawn();
+    #[cfg(target_os = "windows")]
+    let _ = std::process::Command::new("cmd").args(["/c", "start", &url]).spawn();
+    #[cfg(target_os = "linux")]
+    let _ = std::process::Command::new("xdg-open").arg(&url).spawn();
+}
+
+// ---------------------------------------------------------------------------
 // App entry
 // ---------------------------------------------------------------------------
 
@@ -62,7 +76,7 @@ pub fn run() {
         .manage(AppState {
             ntp: Mutex::new(NtpClient::new()),
         })
-        .invoke_handler(tauri::generate_handler![sync_ntp])
+        .invoke_handler(tauri::generate_handler![sync_ntp, open_url])
         .register_uri_scheme_protocol("gandalf", move |_ctx, request| {
             // Only serve video.mp4 — reject anything else (favicon.ico, etc.)
             let path = request.uri().path();

@@ -5,57 +5,252 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Epic Sax Gandalf</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #000; overflow: hidden; }
-    #video-container {
-      position: fixed; top: 0; left: 0;
-      width: 100vw; height: 100vh;
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #000; color: #fff; overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      -webkit-user-select: none; user-select: none;
     }
-    video {
-      width: 100%; height: 100%;
-      object-fit: contain;
+
+    /* ── SVG icon helper ── */
+    .icon { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vertical-align: middle; }
+    .icon.filled { fill: currentColor; stroke: none; }
+
+    /* ── Video ── */
+    #video-container { position: fixed; inset: 0; background: #000; }
+    #video { width: 100%; height: 100%; object-fit: contain; }
+    #unmute-hint {
+      position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,0.55); backdrop-filter: blur(8px);
+      color: rgba(255,255,255,0.75); padding: 6px 16px; border-radius: 14px;
+      font-size: 0.78rem; pointer-events: none; transition: opacity 0.4s;
     }
+
+    /* ── Controls ── */
     #controls {
-      position: fixed; bottom: 16px; right: 16px;
-      display: flex; align-items: center; gap: 8px;
-      background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);
-      border-radius: 8px; padding: 8px 12px;
-      opacity: 0; transition: opacity 0.3s;
-      z-index: 10;
+      position: fixed; bottom: 12px; right: 12px;
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(0,0,0,0.4); backdrop-filter: blur(8px);
+      border-radius: 6px; padding: 5px 8px;
+      opacity: 0; transition: opacity 0.3s; z-index: 10;
     }
     body.mouse-active #controls { opacity: 1; }
-    #controls button {
+    .ctrl-btn {
       background: none; border: none; color: rgba(255,255,255,0.8);
-      cursor: pointer; font-size: 18px; padding: 4px;
+      cursor: pointer; padding: 2px; display: flex; align-items: center; justify-content: center;
     }
-    #controls button:hover { color: #fff; }
-    #controls input[type="range"] {
-      width: 80px; height: 4px;
-      -webkit-appearance: none; appearance: none;
-      background: rgba(255,255,255,0.25); border-radius: 2px;
-      outline: none; cursor: pointer;
+    .ctrl-btn:hover { color: #fff; }
+    .controls-divider { width: 1px; height: 16px; background: rgba(255,255,255,0.15); }
+    #volume {
+      width: 60px; height: 3px; -webkit-appearance: none; appearance: none;
+      background: rgba(255,255,255,0.2); border-radius: 2px; outline: none; cursor: pointer;
     }
-    #controls input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none; width: 14px; height: 14px;
-      border-radius: 50%; background: white; cursor: pointer;
+    #volume::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 10px; height: 10px;
+      border-radius: 50%; background: #fff; cursor: pointer;
     }
-    #sync-status {
-      position: fixed; top: 8px; right: 8px;
-      color: rgba(255,255,255,0.2); font-size: 11px;
-      font-family: monospace; z-index: 10;
+
+    /* ── Sheet Backdrop ── */
+    #sheet-backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+      opacity: 0; pointer-events: none; transition: opacity 0.25s; z-index: 50;
+    }
+    #sheet-backdrop.active { opacity: 1; pointer-events: auto; }
+
+    /* ── Sheet ── */
+    #sheet {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: rgba(18,18,18,0.94); backdrop-filter: blur(40px) saturate(1.4);
+      -webkit-backdrop-filter: blur(40px) saturate(1.4);
+      border-top: 1px solid rgba(255,255,255,0.07);
+      border-radius: 14px 14px 0 0;
+      transform: translateY(100%);
+      transition: transform 0.28s cubic-bezier(0.32,0.72,0,1);
+      z-index: 60;
+    }
+    #sheet.active { transform: translateY(0); }
+
+    #sheet-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 14px 0;
+    }
+    #sheet-header h2 { font-size: 0.9rem; font-weight: 600; }
+    #close-sheet {
+      background: none; border: none; color: rgba(255,255,255,0.4);
+      cursor: pointer; padding: 4px 6px; border-radius: 5px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #close-sheet:hover { background: rgba(255,255,255,0.06); color: #fff; }
+
+    /* ── Sheet Body ── */
+    #sheet-body {
+      padding: 10px 14px 16px; max-height: 75vh; overflow-y: auto;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    #sheet-body::-webkit-scrollbar { width: 3px; }
+    #sheet-body::-webkit-scrollbar-track { background: transparent; }
+    #sheet-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
+
+    /* ── Section Card ── */
+    .section-card {
+      border-radius: 10px; border: 1px solid rgba(255,255,255,0.05);
+      background: rgba(255,255,255,0.025); padding: 10px 12px;
+      transition: border-color 0.2s;
+    }
+    .section-card:hover { border-color: rgba(255,255,255,0.1); }
+    .section-header {
+      font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.35); margin-bottom: 7px;
+    }
+
+    /* ── Sync Status ── */
+    .sync-row { display: flex; align-items: center; gap: 8px; }
+    #sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #6b7280; transition: background 0.3s; }
+    #sync-label { font-size: 0.82rem; color: rgba(255,255,255,0.75); }
+
+    /* ── Segmented Buttons ── */
+    .segmented-group { display: flex; gap: 5px; }
+    .seg-btn {
+      flex: 1; padding: 7px 8px; border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.08); background: transparent;
+      color: rgba(255,255,255,0.5); font-size: 0.78rem; font-weight: 500;
+      cursor: pointer; transition: all 0.2s; text-align: center; font-family: inherit;
+      display: flex; align-items: center; justify-content: center; gap: 4px;
+    }
+    .seg-btn:hover { border-color: rgba(255,255,255,0.14); color: rgba(255,255,255,0.7); }
+    .seg-btn.active {
+      background: linear-gradient(135deg, #e8590c, #d9480f); border-color: transparent;
+      color: #fff; box-shadow: 0 2px 10px rgba(232,89,12,0.2);
+    }
+    .seg-btn .icon { width: 14px; height: 14px; }
+
+    /* ── Action Buttons ── */
+    .action-btn {
+      width: 100%; padding: 8px 12px; border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.08); background: transparent;
+      color: rgba(255,255,255,0.8); font-size: 0.82rem; font-weight: 500;
+      cursor: pointer; transition: all 0.2s; font-family: inherit;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .action-btn:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.12); }
+    .action-btn .icon { width: 15px; height: 15px; }
+    .actions-row { display: flex; gap: 6px; }
+    .actions-row .action-btn { flex: 1; }
+    #share-feedback {
+      display: none; text-align: center; color: rgba(255,255,255,0.45);
+      font-size: 0.72rem; margin-top: 4px;
+    }
+    #share-feedback.visible { display: block; }
+
+    /* ── Footer ── */
+    .sheet-footer { display: flex; flex-direction: column; align-items: center; gap: 8px; padding-top: 4px; }
+    .footer-credit { font-size: 0.72rem; color: rgba(255,255,255,0.3); }
+    .footer-credit span {
+      background: linear-gradient(90deg, #e8590c, #f76707, #ffd43b, #e8590c);
+      background-size: 200% 100%;
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      animation: shimmer 3s linear infinite;
+    }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    .social-links { display: flex; gap: 4px; }
+    .social-link {
+      width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+      background: transparent; border-radius: 6px; color: rgba(255,255,255,0.5);
+      text-decoration: none; cursor: pointer; transition: background 0.2s, color 0.2s;
+    }
+    .social-link:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); }
+    .social-link .icon { width: 16px; height: 16px; }
+    .social-link.text-link {
+      width: auto; padding: 0 8px; font-size: 0.68rem; font-weight: 600;
     }
   </style>
 </head>
 <body>
+
+  <!-- Video -->
   <div id="video-container">
     <video id="video" loop playsinline muted></video>
-    <div id="unmute-hint" style="position:fixed;bottom:50%;left:50%;transform:translate(-50%,50%);color:rgba(255,255,255,0.7);font:16px system-ui;z-index:20;pointer-events:none;transition:opacity 0.5s;">Click anywhere to enable audio</div>
+    <div id="unmute-hint">Click anywhere to enable audio</div>
   </div>
+
+  <!-- Controls -->
   <div id="controls">
-    <button id="mute-btn" title="Mute/Unmute (M)">&#x1f50a;</button>
+    <button class="ctrl-btn" id="mute-btn" title="Mute (M)">
+      <svg class="icon" id="icon-volume" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+    </button>
     <input type="range" id="volume" min="0" max="1" step="0.01" value="1" />
+    <div class="controls-divider"></div>
+    <button class="ctrl-btn" id="fullscreen-btn" title="Fullscreen (F)">
+      <svg class="icon" id="icon-maximize" viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+    </button>
   </div>
-  <div id="sync-status">Syncing...</div>
+
+  <!-- Sheet Backdrop -->
+  <div id="sheet-backdrop"></div>
+
+  <!-- Settings Sheet -->
+  <div id="sheet">
+    <div id="sheet-header">
+      <h2>Settings</h2>
+      <button id="close-sheet"><svg class="icon" viewBox="0 0 24 24" style="width:16px;height:16px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+
+    <div id="sheet-body">
+
+      <!-- Sync -->
+      <div class="section-card">
+        <div class="section-header">Sync</div>
+        <div class="sync-row">
+          <div id="sync-dot"></div>
+          <span id="sync-label">Waiting...</span>
+        </div>
+      </div>
+
+      <!-- Playback -->
+      <div class="section-card">
+        <div class="section-header">Playback</div>
+        <div class="segmented-group">
+          <button class="seg-btn active" id="toggle-pause">Pause on Open</button>
+          <button class="seg-btn" id="toggle-keep">Keep Playing</button>
+        </div>
+      </div>
+
+      <!-- Theme -->
+      <div class="section-card">
+        <div class="section-header">Theme</div>
+        <div class="segmented-group">
+          <button class="seg-btn" id="theme-light"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
+          <button class="seg-btn" id="theme-dark"><svg class="icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
+          <button class="seg-btn active" id="theme-system"><svg class="icon" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></button>
+        </div>
+      </div>
+
+      <!-- Links -->
+      <div class="section-card">
+        <div class="section-header">Links</div>
+        <div class="actions-row">
+          <button class="action-btn" id="btn-video"><svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg> Video</button>
+          <button class="action-btn" id="btn-share"><svg class="icon" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Share</button>
+        </div>
+        <div id="share-feedback">Copied!</div>
+      </div>
+
+      <!-- Footer -->
+      <div class="sheet-footer">
+        <div class="footer-credit">Built by <span>hmziqrs</span></div>
+        <div class="social-links">
+          <a class="social-link" data-url="https://hmziq.rs"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></a>
+          <a class="social-link" data-url="https://hmziq.xyz"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></a>
+          <a class="social-link" data-url="https://github.com/hmziqrs"><svg class="icon" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></a>
+          <a class="social-link text-link" data-url="https://x.com/hmziqrs" style="font-size:14px;font-weight:700;">𝕏</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
   <script src="./app.js"></script>
 </body>
 </html>
