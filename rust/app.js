@@ -1,23 +1,18 @@
-// ---------------------------------------------------------------------------
-// Epic Sax Gandalf — NTP-synced video loop (Tauri v2)
-//
-// Mirrors the web (Svelte) version exactly:
-//   1. Sync NTP once via Rust -> get offset in micros
-//   2. Seek to (Date.now() + offset) % duration + buffer
-//   3. Play. No periodic corrections. Trust the video to loop.
-//
-// Space resumes by re-seeking to current global position (like web's play()).
-// ---------------------------------------------------------------------------
-
 (function () {
   'use strict';
 
   // --- Constants ---
-  var BUFFER_FIRST_SYNC_SECS = 0.165; // 165ms — matches web & Android
+  var BUFFER_FIRST_SYNC_SECS = 0.165;
   var CURSOR_HIDE_DELAY_MS = 3000;
-  var DURATION_MICROS = 117_540_000; // 117.54s — hard-coded, same as Rust
+  var DURATION_MICROS = 117_540_000;
   var YOUTUBE_URL = 'https://www.youtube.com/watch?v=gy1B3agGNxw';
   var SHARE_TEXT = 'Epic Sax Gandalf — NTP-synced video loop https://github.com/hmziqrs/gandalf-sax';
+
+  // --- SVG icon templates ---
+  var SVG_VOLUME_ON = '<svg class="icon" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>';
+  var SVG_VOLUME_OFF = '<svg class="icon" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>';
+  var SVG_MAXIMIZE = '<svg class="icon" viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
+  var SVG_MINIMIZE = '<svg class="icon" viewBox="0 0 24 24"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
 
   // --- State ---
   var ntpOffsetMicros = 0;
@@ -28,19 +23,17 @@
   var isFullscreen = false;
   var cursorTimer = null;
 
-  // --- Settings (persisted to localStorage) ---
   var settings = {
     theme: localStorage.getItem('gandalf_theme') || 'system',
     pauseOnSheetOpen: localStorage.getItem('gandalf_pause_on_open') !== 'false'
   };
 
-  // --- DOM refs ---
+  // --- DOM ---
   var video = document.getElementById('video');
   var videoContainer = document.getElementById('video-container');
   var controls = document.getElementById('controls');
   var muteBtn = document.getElementById('mute-btn');
   var volumeSlider = document.getElementById('volume');
-  var syncStatus = document.getElementById('sync-status');
   var unmuteHint = document.getElementById('unmute-hint');
   var sheetBackdrop = document.getElementById('sheet-backdrop');
   var sheet = document.getElementById('sheet');
@@ -57,20 +50,17 @@
   var shareFeedback = document.getElementById('share-feedback');
   var fullscreenBtn = document.getElementById('fullscreen-btn');
 
-  // --- Tauri helpers ---
-  var core = window.__TAURI__.core;
-  var invoke = core.invoke;
-  var convertFileSrc = core.convertFileSrc;
+  var invoke = window.__TAURI__.core.invoke;
+  var convertFileSrc = window.__TAURI__.core.convertFileSrc;
 
   // ---------------------------------------------------------------------------
-  // Seek formula — same as web version
+  // Seek formula
   // ---------------------------------------------------------------------------
 
   function calcSeekSecs(bufferSecs) {
     var deviceMicros = Date.now() * 1000;
     var corrected = deviceMicros + ntpOffsetMicros;
     var raw = (corrected % DURATION_MICROS) + (bufferSecs * 1_000_000);
-    // Wrap-around: if adding buffer pushes past duration, wrap back
     if (raw >= DURATION_MICROS) raw -= DURATION_MICROS;
     return raw / 1_000_000;
   }
@@ -84,16 +74,12 @@
 
   function applyTheme(mode) {
     document.documentElement.setAttribute('data-theme', mode === 'system'
-      ? (systemDarkQuery.matches ? 'dark' : 'light')
-      : mode);
+      ? (systemDarkQuery.matches ? 'dark' : 'light') : mode);
 
-    // Remove old system listener if any
     if (systemThemeHandler) {
       systemDarkQuery.removeEventListener('change', systemThemeHandler);
       systemThemeHandler = null;
     }
-
-    // Listen for system changes when mode is 'system'
     if (mode === 'system') {
       systemThemeHandler = function (e) {
         document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
@@ -101,18 +87,14 @@
       systemDarkQuery.addEventListener('change', systemThemeHandler);
     }
 
-    // Update active class on theme buttons
+    var active = mode === 'light' ? themeLight : mode === 'dark' ? themeDark : themeSystem;
     [themeLight, themeDark, themeSystem].forEach(function (btn) {
-      if (!btn) return;
-      btn.classList.toggle('active', btn ===
-        (mode === 'light' ? themeLight : mode === 'dark' ? themeDark : themeSystem));
+      if (btn) btn.classList.toggle('active', btn === active);
     });
   }
 
   function initTheme() {
-    var saved = localStorage.getItem('gandalf_theme') || 'system';
-    settings.theme = saved;
-    applyTheme(saved);
+    applyTheme(localStorage.getItem('gandalf_theme') || 'system');
   }
 
   // ---------------------------------------------------------------------------
@@ -131,11 +113,8 @@
   function openSheet() {
     if (sheetBackdrop) sheetBackdrop.classList.add('active');
     if (sheet) sheet.classList.add('active');
-    if (settings.pauseOnSheetOpen) {
-      video.pause();
-    }
+    if (settings.pauseOnSheetOpen) video.pause();
     sheetOpen = true;
-    // Stop cursor hide timer while sheet is open
     clearTimeout(cursorTimer);
     document.body.classList.add('mouse-active');
     document.body.style.cursor = 'default';
@@ -147,15 +126,14 @@
     sheetOpen = false;
 
     if (!isPaused) {
-      // Re-seek to synced position and play
       video.currentTime = calcSeekSecs(BUFFER_FIRST_SYNC_SECS);
       video.play().catch(function () {});
     }
 
-    // On FIRST close, unmute video
     if (!hasPlayedOnce) {
       video.muted = false;
-      if (muteBtn) muteBtn.innerHTML = '&#x1f50a;';
+      if (muteBtn) muteBtn.innerHTML = SVG_VOLUME_ON;
+      if (unmuteHint) unmuteHint.style.opacity = '0';
       hasPlayedOnce = true;
     }
   }
@@ -178,39 +156,30 @@
   }
 
   // ---------------------------------------------------------------------------
-  // Mute / Volume
+  // Mute / Volume / Fullscreen
   // ---------------------------------------------------------------------------
 
   function toggleMute() {
     video.muted = !video.muted;
-    if (muteBtn) muteBtn.innerHTML = video.muted ? '&#x1f507;' : '&#x1f50a;';
+    if (muteBtn) muteBtn.innerHTML = video.muted ? SVG_VOLUME_OFF : SVG_VOLUME_ON;
   }
-
-  // ---------------------------------------------------------------------------
-  // Fullscreen
-  // ---------------------------------------------------------------------------
 
   function toggleFullscreen() {
     isFullscreen = !isFullscreen;
     invoke('plugin:window|set_fullscreen', { label: 'main', fullscreen: isFullscreen }).catch(function () {});
-    if (fullscreenBtn) fullscreenBtn.innerHTML = isFullscreen ? '&#x2921;' : '&#x2922;';
+    if (fullscreenBtn) fullscreenBtn.innerHTML = isFullscreen ? SVG_MINIMIZE : SVG_MAXIMIZE;
   }
 
   // ---------------------------------------------------------------------------
-  // Init — matches web's VideoPlayer.svelte onMount
+  // Init
   // ---------------------------------------------------------------------------
 
   async function init() {
-    // a. Apply theme immediately
     initTheme();
-
-    // b. Update playback toggle state
     updatePlaybackToggle();
 
-    // c. Set video source
     video.src = convertFileSrc('video.mp4', 'gandalf');
 
-    // d. Fire NTP sync and wait for metadata in parallel
     var ntpResult;
     var metadataPromise = new Promise(function (resolve, reject) {
       video.addEventListener('loadedmetadata', function () { resolve(); }, { once: true });
@@ -220,37 +189,23 @@
       setTimeout(function () { reject(new Error('Metadata timeout')); }, 10_000);
     });
 
-    var results = await Promise.all([
-      invoke('sync_ntp'),
-      metadataPromise
-    ]);
+    var results = await Promise.all([invoke('sync_ntp'), metadataPromise]);
     ntpResult = results[0];
 
-    // e. Store ntpOffsetMicros, set isSynced
     ntpOffsetMicros = ntpResult.offset_micros;
     isSynced = true;
 
-    // f. Update sync-dot and sync-label
     if (syncDot) syncDot.style.background = '#22c55e';
     if (syncLabel) syncLabel.textContent = 'NTP';
 
-    // g. Seek to synced position
     video.currentTime = calcSeekSecs(BUFFER_FIRST_SYNC_SECS);
 
-    // h. Play
-    try {
-      await video.play();
-    } catch (e) {
-      console.warn('[gandalf] Autoplay blocked:', e.message);
-    }
+    try { await video.play(); } catch (e) { console.warn('[gandalf] Autoplay blocked:', e.message); }
 
-    // i. Update syncStatus
-    if (syncStatus) syncStatus.textContent = 'Synced';
-
-    // j. Unmute on first user interaction
+    // Unmute on first interaction
     function unmute() {
       video.muted = false;
-      if (muteBtn) muteBtn.innerHTML = '&#x1f50a;';
+      if (muteBtn) muteBtn.innerHTML = SVG_VOLUME_ON;
       if (unmuteHint) unmuteHint.style.opacity = '0';
       document.removeEventListener('click', unmute);
       document.removeEventListener('keydown', unmute);
@@ -263,138 +218,64 @@
   // Event listeners
   // ---------------------------------------------------------------------------
 
-  // video-container click -> openSheet (but NOT if clicking controls)
-  if (videoContainer) {
-    videoContainer.addEventListener('click', function () {
-      openSheet();
-    });
-  }
+  if (videoContainer) videoContainer.addEventListener('click', openSheet);
+  if (controls) controls.addEventListener('click', function (e) { e.stopPropagation(); });
+  if (sheetBackdrop) sheetBackdrop.addEventListener('click', closeSheet);
+  if (closeSheetBtn) closeSheetBtn.addEventListener('click', closeSheet);
 
-  // controls click -> stopPropagation (prevents opening sheet)
-  if (controls) {
-    controls.addEventListener('click', function (e) {
-      e.stopPropagation();
-    });
-  }
-
-  // sheet-backdrop click -> closeSheet
-  if (sheetBackdrop) {
-    sheetBackdrop.addEventListener('click', function () {
-      closeSheet();
-    });
-  }
-
-  // close-sheet click -> closeSheet
-  if (closeSheetBtn) {
-    closeSheetBtn.addEventListener('click', function () {
-      closeSheet();
-    });
-  }
-
-  // toggle-pause click
-  if (togglePause) {
-    togglePause.addEventListener('click', function () {
-      settings.pauseOnSheetOpen = true;
-      localStorage.setItem('gandalf_pause_on_open', 'true');
-      updatePlaybackToggle();
-    });
-  }
-
-  // toggle-keep click
-  if (toggleKeep) {
-    toggleKeep.addEventListener('click', function () {
-      settings.pauseOnSheetOpen = false;
-      localStorage.setItem('gandalf_pause_on_open', 'false');
-      updatePlaybackToggle();
-    });
-  }
-
-  // theme buttons
-  if (themeLight) {
-    themeLight.addEventListener('click', function () {
-      settings.theme = 'light';
-      localStorage.setItem('gandalf_theme', 'light');
-      applyTheme('light');
-    });
-  }
-  if (themeDark) {
-    themeDark.addEventListener('click', function () {
-      settings.theme = 'dark';
-      localStorage.setItem('gandalf_theme', 'dark');
-      applyTheme('dark');
-    });
-  }
-  if (themeSystem) {
-    themeSystem.addEventListener('click', function () {
-      settings.theme = 'system';
-      localStorage.setItem('gandalf_theme', 'system');
-      applyTheme('system');
-    });
-  }
-
-  // btn-video click -> open YouTube URL
-  if (btnVideo) {
-    btnVideo.addEventListener('click', function () {
-      invoke('open_url', { url: YOUTUBE_URL }).catch(function () {});
-    });
-  }
-
-  // btn-share click -> copy to clipboard
-  if (btnShare) {
-    btnShare.addEventListener('click', function () {
-      navigator.clipboard.writeText(SHARE_TEXT).then(function () {
-        if (shareFeedback) {
-          shareFeedback.style.display = 'inline';
-          setTimeout(function () { shareFeedback.style.display = 'none'; }, 2000);
-        }
-      }).catch(function () {});
-    });
-  }
-
-  // social-link click (delegated on sheet)
-  if (sheet) {
-    sheet.addEventListener('click', function (e) {
-      var link = e.target.closest('a[data-url]');
-      if (link) {
-        e.preventDefault();
-        var url = link.dataset.url;
-        if (url) invoke('open_url', { url: url }).catch(function () {});
-      }
-    });
-  }
-
-  // fullscreen-btn click
-  if (fullscreenBtn) {
-    fullscreenBtn.addEventListener('click', function () {
-      toggleFullscreen();
-    });
-  }
-
-  // mute-btn click
-  if (muteBtn) {
-    muteBtn.addEventListener('click', function () {
-      toggleMute();
-    });
-  }
-
-  // volume input
-  if (volumeSlider) {
-    volumeSlider.addEventListener('input', function (e) {
-      video.volume = parseFloat(e.target.value);
-      video.muted = video.volume === 0;
-      if (muteBtn) muteBtn.innerHTML = video.muted ? '&#x1f507;' : '&#x1f50a;';
-    });
-  }
-
-  // mousemove -> show cursor, 3s timer to hide
-  document.addEventListener('mousemove', function () {
-    if (sheetOpen) return;
-    showCursor();
+  if (togglePause) togglePause.addEventListener('click', function () {
+    settings.pauseOnSheetOpen = true;
+    localStorage.setItem('gandalf_pause_on_open', 'true');
+    updatePlaybackToggle();
   });
+  if (toggleKeep) toggleKeep.addEventListener('click', function () {
+    settings.pauseOnSheetOpen = false;
+    localStorage.setItem('gandalf_pause_on_open', 'false');
+    updatePlaybackToggle();
+  });
+
+  if (themeLight) themeLight.addEventListener('click', function () {
+    settings.theme = 'light'; localStorage.setItem('gandalf_theme', 'light'); applyTheme('light');
+  });
+  if (themeDark) themeDark.addEventListener('click', function () {
+    settings.theme = 'dark'; localStorage.setItem('gandalf_theme', 'dark'); applyTheme('dark');
+  });
+  if (themeSystem) themeSystem.addEventListener('click', function () {
+    settings.theme = 'system'; localStorage.setItem('gandalf_theme', 'system'); applyTheme('system');
+  });
+
+  if (btnVideo) btnVideo.addEventListener('click', function () {
+    invoke('open_url', { url: YOUTUBE_URL }).catch(function () {});
+  });
+
+  if (btnShare) btnShare.addEventListener('click', function () {
+    navigator.clipboard.writeText(SHARE_TEXT).then(function () {
+      if (shareFeedback) {
+        shareFeedback.classList.add('visible');
+        setTimeout(function () { shareFeedback.classList.remove('visible'); }, 2000);
+      }
+    }).catch(function () {});
+  });
+
+  if (sheet) sheet.addEventListener('click', function (e) {
+    var link = e.target.closest('a[data-url]');
+    if (link) { e.preventDefault(); invoke('open_url', { url: link.dataset.url }).catch(function () {}); }
+  });
+
+  if (fullscreenBtn) fullscreenBtn.addEventListener('click', toggleFullscreen);
+  if (muteBtn) muteBtn.addEventListener('click', toggleMute);
+
+  if (volumeSlider) volumeSlider.addEventListener('input', function (e) {
+    video.volume = parseFloat(e.target.value);
+    video.muted = video.volume === 0;
+    if (muteBtn) muteBtn.innerHTML = video.muted ? SVG_VOLUME_OFF : SVG_VOLUME_ON;
+  });
+
+  document.addEventListener('mousemove', function () { if (!sheetOpen) showCursor(); });
   showCursor();
 
   // ---------------------------------------------------------------------------
-  // Keyboard handler
+  // Keyboard
   // ---------------------------------------------------------------------------
 
   document.addEventListener('keydown', async function (e) {
@@ -403,36 +284,24 @@
         e.preventDefault();
         if (sheetOpen) return;
         if (isPaused) {
-          // Resume: re-seek to current global position + play
           video.currentTime = calcSeekSecs(BUFFER_FIRST_SYNC_SECS);
           await video.play().catch(function () {});
           isPaused = false;
-        } else {
-          video.pause();
-          isPaused = true;
-        }
+        } else { video.pause(); isPaused = true; }
         break;
 
       case 'Escape':
         e.preventDefault();
-        if (sheetOpen) {
-          closeSheet();
-        } else {
-          // Exit fullscreen
+        if (sheetOpen) { closeSheet(); }
+        else {
           isFullscreen = false;
           invoke('plugin:window|set_fullscreen', { label: 'main', fullscreen: false }).catch(function () {});
-          if (fullscreenBtn) fullscreenBtn.innerHTML = '&#x2922;';
+          if (fullscreenBtn) fullscreenBtn.innerHTML = SVG_MAXIMIZE;
         }
         break;
 
-      case 'KeyM':
-        toggleMute();
-        break;
-
-      case 'KeyF':
-        e.preventDefault();
-        toggleFullscreen();
-        break;
+      case 'KeyM': toggleMute(); break;
+      case 'KeyF': e.preventDefault(); toggleFullscreen(); break;
 
       case 'ArrowUp':
         e.preventDefault();
@@ -452,12 +321,6 @@
   // Boot
   // ---------------------------------------------------------------------------
 
-  init().catch(function (e) {
-    console.error('[gandalf]', e);
-    if (syncStatus) {
-      syncStatus.textContent = 'Error: ' + e.message;
-      syncStatus.style.color = 'red';
-    }
-  });
+  init().catch(function (e) { console.error('[gandalf]', e); });
 
 })();
