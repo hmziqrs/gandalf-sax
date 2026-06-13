@@ -13,7 +13,6 @@
   --fg-muted: #7d7d85;
   --fg-subtle: rgba(0, 0, 0, 0.35);
   --fg-secondary: rgba(0, 0, 0, 0.55);
-  --fg-tertiary: rgba(0, 0, 0, 0.8);
 
   --sheet-bg: rgba(255, 255, 255, 0.92);
   --sheet-border: rgba(0, 0, 0, 0.08);
@@ -59,7 +58,6 @@
   --fg-muted: rgba(255, 255, 255, 0.55);
   --fg-subtle: rgba(255, 255, 255, 0.35);
   --fg-secondary: rgba(255, 255, 255, 0.55);
-  --fg-tertiary: rgba(255, 255, 255, 0.8);
 
   --sheet-bg: rgba(18, 18, 18, 0.94);
   --sheet-border: rgba(255, 255, 255, 0.07);
@@ -111,7 +109,6 @@ body {
   width: 18px; height: 18px; stroke: currentColor; fill: none;
   stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vertical-align: middle;
 }
-.icon.filled { fill: currentColor; stroke: none; }
 
 /* ── Video ── */
 #video-container { position: fixed; inset: 0; background: var(--video-bg); }

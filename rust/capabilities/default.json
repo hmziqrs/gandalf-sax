@@ -4,12 +4,9 @@
   "description": "Capability for the main window",
   "windows": ["main"],
   "permissions": [
-    "core:path:default",
     "core:event:default",
     "core:window:default",
     "core:window:allow-set-fullscreen",
-    "core:window:allow-close",
-    "core:app:default",
-    "core:resources:default"
+    "core:app:default"
   ]
 }

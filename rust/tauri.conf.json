@@ -4,7 +4,7 @@
   "version": "5.0.0",
   "identifier": "com.onemdev.gandalf-sax",
   "build": {
-    "frontendDist": "./",
+    "frontendDist": "./dist",
     "beforeDevCommand": "",
     "beforeBuildCommand": ""
   },

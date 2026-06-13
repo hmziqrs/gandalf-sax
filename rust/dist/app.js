@@ -21,6 +21,8 @@
   var sheetOpen = false;
   var hasPlayedOnce = false;
   var isFullscreen = false;
+  var pausedBySheet = false;
+  var ready = false;
   var cursorTimer = null;
 
   var settings = {
@@ -58,6 +60,7 @@
   // ---------------------------------------------------------------------------
 
   function calcSeekSecs(bufferSecs) {
+    if (!durationMicros) return 0; // guard pre-init (metadata not loaded yet)
     var deviceMicros = Date.now() * 1000;
     var corrected = deviceMicros + ntpOffsetMicros;
     var raw = (corrected % durationMicros) + (bufferSecs * 1_000_000);
@@ -125,7 +128,10 @@
   function openSheet() {
     if (sheetBackdrop) sheetBackdrop.classList.add('active');
     if (sheet) sheet.classList.add('active');
-    if (settings.pauseOnSheetOpen) video.pause();
+    if (settings.pauseOnSheetOpen && !video.paused) {
+      pausedBySheet = true; // the sheet caused this pause → resume on close
+      video.pause();
+    }
     sheetOpen = true;
     clearTimeout(cursorTimer);
     document.body.classList.add('mouse-active');
@@ -137,7 +143,8 @@
     if (sheet) sheet.classList.remove('active');
     sheetOpen = false;
 
-    if (!video.paused) {
+    if (pausedBySheet) {
+      pausedBySheet = false;
       video.currentTime = calcSeekSecs(BUFFER_FIRST_SYNC_SECS);
       video.play().catch(function () {});
     }
@@ -176,10 +183,22 @@
     updateVolumeIcon();
   }
 
-  function toggleFullscreen() {
-    isFullscreen = !isFullscreen;
-    invoke('plugin:window|set_fullscreen', { label: 'main', fullscreen: isFullscreen }).catch(function () {});
+  function syncFullscreenIcon() {
     if (fullscreenBtn) fullscreenBtn.innerHTML = isFullscreen ? SVG_MINIMIZE : SVG_MAXIMIZE;
+  }
+
+  function toggleFullscreen() {
+    // Query the real window state so we toggle correctly even if the user
+    // exited fullscreen via the OS (green traffic light, Cmd+Ctrl+F, etc.).
+    invoke('plugin:window|is_fullscreen', { label: 'main' }).then(function (fs) {
+      isFullscreen = !fs;
+      invoke('plugin:window|set_fullscreen', { label: 'main', fullscreen: isFullscreen }).catch(function () {});
+      syncFullscreenIcon();
+    }).catch(function () {
+      isFullscreen = !isFullscreen;
+      invoke('plugin:window|set_fullscreen', { label: 'main', fullscreen: isFullscreen }).catch(function () {});
+      syncFullscreenIcon();
+    });
   }
 
   // ---------------------------------------------------------------------------
@@ -205,8 +224,9 @@
     ntpResult = results[0];
 
     ntpOffsetMicros = ntpResult.offset_micros;
-    durationMicros = ntpResult.video_duration_micros;
+    durationMicros = Math.round(video.duration * 1_000_000);
     isSynced = ntpResult.is_synced;
+    ready = true;
 
     if (syncDot) syncDot.style.background = isSynced ? '#22c55e' : '#ef4444';
     if (syncLabel) syncLabel.textContent = isSynced ? 'NTP' : 'Sync failed';
@@ -241,13 +261,14 @@
     settings.pauseOnSheetOpen = true;
     localStorage.setItem('gandalf_pause_on_open', 'true');
     updatePlaybackToggle();
-    if (sheetOpen) video.pause();
+    if (sheetOpen && !video.paused) { pausedBySheet = true; video.pause(); }
   });
   if (toggleKeep) toggleKeep.addEventListener('click', function () {
     settings.pauseOnSheetOpen = false;
     localStorage.setItem('gandalf_pause_on_open', 'false');
     updatePlaybackToggle();
-    if (sheetOpen && video.paused) {
+    if (sheetOpen && video.paused && pausedBySheet) {
+      pausedBySheet = false;
       video.currentTime = calcSeekSecs(BUFFER_FIRST_SYNC_SECS);
       video.play().catch(function () {});
     }
@@ -293,6 +314,20 @@
   document.addEventListener('mousemove', function () { if (!sheetOpen) showCursor(); });
   showCursor();
 
+  // Reconcile the fullscreen icon when the OS changes window state on its own
+  // (green traffic light, Cmd+Ctrl+F, etc.). Best-effort — never throws.
+  var tauriEvent = window.__TAURI__ && window.__TAURI__.event;
+  if (tauriEvent && typeof tauriEvent.listen === 'function') {
+    try {
+      tauriEvent.listen('tauri://resize', function () {
+        invoke('plugin:window|is_fullscreen', { label: 'main' }).then(function (fs) {
+          isFullscreen = !!fs;
+          syncFullscreenIcon();
+        }).catch(function () {});
+      });
+    } catch (e) {}
+  }
+
   // ---------------------------------------------------------------------------
   // Keyboard
   // ---------------------------------------------------------------------------
@@ -301,7 +336,7 @@
     switch (e.code) {
       case 'Space':
         e.preventDefault();
-        if (sheetOpen) return;
+        if (sheetOpen || !ready) return;
         if (video.paused) {
           video.currentTime = calcSeekSecs(BUFFER_FIRST_SYNC_SECS);
           await video.play().catch(function () {});
@@ -314,7 +349,7 @@
         else {
           isFullscreen = false;
           invoke('plugin:window|set_fullscreen', { label: 'main', fullscreen: false }).catch(function () {});
-          if (fullscreenBtn) fullscreenBtn.innerHTML = SVG_MAXIMIZE;
+          syncFullscreenIcon();
         }
         break;
 
@@ -324,6 +359,7 @@
       case 'ArrowUp':
         e.preventDefault();
         video.volume = Math.min(1, video.volume + 0.05);
+        if (video.volume > 0) video.muted = false;
         if (volumeSlider) volumeSlider.value = video.volume;
         updateVolumeIcon();
         break;
@@ -331,6 +367,7 @@
       case 'ArrowDown':
         e.preventDefault();
         video.volume = Math.max(0, video.volume - 0.05);
+        video.muted = video.volume === 0;
         if (volumeSlider) volumeSlider.value = video.volume;
         updateVolumeIcon();
         break;

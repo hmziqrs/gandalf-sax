@@ -53,7 +53,14 @@ impl NtpClient {
         }
 
         offsets.sort();
-        let median = offsets[offsets.len() / 2];
+        let len = offsets.len();
+        let mid = len / 2;
+        // True median: midpoint for odd counts, mean of the two middle for even.
+        let median = if len % 2 == 1 {
+            offsets[mid]
+        } else {
+            (offsets[mid - 1] + offsets[mid]) / 2
+        };
 
         self.offset_micros = median;
         self.is_synced = true;
@@ -86,16 +93,39 @@ impl NtpClient {
         let mut response = [0u8; NTP_PACKET_SIZE];
         socket.recv(&mut response).ok()?;
 
+        // Reject bogus replies: Kiss-o'-Death (stratum 0), unsynchronized
+        // (stratum >= 16), or alarm leap indicator (LI == 3).
+        let stratum = response[1];
+        let leap = response[0] >> 6;
+        if stratum == 0 || stratum >= 16 || leap == 3 {
+            warn!("NTP {host}: invalid response (stratum={stratum}, leap={leap})");
+            return None;
+        }
+
         let t4_millis = Self::millis_since_epoch();
 
         let t2_millis = Self::read_timestamp(&response, 32);
         let t3_millis = Self::read_timestamp(&response, 40);
+
+        if t2_millis == 0 || t3_millis == 0 {
+            warn!("NTP {host}: zero timestamps (server not synchronized)");
+            return None;
+        }
 
         // offset = ((T2 - T1) + (T3 - T4)) / 2
         let offset_ms = ((t2_millis as f64 - t1_millis as f64)
             + (t3_millis as f64 - t4_millis as f64))
             / 2.0;
         let offset_micros = (offset_ms * 1000.0) as i64;
+
+        // Reject obviously implausible offsets (> 1 day) — corrupt or spoofed reply.
+        if offset_micros.abs() > 86_400_000_000 {
+            warn!(
+                "NTP {host}: implausible offset {:.2}s",
+                offset_micros as f64 / 1_000_000.0
+            );
+            return None;
+        }
 
         Some(offset_micros)
     }

@@ -1,14 +1,13 @@
 mod ntp;
 
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Mutex, OnceLock};
 
 use log::info;
 use serde::Serialize;
 use tauri::http;
+use tauri::Manager;
 
 use ntp::NtpClient;
-
-const VIDEO_DURATION_MICROS: i64 = 117_540_000; // 117.54 seconds
 
 // ---------------------------------------------------------------------------
 // State
@@ -27,7 +26,6 @@ pub struct AppState {
 pub struct NtpState {
     offset_micros: i64,
     is_synced: bool,
-    video_duration_micros: i64,
 }
 
 #[tauri::command]
@@ -37,7 +35,6 @@ fn sync_ntp(state: tauri::State<AppState>) -> Result<NtpState, String> {
     Ok(NtpState {
         offset_micros: ntp.offset_micros,
         is_synced: ntp.is_synced,
-        video_duration_micros: VIDEO_DURATION_MICROS,
     })
 }
 
@@ -46,13 +43,25 @@ fn sync_ntp(state: tauri::State<AppState>) -> Result<NtpState, String> {
 // ---------------------------------------------------------------------------
 
 #[tauri::command]
-fn open_url(url: String) {
-    #[cfg(target_os = "macos")]
-    let _ = std::process::Command::new("open").arg(&url).spawn();
-    #[cfg(target_os = "windows")]
-    let _ = std::process::Command::new("cmd").args(["/c", "start", &url]).spawn();
-    #[cfg(target_os = "linux")]
-    let _ = std::process::Command::new("xdg-open").arg(&url).spawn();
+fn open_url(url: String) -> Result<(), String> {
+    use std::process::Command;
+    let result = {
+        #[cfg(target_os = "macos")]
+        { Command::new("open").arg(&url).spawn() }
+        // Empty title ("") so `start` doesn't treat a quoted URL as the title,
+        // and survives URLs containing spaces or '&' on the cmd command line.
+        #[cfg(target_os = "windows")]
+        { Command::new("cmd").args(["/c", "start", "", &url]).spawn() }
+        #[cfg(target_os = "linux")]
+        { Command::new("xdg-open").arg(&url).spawn() }
+        #[cfg(not(any(target_os = "macos", target_os = "windows", target_os = "linux")))]
+        { return Err("unsupported platform".into()); }
+    };
+    if let Err(e) = result {
+        log::warn!("open_url failed for {url}: {e}");
+        return Err(e.to_string());
+    }
+    Ok(())
 }
 
 // ---------------------------------------------------------------------------
@@ -61,37 +70,39 @@ fn open_url(url: String) {
 
 #[tauri::command]
 fn copy_to_clipboard(text: String) -> Result<(), String> {
-    use std::io::Write;
+    // Spawn a clipboard helper, pipe `text` to its stdin, and wait for it.
+    fn pipe_to(prog: &str, args: &[&str], text: &str) -> Result<(), String> {
+        use std::io::Write;
+        use std::process::{Command, Stdio};
+        let mut child = Command::new(prog)
+            .args(args)
+            .stdin(Stdio::piped())
+            .spawn()
+            .map_err(|e| format!("{prog}: {e}"))?;
+        if let Some(mut stdin) = child.stdin.take() {
+            stdin.write_all(text.as_bytes()).map_err(|e| e.to_string())?;
+        }
+        child.wait().map_err(|e| e.to_string())?;
+        Ok(())
+    }
 
     #[cfg(target_os = "macos")]
-    let mut child = std::process::Command::new("pbcopy")
-        .stdin(std::process::Stdio::piped())
-        .spawn()
-        .map_err(|e| e.to_string())?;
+    { return pipe_to("pbcopy", &[], &text); }
 
     #[cfg(target_os = "windows")]
-    let mut child = std::process::Command::new("cmd")
-        .args(["/c", "clip"])
-        .stdin(std::process::Stdio::piped())
-        .spawn()
-        .map_err(|e| e.to_string())?;
+    { return pipe_to("cmd", &["/c", "clip"], &text); }
 
     #[cfg(target_os = "linux")]
-    let mut child = std::process::Command::new("xclip")
-        .args(["-selection", "clipboard"])
-        .stdin(std::process::Stdio::piped())
-        .spawn()
-        .map_err(|e| e.to_string())?;
+    {
+        // Prefer xclip (X11); fall back to wl-copy (Wayland).
+        if pipe_to("xclip", &["-selection", "clipboard"], &text).is_ok() {
+            return Ok(());
+        }
+        return pipe_to("wl-copy", &[], &text);
+    }
 
-    child
-        .stdin
-        .take()
-        .unwrap()
-        .write_all(text.as_bytes())
-        .map_err(|e| e.to_string())?;
-
-    child.wait().map_err(|e| e.to_string())?;
-    Ok(())
+    #[cfg(not(any(target_os = "macos", target_os = "windows", target_os = "linux")))]
+    { Err("clipboard not supported on this platform".into()) }
 }
 
 // ---------------------------------------------------------------------------
@@ -103,20 +114,42 @@ pub fn run() {
     env_logger::init();
     info!("Starting Epic Sax Gandalf v5.0.0");
 
-    // Pre-load video into memory so the protocol handler serves it instantly
-    let manifest_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap_or_else(|_| ".".into());
-    let video_path = std::path::Path::new(&manifest_dir).join("assets/video.mp4");
-    let video_data = Arc::new(std::fs::read(&video_path).unwrap_or_else(|e| {
-        panic!("Failed to read video at {:?}: {e}", video_path);
-    }));
-    info!("Loaded video: {} bytes", video_data.len());
+    // The video is loaded once at startup (resolved through Tauri's resource
+    // API, so it works in dev AND in a bundled .app/.exe/AppImage) and then
+    // served from memory. Kept out of the binary because an 11 MB
+    // `include_bytes!` makes debuginfo emission pathologically slow to compile.
+    let video_cache: Arc<OnceLock<Vec<u8>>> = Arc::new(OnceLock::new());
+    let video_for_setup = video_cache.clone();
 
     tauri::Builder::default()
         .manage(AppState {
             ntp: Mutex::new(NtpClient::new()),
         })
+        .setup(move |app| {
+            // Resolve the bundled resource path first; fall back to the source
+            // tree (assets/video.mp4) for `cargo run` outside `cargo tauri dev`.
+            let resource = app
+                .path()
+                .resolve("video.mp4", tauri::path::BaseDirectory::Resource)
+                .ok();
+            let dev_fallback =
+                std::env::current_dir().ok().map(|d| d.join("assets/video.mp4"));
+            let video_path = resource.into_iter().chain(dev_fallback).find(|p| p.exists());
+
+            match video_path {
+                Some(path) => match std::fs::read(&path) {
+                    Ok(bytes) => {
+                        info!("Loaded video: {} bytes from {}", bytes.len(), path.display());
+                        let _ = video_for_setup.set(bytes);
+                    }
+                    Err(e) => log::error!("Failed to read video at {}: {e}", path.display()),
+                },
+                None => log::error!("Could not locate video.mp4 in resources or assets/"),
+            }
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![sync_ntp, open_url, copy_to_clipboard])
-        .register_uri_scheme_protocol("gandalf", move |_ctx, request| {
+        .register_uri_scheme_protocol("gandalf", move |_app, request| {
             // Only serve video.mp4 — reject anything else (favicon.ico, etc.)
             let path = request.uri().path();
             if !path.ends_with("video.mp4") {
@@ -126,7 +159,15 @@ pub fn run() {
                     .unwrap();
             }
 
-            let data = &*video_data;
+            let data = match video_cache.get() {
+                Some(d) => d,
+                None => {
+                    return http::Response::builder()
+                        .status(http::StatusCode::SERVICE_UNAVAILABLE)
+                        .body(b"video not ready".to_vec())
+                        .unwrap();
+                }
+            };
             let total = data.len();
 
             let range_header = request
