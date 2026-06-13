@@ -21,12 +21,13 @@
   --card-border: rgba(0, 0, 0, 0.06);
   --card-border-hover: rgba(0, 0, 0, 0.12);
 
-  --ctrl-bg: rgba(0, 0, 0, 0.06);
-  --ctrl-fg: rgba(0, 0, 0, 0.55);
-  --ctrl-fg-hover: rgba(0, 0, 0, 0.85);
-  --ctrl-divider: rgba(0, 0, 0, 0.1);
-  --slider-track: rgba(0, 0, 0, 0.1);
-  --slider-thumb: #1a1a1a;
+  /* Overlay = always dark because it floats over black video */
+  --ctrl-bg: rgba(0, 0, 0, 0.4);
+  --ctrl-fg: rgba(255, 255, 255, 0.8);
+  --ctrl-fg-hover: #fff;
+  --ctrl-divider: rgba(255, 255, 255, 0.15);
+  --slider-track: rgba(255, 255, 255, 0.2);
+  --slider-thumb: #fff;
 
   --backdrop: rgba(0, 0, 0, 0.25);
 
@@ -45,8 +46,8 @@
   --close-fg: rgba(0, 0, 0, 0.35);
   --close-hover-bg: rgba(0, 0, 0, 0.05);
 
-  --hint-bg: rgba(255, 255, 255, 0.7);
-  --hint-fg: rgba(0, 0, 0, 0.55);
+  --hint-bg: rgba(0, 0, 0, 0.55);
+  --hint-fg: rgba(255, 255, 255, 0.75);
 
   --video-bg: #000;
   --footer-fg: rgba(0, 0, 0, 0.25);
@@ -259,5 +260,14 @@ body.mouse-active #controls { opacity: 1; }
 .social-link:hover { background: var(--social-hover-bg); color: var(--social-fg-hover); }
 .social-link .icon { width: 16px; height: 16px; }
 .social-link.text-link {
-  width: auto; padding: 0 8px; font-size: 0.68rem; font-weight: 600;
+  width: auto; padding: 0 8px; font-size: 14px; font-weight: 700;
+}
+
+/* ── Close button icon ── */
+#close-sheet .icon { width: 16px; height: 16px; }
+
+/* ── Sheet handle bar ── */
+.sheet-handle {
+  width: 32px; height: 4px; border-radius: 2px;
+  background: var(--fg-subtle); margin: 8px auto 0;
 }

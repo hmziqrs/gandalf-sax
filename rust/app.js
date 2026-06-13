@@ -4,20 +4,20 @@
   // --- Constants ---
   var BUFFER_FIRST_SYNC_SECS = 0.165;
   var CURSOR_HIDE_DELAY_MS = 3000;
-  var DURATION_MICROS = 117_540_000;
   var YOUTUBE_URL = 'https://www.youtube.com/watch?v=gy1B3agGNxw';
   var SHARE_TEXT = 'Epic Sax Gandalf — NTP-synced video loop https://github.com/hmziqrs/gandalf-sax';
 
   // --- SVG icon templates ---
   var SVG_VOLUME_ON = '<svg class="icon" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>';
+  var SVG_VOLUME_LOW = '<svg class="icon" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>';
   var SVG_VOLUME_OFF = '<svg class="icon" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>';
   var SVG_MAXIMIZE = '<svg class="icon" viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
   var SVG_MINIMIZE = '<svg class="icon" viewBox="0 0 24 24"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
 
   // --- State ---
   var ntpOffsetMicros = 0;
+  var durationMicros = 0;
   var isSynced = false;
-  var isPaused = false;
   var sheetOpen = false;
   var hasPlayedOnce = false;
   var isFullscreen = false;
@@ -60,8 +60,8 @@
   function calcSeekSecs(bufferSecs) {
     var deviceMicros = Date.now() * 1000;
     var corrected = deviceMicros + ntpOffsetMicros;
-    var raw = (corrected % DURATION_MICROS) + (bufferSecs * 1_000_000);
-    if (raw >= DURATION_MICROS) raw -= DURATION_MICROS;
+    var raw = (corrected % durationMicros) + (bufferSecs * 1_000_000);
+    if (raw >= durationMicros) raw -= durationMicros;
     return raw / 1_000_000;
   }
 
@@ -108,6 +108,17 @@
   }
 
   // ---------------------------------------------------------------------------
+  // Volume icon (three-state)
+  // ---------------------------------------------------------------------------
+
+  function updateVolumeIcon() {
+    if (!muteBtn) return;
+    if (video.muted || video.volume === 0) muteBtn.innerHTML = SVG_VOLUME_OFF;
+    else if (video.volume < 0.5) muteBtn.innerHTML = SVG_VOLUME_LOW;
+    else muteBtn.innerHTML = SVG_VOLUME_ON;
+  }
+
+  // ---------------------------------------------------------------------------
   // Sheet
   // ---------------------------------------------------------------------------
 
@@ -126,14 +137,14 @@
     if (sheet) sheet.classList.remove('active');
     sheetOpen = false;
 
-    if (!isPaused) {
+    if (!video.paused) {
       video.currentTime = calcSeekSecs(BUFFER_FIRST_SYNC_SECS);
       video.play().catch(function () {});
     }
 
     if (!hasPlayedOnce) {
       video.muted = false;
-      if (muteBtn) muteBtn.innerHTML = SVG_VOLUME_ON;
+      updateVolumeIcon();
       if (unmuteHint) unmuteHint.style.opacity = '0';
       hasPlayedOnce = true;
     }
@@ -162,7 +173,7 @@
 
   function toggleMute() {
     video.muted = !video.muted;
-    if (muteBtn) muteBtn.innerHTML = video.muted ? SVG_VOLUME_OFF : SVG_VOLUME_ON;
+    updateVolumeIcon();
   }
 
   function toggleFullscreen() {
@@ -194,19 +205,21 @@
     ntpResult = results[0];
 
     ntpOffsetMicros = ntpResult.offset_micros;
-    isSynced = true;
+    durationMicros = ntpResult.video_duration_micros;
+    isSynced = ntpResult.is_synced;
 
-    if (syncDot) syncDot.style.background = '#22c55e';
-    if (syncLabel) syncLabel.textContent = 'NTP';
+    if (syncDot) syncDot.style.background = isSynced ? '#22c55e' : '#ef4444';
+    if (syncLabel) syncLabel.textContent = isSynced ? 'NTP' : 'Sync failed';
 
     video.currentTime = calcSeekSecs(BUFFER_FIRST_SYNC_SECS);
 
     try { await video.play(); } catch (e) { console.warn('[gandalf] Autoplay blocked:', e.message); }
 
-    // Unmute on first interaction
-    function unmute() {
+    // Unmute on first interaction (but not if clicking inside the sheet)
+    function unmute(e) {
+      if (e && e.target && sheet && sheet.contains(e.target)) return;
       video.muted = false;
-      if (muteBtn) muteBtn.innerHTML = SVG_VOLUME_ON;
+      updateVolumeIcon();
       if (unmuteHint) unmuteHint.style.opacity = '0';
       document.removeEventListener('click', unmute);
       document.removeEventListener('keydown', unmute);
@@ -234,7 +247,7 @@
     settings.pauseOnSheetOpen = false;
     localStorage.setItem('gandalf_pause_on_open', 'false');
     updatePlaybackToggle();
-    if (sheetOpen && !isPaused) {
+    if (sheetOpen && video.paused) {
       video.currentTime = calcSeekSecs(BUFFER_FIRST_SYNC_SECS);
       video.play().catch(function () {});
     }
@@ -274,7 +287,7 @@
   if (volumeSlider) volumeSlider.addEventListener('input', function (e) {
     video.volume = parseFloat(e.target.value);
     video.muted = video.volume === 0;
-    if (muteBtn) muteBtn.innerHTML = video.muted ? SVG_VOLUME_OFF : SVG_VOLUME_ON;
+    updateVolumeIcon();
   });
 
   document.addEventListener('mousemove', function () { if (!sheetOpen) showCursor(); });
@@ -289,11 +302,10 @@
       case 'Space':
         e.preventDefault();
         if (sheetOpen) return;
-        if (isPaused) {
+        if (video.paused) {
           video.currentTime = calcSeekSecs(BUFFER_FIRST_SYNC_SECS);
           await video.play().catch(function () {});
-          isPaused = false;
-        } else { video.pause(); isPaused = true; }
+        } else { video.pause(); }
         break;
 
       case 'Escape':
@@ -313,12 +325,14 @@
         e.preventDefault();
         video.volume = Math.min(1, video.volume + 0.05);
         if (volumeSlider) volumeSlider.value = video.volume;
+        updateVolumeIcon();
         break;
 
       case 'ArrowDown':
         e.preventDefault();
         video.volume = Math.max(0, video.volume - 0.05);
         if (volumeSlider) volumeSlider.value = video.volume;
+        updateVolumeIcon();
         break;
     }
   });
