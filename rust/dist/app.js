@@ -21,7 +21,6 @@
   var sheetOpen = false;
   var hasPlayedOnce = false;
   var isFullscreen = false;
-  var pausedBySheet = false;
   var ready = false;
   var cursorTimer = null;
 
@@ -128,8 +127,9 @@
   function openSheet() {
     if (sheetBackdrop) sheetBackdrop.classList.add('active');
     if (sheet) sheet.classList.add('active');
+    // Matches Swift handleVideoTap(): if "Pause on Open" is on, pause on
+    // open. (syncVideo on close re-syncs + resumes when the setting is on.)
     if (settings.pauseOnSheetOpen && !video.paused) {
-      pausedBySheet = true; // the sheet caused this pause → resume on close
       video.pause();
     }
     sheetOpen = true;
@@ -143,8 +143,10 @@
     if (sheet) sheet.classList.remove('active');
     sheetOpen = false;
 
-    if (pausedBySheet) {
-      pausedBySheet = false;
+    // Matches Swift hideSettings(): when "Pause on Open" is on, closing the
+    // sheet re-syncs and resumes — regardless of how playback was paused
+    // (space bar, toggle button, or the sheet itself).
+    if (settings.pauseOnSheetOpen && video.paused) {
       video.currentTime = calcSeekSecs(BUFFER_FIRST_SYNC_SECS);
       video.play().catch(function () {});
     }
@@ -261,14 +263,16 @@
     settings.pauseOnSheetOpen = true;
     localStorage.setItem('gandalf_pause_on_open', 'true');
     updatePlaybackToggle();
-    if (sheetOpen && !video.paused) { pausedBySheet = true; video.pause(); }
+    // Matches Swift pauseOnOpenTapped → onPause: always pause.
+    if (sheetOpen && !video.paused) { video.pause(); }
   });
   if (toggleKeep) toggleKeep.addEventListener('click', function () {
     settings.pauseOnSheetOpen = false;
     localStorage.setItem('gandalf_pause_on_open', 'false');
     updatePlaybackToggle();
-    if (sheetOpen && video.paused && pausedBySheet) {
-      pausedBySheet = false;
+    // Matches Swift keepPlayingTapped → onPlay: always resume (re-synced),
+    // even if the pause came from the space bar.
+    if (sheetOpen && video.paused) {
       video.currentTime = calcSeekSecs(BUFFER_FIRST_SYNC_SECS);
       video.play().catch(function () {});
     }
@@ -332,15 +336,17 @@
   // Keyboard
   // ---------------------------------------------------------------------------
 
-  document.addEventListener('keydown', async function (e) {
+  document.addEventListener('keydown', function (e) {
     switch (e.code) {
       case 'Space':
+        // Space toggles the settings sheet (like clicking the video):
+        // open pauses-on-open, close resumes — in "Pause on Open" mode the
+        // open/close brackets a pause; in "Keep Playing" mode playback is
+        // untouched. Either way, Space never drives playback directly, so it
+        // can't desync the sheet's resume logic.
         e.preventDefault();
-        if (sheetOpen || !ready) return;
-        if (video.paused) {
-          video.currentTime = calcSeekSecs(BUFFER_FIRST_SYNC_SECS);
-          await video.play().catch(function () {});
-        } else { video.pause(); }
+        if (!ready) return;
+        if (sheetOpen) { closeSheet(); } else { openSheet(); }
         break;
 
       case 'Escape':
