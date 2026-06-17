@@ -137,11 +137,21 @@ body.mouse-active #controls { opacity: 1; }
 .controls-divider { width: 1px; height: 16px; background: var(--ctrl-divider); }
 #volume {
   width: 60px; height: 3px; -webkit-appearance: none; appearance: none;
-  background: var(--slider-track); border-radius: 2px; outline: none; cursor: pointer;
+  background: var(--slider-track); border-radius: 2px; cursor: pointer;
 }
 #volume::-webkit-slider-thumb {
   -webkit-appearance: none; width: 10px; height: 10px;
   border-radius: 50%; background: var(--slider-thumb); cursor: pointer;
+}
+
+/* ── Keyboard focus indicators (keyboard users only, via :focus-visible) ── */
+#volume:focus-visible { outline: 2px solid var(--ctrl-fg-hover); outline-offset: 3px; }
+.ctrl-btn:focus-visible { outline: 2px solid var(--ctrl-fg-hover); outline-offset: 3px; }
+#close-sheet:focus-visible,
+.seg-btn:focus-visible,
+.action-btn:focus-visible,
+.social-link:focus-visible {
+  outline: 2px solid var(--btn-fg); outline-offset: 2px; border-radius: 6px;
 }
 
 /* ── Sheet Backdrop ── */
@@ -247,6 +257,14 @@ body.mouse-active #controls { opacity: 1; }
   animation: shimmer 3s linear infinite;
 }
 @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* ── Reduced motion: honor the OS preference ── */
+@media (prefers-reduced-motion: reduce) {
+  #sheet, #sheet-backdrop, #sync-dot, .footer-credit span {
+    transition: none !important;
+    animation: none !important;
+  }
+}
 
 .social-links { display: flex; gap: 4px; }
 .social-link {

@@ -8,11 +8,11 @@
   var SHARE_TEXT = 'Epic Sax Gandalf — NTP-synced video loop https://github.com/hmziqrs/gandalf-sax';
 
   // --- SVG icon templates ---
-  var SVG_VOLUME_ON = '<svg class="icon" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>';
-  var SVG_VOLUME_LOW = '<svg class="icon" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>';
-  var SVG_VOLUME_OFF = '<svg class="icon" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>';
-  var SVG_MAXIMIZE = '<svg class="icon" viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
-  var SVG_MINIMIZE = '<svg class="icon" viewBox="0 0 24 24"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
+  var SVG_VOLUME_ON = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>';
+  var SVG_VOLUME_LOW = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>';
+  var SVG_VOLUME_OFF = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>';
+  var SVG_MAXIMIZE = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
+  var SVG_MINIMIZE = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
 
   // --- State ---
   var ntpOffsetMicros = 0;
@@ -23,6 +23,8 @@
   var isFullscreen = false;
   var ready = false;
   var cursorTimer = null;
+  var lastFocused = null;          // element to return focus to when the sheet closes
+  var fullscreenInFlight = false;  // serialize rapid fullscreen toggles
 
   var settings = {
     theme: localStorage.getItem('gandalf_theme') || 'system',
@@ -72,6 +74,7 @@
   // ---------------------------------------------------------------------------
 
   var systemDarkQuery = window.matchMedia('(prefers-color-scheme: dark)');
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var systemThemeHandler = null;
 
   function applyTheme(mode) {
@@ -115,9 +118,11 @@
 
   function updateVolumeIcon() {
     if (!muteBtn) return;
-    if (video.muted || video.volume === 0) muteBtn.innerHTML = SVG_VOLUME_OFF;
+    var isMuted = video.muted || video.volume === 0;
+    if (isMuted) muteBtn.innerHTML = SVG_VOLUME_OFF;
     else if (video.volume < 0.5) muteBtn.innerHTML = SVG_VOLUME_LOW;
     else muteBtn.innerHTML = SVG_VOLUME_ON;
+    muteBtn.setAttribute('aria-label', isMuted ? 'Unmute' : 'Mute');
   }
 
   // ---------------------------------------------------------------------------
@@ -126,7 +131,11 @@
 
   function openSheet() {
     if (sheetBackdrop) sheetBackdrop.classList.add('active');
-    if (sheet) sheet.classList.add('active');
+    if (sheet) {
+      sheet.classList.add('active');
+      sheet.setAttribute('aria-hidden', 'false');
+    }
+    lastFocused = document.activeElement;
     // Matches Swift handleVideoTap(): if "Pause on Open" is on, pause on
     // open. (syncVideo on close re-syncs + resumes when the setting is on.)
     if (settings.pauseOnSheetOpen && !video.paused) {
@@ -136,12 +145,17 @@
     clearTimeout(cursorTimer);
     document.body.classList.add('mouse-active');
     document.body.style.cursor = 'default';
+    if (closeSheetBtn) closeSheetBtn.focus();
   }
 
   function closeSheet() {
     if (sheetBackdrop) sheetBackdrop.classList.remove('active');
-    if (sheet) sheet.classList.remove('active');
+    if (sheet) {
+      sheet.classList.remove('active');
+      sheet.setAttribute('aria-hidden', 'true');
+    }
     sheetOpen = false;
+    if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
 
     // Matches Swift hideSettings(): when "Pause on Open" is on, closing the
     // sheet re-syncs and resumes — regardless of how playback was paused
@@ -167,7 +181,9 @@
     document.body.classList.add('mouse-active');
     document.body.style.cursor = 'default';
     clearTimeout(cursorTimer);
-    cursorTimer = setTimeout(hideCursor, CURSOR_HIDE_DELAY_MS);
+    // Respect users who asked the OS to reduce motion: keep the cursor
+    // visible instead of auto-hiding it on a timer.
+    if (!reducedMotion) cursorTimer = setTimeout(hideCursor, CURSOR_HIDE_DELAY_MS);
   }
 
   function hideCursor() {
@@ -186,10 +202,17 @@
   }
 
   function syncFullscreenIcon() {
-    if (fullscreenBtn) fullscreenBtn.innerHTML = isFullscreen ? SVG_MINIMIZE : SVG_MAXIMIZE;
+    if (!fullscreenBtn) return;
+    fullscreenBtn.innerHTML = isFullscreen ? SVG_MINIMIZE : SVG_MAXIMIZE;
+    fullscreenBtn.setAttribute('aria-label', isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen');
   }
 
   function toggleFullscreen() {
+    // Serialize rapid presses: while one toggle's IPC round-trip is in flight,
+    // ignore further presses so a double-press can't read stale state and
+    // collapse into a single (or contradictory) toggle.
+    if (fullscreenInFlight) return;
+    fullscreenInFlight = true;
     // Query the real window state so we toggle correctly even if the user
     // exited fullscreen via the OS (green traffic light, Cmd+Ctrl+F, etc.).
     invoke('plugin:window|is_fullscreen', { label: 'main' }).then(function (fs) {
@@ -200,6 +223,8 @@
       isFullscreen = !isFullscreen;
       invoke('plugin:window|set_fullscreen', { label: 'main', fullscreen: isFullscreen }).catch(function () {});
       syncFullscreenIcon();
+    }).finally(function () {
+      fullscreenInFlight = false;
     });
   }
 
@@ -339,6 +364,9 @@
   document.addEventListener('keydown', function (e) {
     switch (e.code) {
       case 'Space':
+        // If a button/input/etc. has focus, let Space activate that control
+        // natively instead of toggling the sheet.
+        if (e.target instanceof HTMLElement && /^(BUTTON|INPUT|SELECT|TEXTAREA|A)$/.test(e.target.tagName)) return;
         // Space toggles the settings sheet (like clicking the video):
         // open pauses-on-open, close resumes — in "Pause on Open" mode the
         // open/close brackets a pause; in "Keep Playing" mode playback is
@@ -363,6 +391,8 @@
       case 'KeyF': e.preventDefault(); toggleFullscreen(); break;
 
       case 'ArrowUp':
+        // Don't hijack arrow keys while focus is inside the settings sheet.
+        if (e.target instanceof HTMLElement && e.target.closest && e.target.closest('#sheet')) break;
         e.preventDefault();
         video.volume = Math.min(1, video.volume + 0.05);
         if (video.volume > 0) video.muted = false;
@@ -371,6 +401,7 @@
         break;
 
       case 'ArrowDown':
+        if (e.target instanceof HTMLElement && e.target.closest && e.target.closest('#sheet')) break;
         e.preventDefault();
         video.volume = Math.max(0, video.volume - 0.05);
         video.muted = video.volume === 0;
@@ -384,6 +415,16 @@
   // Boot
   // ---------------------------------------------------------------------------
 
-  init().catch(function (e) { console.error('[gandalf]', e); });
+  init().catch(function (e) {
+    console.error('[gandalf]', e);
+    // ready never becomes true on failure, so the app appears frozen. Surface
+    // the failure in the DOM — a packaged Tauri webview has no console.
+    if (syncLabel) syncLabel.textContent = 'Video failed to load — restart the app.';
+    if (syncDot) syncDot.style.background = '#ef4444';
+    if (unmuteHint) {
+      unmuteHint.textContent = 'Load failed — restart the app';
+      unmuteHint.style.opacity = '1';
+    }
+  });
 
 })();
